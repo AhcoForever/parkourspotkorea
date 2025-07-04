@@ -6,6 +6,7 @@ Parkour Spot Finder in Korea
 
 
 This project is a starting point for a Flutter application.
+![parkoutmainlogo.png](../../Downloads/parkoutmainlogo.png)
 
 A few resources to get you started if this is your first Flutter project:
 
