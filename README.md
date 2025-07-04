@@ -1,8 +1,10 @@
 # parkourspotkorea
 
-Parkour Spot Finder Korea
+Parkour Spot Finder in Korea
 
 ## Getting Started
+
+![ChatGPT Image 2025년 6월 17일 오후 03_52_13 1](https://github.com/user-attachments/assets/b4c499ac-8f41-49f0-8227-e2e9425240d0)
 
 This project is a starting point for a Flutter application.
 
