@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class CustomerServicePage extends StatelessWidget {
   const CustomerServicePage({Key? key}) : super(key: key);
+
+  //QR코드 URL
+  final String _qrcodeUrl = 'https://open.kakao.com/me/parkourspotcustomer';
 
   @override
   Widget build(BuildContext context) {
@@ -62,48 +66,26 @@ class CustomerServicePage extends StatelessWidget {
             ),
             const SizedBox(height: 30),
 
-            // QR 코드 플레이스홀더
-            Container(
-              width: 150,
-              height: 150,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.grey[300]!),
+            const Text(
+              'https://open.kakao.com/me/parkourspotcustomer',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+                color: Colors.black54,
               ),
-              child: const Center(
-                child: Text(
-                  'QR 코드\n영역',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 14,
-                  ),
-                ),
-              ),
-            ),
-
-            const Spacer(),
-
-            // 하단 인디케이터
-            Container(
-              width: 134,
-              height: 5,
-              decoration: BoxDecoration(
-                color: Colors.black,
-                borderRadius: BorderRadius.circular(2.5),
-              ),
+              textAlign: TextAlign.center,
             ),
             const SizedBox(height: 10),
+            // QR 코드 이미지
+             Image.asset('assets/QRcode/CustomerService_QRcode.jpeg'),
+            const SizedBox(height: 30),
+
+
+
           ],
+
         ),
       ),
     );
   }
 }
-
-// 사용 예시:
-// Navigator.push(
-//   context,
-//   MaterialPageRoute(builder: (context) => const CustomerServicePage()),
-// );

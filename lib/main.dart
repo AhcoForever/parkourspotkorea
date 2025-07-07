@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
       title: 'Parkour Finder',
       theme: ThemeData(
       ),
-      home: CustomerServicePage(),
+      //home: CustomerServicePage(),
       //home: SignUpPage(),
       //home: SignupCompleteDialog(),
       //home: const LoginPage()
