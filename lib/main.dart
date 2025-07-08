@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:parkourspotkorea/screens/customer_service_page.dart';
+import 'package:parkourspotkorea/screens/findIDPW_page.dart';
 import 'package:parkourspotkorea/screens/login_page.dart';
 import 'package:parkourspotkorea/screens/signup_page.dart';
 
@@ -17,7 +18,8 @@ class MyApp extends StatelessWidget {
       title: 'Parkour Finder',
       theme: ThemeData(
       ),
-      home: CustomerServicePage(),
+      home: findIDPW(),
+      //home: CustomerServicePage(),
       //home: SignUpPage(),
       //home: SignupCompleteDialog(),
       //home: const LoginPage()
