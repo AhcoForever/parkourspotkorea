@@ -3,6 +3,10 @@
         android:label="parkourspotkorea"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+        <!-- google map API-->
+        <meta-data android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyBhID27w_HzKJs0cRJdmw-gB73Nrh8NaAM"/>
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

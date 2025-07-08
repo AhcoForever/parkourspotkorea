@@ -1,5 +1,7 @@
-import Flutter
 import UIKit
+import Flutter
+import GoogleMaps
+// Maps SDK for iOS API
 
 @main
 @objc class AppDelegate: FlutterAppDelegate {
@@ -7,6 +9,7 @@ import UIKit
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
+    GMSServices.provideAPIKey("AIzaSyDkvnDPXJ7XzRRywSgK806uOC-V2on2ews")
     GeneratedPluginRegistrant.register(with: self)
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
