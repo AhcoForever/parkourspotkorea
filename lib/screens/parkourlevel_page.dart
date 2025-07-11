@@ -115,7 +115,7 @@ class _ParkourLevelState extends State<ParkourLevel> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
-          '나의 파쿠르 레벨은?',
+          '나의 파쿠르 실력은?',
           style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold),
         ),
         backgroundColor: Colors.white,

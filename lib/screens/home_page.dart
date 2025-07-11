@@ -78,7 +78,8 @@ class _BasicMapPageState extends State<BasicMapPage> {
               }
             },
             myLocationEnabled: true,
-            myLocationButtonEnabled: false, // 기본 버튼 비활성
+            myLocationButtonEnabled: false,
+            // 기본 버튼 비활성
             scrollGesturesEnabled: true,
             zoomGesturesEnabled: true,
             tiltGesturesEnabled: true,
@@ -100,13 +101,22 @@ class _BasicMapPageState extends State<BasicMapPage> {
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(24),
-                  boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 4, offset: Offset(0, 2))],
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 4,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
                 ),
                 child: Row(
                   children: [
                     Icon(Icons.search, color: Colors.grey),
                     SizedBox(width: 8),
-                    Text('장소를 검색하세요', style: TextStyle(color: Colors.grey, fontSize: 16)),
+                    Text(
+                      '장소를 검색하세요',
+                      style: TextStyle(color: Colors.grey, fontSize: 16),
+                    ),
                   ],
                 ),
               ),
@@ -123,16 +133,24 @@ class _BasicMapPageState extends State<BasicMapPage> {
               children: [
                 // 3-1) 내 위치 찾기 버튼 (우측 정렬)
                 Align(
+
                   alignment: Alignment.centerRight,
                   child: GestureDetector(
                     onTap: _getCurrentLocation,
                     child: Container(
-                      width: 40,
+                      width: 100,
                       height: 40,
+
                       decoration: BoxDecoration(
                         color: Colors.white,
                         shape: BoxShape.circle,
-                        boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 4, offset: Offset(0, 2))],
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black26,
+                            blurRadius: 4,
+                            offset: Offset(0, 2),
+                          ),
+                        ],
                       ),
                       child: Icon(Icons.my_location, color: Colors.blueAccent),
                     ),
@@ -146,37 +164,36 @@ class _BasicMapPageState extends State<BasicMapPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     BottomCircleButton(
-                      onTap: () {/* TODO */},
-                      child: Stack(
-                        alignment: Alignment.center,
-
-                        children: [
-
-                          Text('scratch map',
-                              style: TextStyle(fontSize: 12, fontWeight: FontWeight.normal)),
-                          Positioned(
-                            top: 6,
-                            right: 6,
-                            child: Container(
-                              width: 8,
-                              height: 8,
-                              decoration:
-                              BoxDecoration(color: Colors.red, shape: BoxShape.circle),
-                            ),
-                          ),
-                        ],
+                      onTap: () {
+                        /* TODO */
+                      },
+                      child: Icon(
+                        Icons.map,
+                        size: 28,
+                        color: Colors.blueAccent,
                       ),
                       label: 'scratch map',
                     ),
                     BottomCircleButton(
-                      onTap: () {/* TODO */},
-                      child: Icon(Icons.chat_bubble_outline,
-                          size: 28, color: Colors.blueAccent),
+                      onTap: () {
+                        /* TODO */
+                      },
+                      child: Icon(
+                        Icons.accessibility_new_sharp,
+                        size: 28,
+                        color: Colors.blueAccent,
+                      ),
                       label: '버디찾기',
                     ),
                     BottomCircleButton(
-                      onTap: () {/* TODO */},
-                      child: Icon(Icons.place, size: 28, color: Colors.blueAccent),
+                      onTap: () {
+                        /* TODO */
+                      },
+                      child: Icon(
+                        Icons.pin_drop_rounded,
+                        size: 28,
+                        color: Colors.blueAccent,
+                      ),
                       label: '장소',
                     ),
                   ],
@@ -217,7 +234,13 @@ class BottomCircleButton extends StatelessWidget {
             decoration: BoxDecoration(
               color: Colors.white,
               shape: BoxShape.circle,
-              boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 4, offset: Offset(0, 2))],
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black26,
+                  blurRadius: 4,
+                  offset: Offset(0, 2),
+                ),
+              ],
             ),
             alignment: Alignment.center,
             child: child,

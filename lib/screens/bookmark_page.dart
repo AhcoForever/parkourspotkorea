@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class NewParkourSpot extends StatelessWidget {
-  const NewParkourSpot({super.key});
+class Bookmark extends StatelessWidget {
+  const Bookmark({super.key});
 
   @override
   Widget build(BuildContext context) {

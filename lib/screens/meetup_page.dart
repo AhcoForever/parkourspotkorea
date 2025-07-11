@@ -3,24 +3,6 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'dart:async';
 import 'dart:math';
 
-void main() {
-  runApp(MeetUp());
-}
-
-class MeetUp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: '모임 생성 앱',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        useMaterial3: true,
-      ),
-      home: MapScreen(),
-    );
-  }
-}
-
 class Meeting {
   final String id;
   final String title;

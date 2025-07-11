@@ -258,19 +258,6 @@ class _FindIDPWState extends State<FindIDPW> {
         ),
 
         Spacer(),
-
-        // Bottom indicator
-        Center(
-          child: Container(
-            width: 134,
-            height: 5,
-            decoration: BoxDecoration(
-              color: Colors.black,
-              borderRadius: BorderRadius.circular(2.5),
-            ),
-          ),
-        ),
-        SizedBox(height: 10),
       ],
     );
   }
@@ -437,18 +424,7 @@ class _FindIDPWState extends State<FindIDPW> {
 
         Spacer(),
 
-        // Bottom indicator
-        Center(
-          child: Container(
-            width: 134,
-            height: 5,
-            decoration: BoxDecoration(
-              color: Colors.black,
-              borderRadius: BorderRadius.circular(2.5),
-            ),
-          ),
-        ),
-        SizedBox(height: 10),
+
       ],
     );
   }

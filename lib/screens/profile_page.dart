@@ -46,6 +46,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text('내 프로필'),
         centerTitle: true,
@@ -129,7 +130,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 children: [
                   Text(
 
-                    '파쿠르 레벨',
+                    '파쿠르 실력',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w700,
@@ -139,12 +140,12 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                   SizedBox(width: 8),
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: 7, vertical: 1),
+                    padding: EdgeInsets.symmetric(horizontal: 5, vertical: 2),
                     decoration: BoxDecoration(
-                      border: Border.all(color: Colors.blueAccent, width: 2),
+                      border: Border.all(color: Colors.green, width: 2),
                       borderRadius: BorderRadius.circular(5),
                     ),
-                    child: Text('1', style: TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.w700)),
+                    child: Text('초급', style: TextStyle(color: Colors.green, fontWeight: FontWeight.w700, fontSize: 12)),
                   ),
                   Spacer(),
                   Icon(Icons.info_outline, color: Colors.grey),
@@ -174,21 +175,24 @@ class _ProfilePageState extends State<ProfilePage> {
   }) {
     return InkWell(
       onTap: onTap,
-      child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 15),
+      child: Container(
+        margin: EdgeInsets.all(15),
         child: Row(
-
           children: [
-            Text(
-              title,
-              style: TextStyle(
-                decoration: underline
-                    ? TextDecoration.underline
-                    : TextDecoration.none,
 
+            Expanded(
+              child: Text(
+
+                title,
+                style: TextStyle(
+                  decoration: underline
+                      ? TextDecoration.underline
+                      : TextDecoration.none,
+
+                ),
               ),
             ),
-            Spacer(),
+
             Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
           ],
         ),
