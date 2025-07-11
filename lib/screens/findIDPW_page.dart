@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-class findIDPW extends StatefulWidget {
+class FindIDPW extends StatefulWidget {
   @override
-  _findIDPWState createState() => _findIDPWState();
+  _FindIDPWState createState() => _FindIDPWState();
 }
 
-class _findIDPWState extends State<findIDPW> {
+class _FindIDPWState extends State<FindIDPW> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordPhoneController = TextEditingController();
