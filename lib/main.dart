@@ -29,8 +29,9 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
       ),
       //home: MapScreen(),
+      //장소 검색시 공통된 키워드를 갖고 있는 장소가 핀으로 나타남, bottom sheet로 장소 리스트가 나타남.
       //home: LocationPermissionPage(),
-      home: ParkourLevel(),
+      //home: ParkourLevel(),
       //home: AddedNewSpot(),
       //home: Bookmark(),
       //home: MapSearchDetailPage(),
@@ -39,7 +40,7 @@ class MyApp extends StatelessWidget {
       //home: NicknamePage(),
       //home: BasicMapPage(),
       //home: FindIDPW(),
-      //ome: CustomerServicePage(),
+      //home: CustomerServicePage(),
       //home: SignUpPage(),
       //home: SignupCompleteDialog(),
       //home: const LoginPage()
