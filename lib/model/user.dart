@@ -34,13 +34,13 @@ class User {
   //map 으로 바꿔주는 함수
   Map<String, dynamic> toMap() {
     return {
-      'UID': uid,
+      'uid': uid,
       'email': email,
       'displayName': displayName,
       'parkourProficiency': parkourProficiency,
       'signupDate': signupDate,
       'lastLogin': lastLogin,
-      'status': status,
+      'status': status.name,
       'age': age,
       'phoneNum': phoneNum,
       'favoriteSpotID': favoriteSpotID,
@@ -77,7 +77,7 @@ class User {
       case 'banned':
         return UserStatus.banned;
       default:
-        return UserStatus.inactive; //기본값
+        return UserStatus.inactive; //기본값은 비활성.
     }
   }
 }
