@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:go_router/go_router.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -9,7 +10,8 @@ class LoginPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: SingleChildScrollView( // 스크롤 가능하게 만들어주는 위젯
+        child: SingleChildScrollView(
+          // 스크롤 가능하게 만들어주는 위젯
           padding: const EdgeInsets.symmetric(horizontal: 32),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -74,11 +76,12 @@ class LoginPage extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    context.goNamed('map');
+                  },
                   child: const Text(
                     '로그인',
-                    style: TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.bold,),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
@@ -150,26 +153,19 @@ class LoginPage extends StatelessWidget {
                 children: [
                   TextButton(
                     onPressed: () {
-                      print("아이디 찾기 클릭됨");
+                      context.pushNamed('find');
                     },
                     child: const Text(
-                      '아이디 찾기',
+                      '아이디 / 비밀번호 찾기',
                       style: TextStyle(color: Colors.black87),
                     ),
                   ),
+
                   const Text('|', style: TextStyle(color: Colors.black54)),
                   TextButton(
                     onPressed: () {
-                      print("비밀번호 재설정 클릭됨");
+                      context.pushNamed('signup');
                     },
-                    child: const Text(
-                      '비밀번호 재설정',
-                      style: TextStyle(color: Colors.black87),
-                    ),
-                  ),
-                  const Text('|', style: TextStyle(color: Colors.black54)),
-                  TextButton(
-                    onPressed: () { },
                     child: const Text(
                       '회원 가입',
                       style: TextStyle(color: Colors.black87),
@@ -181,7 +177,9 @@ class LoginPage extends StatelessWidget {
               const SizedBox(height: 12),
 
               TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  context.pushNamed('customerService');
+                },
                 child: const Text(
                   '로그인에 어려움이 있나요?',
                   style: TextStyle(color: Colors.black45),
@@ -192,6 +190,7 @@ class LoginPage extends StatelessWidget {
             ],
           ),
         ),
-      ),);
+      ),
+    );
   }
 }

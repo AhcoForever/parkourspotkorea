@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+
+import '../utils/back_button.dart';
 
 class FindIDPW extends StatefulWidget {
   @override
@@ -19,8 +22,8 @@ class _FindIDPWState extends State<FindIDPW> {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
+          icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
+          onPressed: () => smartBack(context)
         ),
         title: Text(
           _isPhoneTabSelected ? '아이디 찾기' : '비밀번호 찾기',

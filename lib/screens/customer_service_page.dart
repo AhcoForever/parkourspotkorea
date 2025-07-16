@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import '../utils/back_button.dart';
 
 class CustomerServicePage extends StatelessWidget {
   const CustomerServicePage({Key? key}) : super(key: key);
@@ -28,7 +31,7 @@ class CustomerServicePage extends StatelessWidget {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => smartBack(context),
         ),
         title: const Text(
           '고객 지원',

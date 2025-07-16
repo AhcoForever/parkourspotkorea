@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../utils/back_button.dart';
 
 class SignupCompleteDialog extends StatelessWidget {
   final VoidCallback? onConfirm;
@@ -94,9 +95,11 @@ class SignupCompleteDialog extends StatelessWidget {
     showDialog(
       context: context,
       barrierDismissible: false, // 배경 터치로 닫기 불가
-      builder: (BuildContext context) {
-        return SignupCompleteDialog(onConfirm: onConfirm);
-      },
+      builder: (BuildContext context) => SignupCompleteDialog(
+        onConfirm: ()=> smartBack(context)
+
+
+      )
     );
   }
 }
@@ -138,7 +141,7 @@ class _SignUpPageState extends State<SignUpPage> {
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios, color: Colors.black, size: 20),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => smartBack(context)
         ),
         title: Text(
           '회원가입',

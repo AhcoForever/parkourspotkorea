@@ -7,7 +7,7 @@ class User {
   String displayName;
   String parkourProficiency;
   final DateTime signupDate;
-  DateTime lastLogin; //서비스 디렉토리
+  DateTime lastLogin; //서비스 디렉토리로 따로 분류하는 것이 좋다.
   UserStatus status;
   final int age;
   final int phoneNum;

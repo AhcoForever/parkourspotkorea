@@ -1,6 +1,9 @@
-enum meetupStatus { upcoming, cancelled, completed }
+import 'package:flutter/cupertino.dart';
+
+enum meetupStatus { upcoming, canceled, finished }
 
 class MeetUp {
+  //변수
   final String meetupId;
   String title;
   final String hostUserId;
@@ -70,7 +73,19 @@ class MeetUp {
       images: List<String>.from(map['images'] ?? []),
     );
   }
-}
 
+  static meetupStatus _statusFromString(String status) {
+    switch (status) {
+      case 'upcoming':
+        return meetupStatus.upcoming;
+      case 'canceled':
+        return meetupStatus.canceled;
+      case 'finished':
+        return meetupStatus.finished;
+      default:
+        return meetupStatus.upcoming;
+    }
+  }
+}
 
 

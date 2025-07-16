@@ -3,12 +3,12 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 
 /// 사용자의 현재 위치를 지도에 바로 표시하는 예제
-class BasicMapPage extends StatefulWidget {
+class MapPage extends StatefulWidget {
   @override
-  _BasicMapPageState createState() => _BasicMapPageState();
+  _MapPageState createState() => _MapPageState();
 }
 
-class _BasicMapPageState extends State<BasicMapPage> {
+class _MapPageState extends State<MapPage> {
   GoogleMapController? _mapController;
   LatLng? _currentPosition;
 
