@@ -23,7 +23,9 @@ class _FindIDPWState extends State<FindIDPW> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
-          onPressed: () => smartBack(context)
+          onPressed: () {
+          context.goNamed('login');
+          }
         ),
         title: Text(
           _isPhoneTabSelected ? '아이디 찾기' : '비밀번호 찾기',

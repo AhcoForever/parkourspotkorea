@@ -1,21 +1,57 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:parkourspotkorea/services/map.dart';
+// 사용자의 현재 위치를 지도에 바로 표시
 
-/// 사용자의 현재 위치를 지도에 바로 표시하는 예제
+String? _mapStyle;
+
 class MapPage extends StatefulWidget {
   @override
   _MapPageState createState() => _MapPageState();
 }
 
 class _MapPageState extends State<MapPage> {
-  GoogleMapController? _mapController;
-  LatLng? _currentPosition;
+  GoogleMapController? mapController;
+  Set<Polygon> allPolygons = {}; //전체 행정구역 polygons
+  Set<String> visitedAreas = {}; //방문한 지역 ID 들
+  bool isLoading = true; //로딩 상태 추가
+
 
   @override
   void initState() {
+
     super.initState();
-    _requestLocationPermission();
+    _loadKoreaBundary();
+    _loadMapStyle();
+  }
+  Future<void> _loadMapStyle() async {
+    _mapStyle = await rootBundle.loadString('assets/map_style.json');
+    setState(() {}); // 스타일이 로딩된 후 다시 build
+  }
+  Future<void> _loadKoreaBundary() async {
+    print('경계선 로딩 시작...');
+    Set<Polygon> loadedPolygons = await MapService.loadKoreaBundary();
+    setState(() {
+      allPolygons = loadedPolygons;
+      isLoading = false;
+    });
+    print('지도에 Polygon 적용 완료');
+  }
+
+  void _markAreaAsVisited(String areaId) {
+    setState(() {
+      visitedAreas.add(areaId);
+      //방문한 지역의 polygon 색상 변경
+      allPolygons = allPolygons.map((polygon) {
+        if (polygon.polygonId.value.startsWith(areaId)) {
+          return polygon.copyWith(fillColorParam: Colors.blue.withOpacity(0.5));
+        }
+        return polygon;
+      }).toSet();
+    });
   }
 
   Future<void> _requestLocationPermission() async {
@@ -30,22 +66,21 @@ class _MapPageState extends State<MapPage> {
     }
   }
 
+  //현재 내위치로 이동
   Future<void> _getCurrentLocation() async {
     try {
       Position pos = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+        ),
       );
-      _currentPosition = LatLng(pos.latitude, pos.longitude);
+      final latlng = LatLng(pos.latitude, pos.longitude);
+      mapController?.animateCamera(
+        CameraUpdate.newLatLngZoom(latlng, 15),
+      );
+      setState(() {
 
-      // 맵 컨트롤러가 준비됐으면 카메라 이동
-      if (_mapController != null) {
-        _mapController!.animateCamera(
-          CameraUpdate.newCameraPosition(
-            CameraPosition(target: _currentPosition!, zoom: 15),
-          ),
-        );
-      }
-      setState(() {});
+      });
     } catch (e) {
       print('Error getting location: $e');
     }
@@ -61,22 +96,21 @@ class _MapPageState extends State<MapPage> {
     return Scaffold(
       body: Stack(
         children: [
+
           // ─── 1) 구글 맵 ───────────────────────────────────────────────────
           GoogleMap(
             initialCameraPosition: CameraPosition(
               // 위치 준비 전엔 서울 시청
-              target: _currentPosition ?? LatLng(37.5665, 126.9780),
+              target: LatLng(37.5326, 126.9906),
+              //_currentPosition ?? LatLng(36.5, 127.5),
               zoom: 15,
             ),
+
+
             onMapCreated: (controller) {
-              _mapController = controller;
-              // 위치가 이미 있으면 곧바로 이동
-              if (_currentPosition != null) {
-                controller.animateCamera(
-                  CameraUpdate.newLatLngZoom(_currentPosition!, 15),
-                );
-              }
+              mapController = controller;
             },
+            polygons: allPolygons,
             myLocationEnabled: true,
             myLocationButtonEnabled: false,
             // 기본 버튼 비활성
@@ -84,6 +118,7 @@ class _MapPageState extends State<MapPage> {
             zoomGesturesEnabled: true,
             tiltGesturesEnabled: true,
             rotateGesturesEnabled: true,
+
           ),
 
           // ─── 2) 상단 검색창 ────────────────────────────────────────────────
@@ -131,34 +166,6 @@ class _MapPageState extends State<MapPage> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // 3-1) 내 위치 찾기 버튼 (우측 정렬)
-                Align(
-
-                  alignment: Alignment.centerRight,
-                  child: GestureDetector(
-                    onTap: _getCurrentLocation,
-                    child: Container(
-                      width: 100,
-                      height: 40,
-
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black26,
-                            blurRadius: 4,
-                            offset: Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: Icon(Icons.my_location, color: Colors.blueAccent),
-                    ),
-                  ),
-                ),
-
-                SizedBox(height: 16),
-
                 // 3-2) scratch map, 채팅, 장소 3개 버튼
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -166,6 +173,7 @@ class _MapPageState extends State<MapPage> {
                     BottomCircleButton(
                       onTap: () {
                         /* TODO */
+                        context.goNamed('scratch_map');
                       },
                       child: Icon(
                         Icons.map,

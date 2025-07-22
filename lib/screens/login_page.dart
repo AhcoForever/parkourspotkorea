@@ -1,9 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:parkourspotkorea/services/auth.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
+
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  final TextEditingController _emailCtrl = TextEditingController();
+  final TextEditingController _pwCtrl = TextEditingController();
+  bool _isLoading = false;
+  String? _error;
+
+  @override
+  void dispose() {
+    _emailCtrl.dispose();
+    _pwCtrl.dispose();
+    super.dispose();
+  }
+
+  //로그인 함수
+  Future<void> _login() async {
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+
+    // try{
+    //   final userCred = await FirebaseAuth.i
+    // }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,21 +56,22 @@ class LoginPage extends StatelessWidget {
 
               const SizedBox(height: 40),
 
-              // 이메일 로그인 텍스트
-              const Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  '이메일로 로그인',
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-                ),
-              ),
-
+              // // 이메일 로그인 텍스트
+              // const Align(
+              //   alignment: Alignment.centerLeft,
+              //   child: Text(
+              //     '이메일로 로그인',
+              //     style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+              //   ),
+              // ),
               const SizedBox(height: 10),
 
               // 이메일 입력창
               TextField(
+                controller: _emailCtrl,
                 decoration: InputDecoration(
-                  hintText: '아이디(이메일)을 입력해주세요.',
+                  labelText: '이메일',
+                  hintText: 'abc@example.com',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -52,8 +83,10 @@ class LoginPage extends StatelessWidget {
 
               // 비밀번호 입력창
               TextField(
+                controller: _pwCtrl,
                 obscureText: true,
                 decoration: InputDecoration(
+                  labelText: '비밀번호',
                   hintText: '비밀번호를 입력해주세요.',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -153,7 +186,7 @@ class LoginPage extends StatelessWidget {
                 children: [
                   TextButton(
                     onPressed: () {
-                      context.pushNamed('find');
+                      context.goNamed('find');
                     },
                     child: const Text(
                       '아이디 / 비밀번호 찾기',
@@ -164,7 +197,7 @@ class LoginPage extends StatelessWidget {
                   const Text('|', style: TextStyle(color: Colors.black54)),
                   TextButton(
                     onPressed: () {
-                      context.pushNamed('signup');
+                      context.goNamed('signup');
                     },
                     child: const Text(
                       '회원 가입',
@@ -178,7 +211,7 @@ class LoginPage extends StatelessWidget {
 
               TextButton(
                 onPressed: () {
-                  context.pushNamed('customerService');
+                  context.goNamed('customerService');
                 },
                 child: const Text(
                   '로그인에 어려움이 있나요?',

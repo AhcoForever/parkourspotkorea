@@ -17,6 +17,7 @@ class _MapSearchDetailPageState extends State<MapSearchDetailPage> {
   @override
   void initState() {
     super.initState();
+   // loadmapdata('HangJeongDong_ver20250401.geojson');
     _determinePosition();
   }
 

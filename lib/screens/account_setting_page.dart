@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:parkourspotkorea/utils/back_button.dart';
 
 class AccountSettingsPage extends StatelessWidget {
   const AccountSettingsPage({Key? key}) : super(key: key);
@@ -14,7 +15,7 @@ class AccountSettingsPage extends StatelessWidget {
         // '<' 버튼
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios, color: Colors.black),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => smartBack(context),
         ),
         title: Text(
           '계정 설정',

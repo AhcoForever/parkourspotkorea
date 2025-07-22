@@ -468,8 +468,6 @@ class _SignUpPageState extends State<SignUpPage> {
       onConfirm: () {
         // 확인 버튼 클릭 시 로그인 화면으로 이동
         Navigator.of(context).popUntil((route) => route.isFirst);
-        // 또는 로그인 화면으로 이동
-        // Navigator.pushReplacementNamed(context, '/login');
       },
     );
   }
