@@ -1,13 +1,18 @@
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:parkourspotkorea/model/polygon.dart' as turf;
+
+
 class Polygon {
-   double latitude;
-   double longitude;
-   Map<String, dynamic> coordinate;
-   String admNm;
-   int admCd2;
-   int sido;
-   String sidonm;
-   int sgg;
-   String sggnm;
+  double latitude;
+  double longitude;
+  Map<String, dynamic> coordinate;  // GeoJSON coordinates
+  String admNm;
+  int admCd2;
+  int sido;
+  String sidonm;
+  int sgg;
+  String sggnm;
 
   Polygon({
     required this.latitude,
@@ -37,17 +42,17 @@ class Polygon {
   }
 
   /// Map에서 객체로 변환
-  factory Polygon.fromMap(Map<String, dynamic> map) {
+   factory Polygon.fromMap(Map<String, dynamic> map) {
     return Polygon(
-      latitude: map['latitude']?.toDouble() ?? 0.0,
-      longitude: map['longitude']?.toDouble() ?? 0.0,
+      latitude: map['latitude']?.toDouble(),
+      longitude: map['longitude']?.toDouble(),
       coordinate: Map<String, dynamic>.from(map['coordinate']),
-      admNm: map['admNm'] ?? '',
-      admCd2: map['admCd2'] ?? 0,
-      sido: map['sido'] ?? 0,
-      sidonm: map['sidonm'] ?? '',
-      sgg: map['sgg'] ?? 0,
-      sggnm: map['sggnm'] ?? '',
+      admNm: map['admNm'],
+      admCd2: map['admCd2'],
+      sido: map['sido'],
+      sidonm: map['sidonm'],
+      sgg: map['sgg'],
+      sggnm: map['sggnm'],
     );
   }
 }

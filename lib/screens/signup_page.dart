@@ -1,20 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:parkourspotkorea/services/auth_service.dart';
 import '../utils/back_button.dart';
 
-class SignupCompleteDialog extends StatelessWidget {
+class SignupCompleteDialog extends StatefulWidget {
   final VoidCallback? onConfirm;
 
-  const SignupCompleteDialog({
-    Key? key,
-    this.onConfirm,
-  }) : super(key: key);
+  //final TextEditingController _emailCtrl;
+  const SignupCompleteDialog({super.key, this.onConfirm});
 
+  @override
+  State<SignupCompleteDialog> createState() => _SignupCompleteDialogState();
+
+  static void show(BuildContext context, {VoidCallback? onConfirm}) {
+    showDialog(
+      context: context,
+      barrierDismissible: false, // 배경 터치로 닫기 불가
+      builder: (BuildContext context) =>
+          SignupCompleteDialog(onConfirm: () => smartBack(context)),
+    );
+  }
+}
+
+class _SignupCompleteDialogState extends State<SignupCompleteDialog> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       backgroundColor: Colors.white,
       child: Container(
         padding: const EdgeInsets.all(32),
@@ -52,14 +63,14 @@ class SignupCompleteDialog extends StatelessWidget {
             const SizedBox(height: 32),
 
             // 확인 버튼
-            Container(
+            SizedBox(
               width: double.infinity,
               height: 50,
               child: ElevatedButton(
                 onPressed: () {
                   Navigator.of(context).pop();
-                  if (onConfirm != null) {
-                    onConfirm!();
+                  if (widget.onConfirm != null) {
+                    widget.onConfirm!();
                   }
                 },
                 style: ElevatedButton.styleFrom(
@@ -72,10 +83,7 @@ class SignupCompleteDialog extends StatelessWidget {
                 ),
                 child: Text(
                   '확인',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                 ),
               ),
             ),
@@ -84,22 +92,6 @@ class SignupCompleteDialog extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-
-  // 다이얼로그 표시 헬퍼 메서드
-  static void show(
-      BuildContext context, {
-        VoidCallback? onConfirm,
-      }) {
-    showDialog(
-      context: context,
-      barrierDismissible: false, // 배경 터치로 닫기 불가
-      builder: (BuildContext context) => SignupCompleteDialog(
-        onConfirm: ()=> smartBack(context)
-
-
-      )
     );
   }
 }
@@ -141,7 +133,7 @@ class _SignUpPageState extends State<SignUpPage> {
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios, color: Colors.black, size: 20),
-          onPressed: () => smartBack(context)
+          onPressed: () => smartBack(context),
         ),
         title: Text(
           '회원가입',
@@ -204,66 +196,54 @@ class _SignUpPageState extends State<SignUpPage> {
                 // 약관 동의 안내
                 Text(
                   '사이트 이용을 위한 약관에 동의해 주세요.',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey[600],
-                  ),
+                  style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                 ),
                 SizedBox(height: 20),
 
                 // 전체 동의
-                _buildCheckboxRow(
-                  '네, 모두 동의합니다.',
-                  _agreeToTerms,
-                      (value) {
-                    setState(() {
-                      _agreeToTerms = value ?? false;
-                      if (_agreeToTerms) {
-                        _isAdult = true;
-                        _agreeToService = true;
-                        _agreeToPrivacy = true;
-                        _agreeToLocation = true;
-                      } else {
-                        _isAdult = false;
-                        _agreeToService = false;
-                        _agreeToPrivacy = false;
-                        _agreeToLocation = false;
-                      }
-                    });
-                  },
-                  isBold: true,
-                ),
+                _buildCheckboxRow('네, 모두 동의합니다.', _agreeToTerms, (value) {
+                  setState(() {
+                    _agreeToTerms = value ?? false;
+                    if (_agreeToTerms) {
+                      _isAdult = true;
+                      _agreeToService = true;
+                      _agreeToPrivacy = true;
+                      _agreeToLocation = true;
+                    } else {
+                      _isAdult = false;
+                      _agreeToService = false;
+                      _agreeToPrivacy = false;
+                      _agreeToLocation = false;
+                    }
+                  });
+                }, isBold: true),
                 SizedBox(height: 15),
 
                 // 개별 약관들
-                _buildCheckboxRowWithButton(
-                  '[필수] 만 14세 이상입니다.',
-                  _isAdult,
-                      (value) {
-                    setState(() {
-                      _isAdult = value ?? false;
-                      _updateMainCheckbox();
-                    });
-                  },
-                ),
+                _buildCheckboxRowWithButton('[필수] 만 14세 이상입니다.', _isAdult, (
+                  value,
+                ) {
+                  setState(() {
+                    _isAdult = value ?? false;
+                    _updateMainCheckbox();
+                  });
+                }),
                 SizedBox(height: 10),
 
-                _buildCheckboxRowWithButton(
-                  '[필수] 서비스 이용약관',
-                  _agreeToService,
-                      (value) {
-                    setState(() {
-                      _agreeToService = value ?? false;
-                      _updateMainCheckbox();
-                    });
-                  },
-                ),
+                _buildCheckboxRowWithButton('[필수] 서비스 이용약관', _agreeToService, (
+                  value,
+                ) {
+                  setState(() {
+                    _agreeToService = value ?? false;
+                    _updateMainCheckbox();
+                  });
+                }),
                 SizedBox(height: 10),
 
                 _buildCheckboxRowWithButton(
                   '[필수] 개인정보 수집/이용동의',
                   _agreeToPrivacy,
-                      (value) {
+                  (value) {
                     setState(() {
                       _agreeToPrivacy = value ?? false;
                       _updateMainCheckbox();
@@ -275,7 +255,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 _buildCheckboxRowWithButton(
                   '[필수]위치기반 서비스 이용약관',
                   _agreeToLocation,
-                      (value) {
+                  (value) {
                     setState(() {
                       _agreeToLocation = value ?? false;
                       _updateMainCheckbox();
@@ -285,13 +265,15 @@ class _SignUpPageState extends State<SignUpPage> {
                 SizedBox(height: 40),
 
                 // 회원가입 버튼
-                Container(
+                SizedBox(
                   width: double.infinity,
                   height: 50,
                   child: ElevatedButton(
                     onPressed: _canSignUp() ? _handleSignUp : null,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: _canSignUp() ? Color(0xFFFF8A3D) : Colors.grey[300],
+                      backgroundColor: _canSignUp()
+                          ? Color(0xFFFF8A3D)
+                          : Colors.grey[300],
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
@@ -328,13 +310,7 @@ class _SignUpPageState extends State<SignUpPage> {
           ),
         ),
         if (isRequired)
-          Text(
-            ' *',
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.red,
-            ),
-          ),
+          Text(' *', style: TextStyle(fontSize: 14, color: Colors.red)),
       ],
     );
   }
@@ -356,10 +332,7 @@ class _SignUpPageState extends State<SignUpPage> {
         keyboardType: keyboardType,
         decoration: InputDecoration(
           hintText: hintText,
-          hintStyle: TextStyle(
-            color: Colors.grey[400],
-            fontSize: 14,
-          ),
+          hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
           border: InputBorder.none,
           contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         ),
@@ -367,16 +340,19 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 
-  Widget _buildCheckboxRow(String text, bool value, Function(bool?) onChanged, {bool isBold = false}) {
+  Widget _buildCheckboxRow(
+    String text,
+    bool value,
+    Function(bool?) onChanged, {
+    bool isBold = false,
+  }) {
     return Row(
       children: [
         Checkbox(
           value: value,
           onChanged: onChanged,
           activeColor: Color(0xFFFF8A3D),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(4),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
         ),
         Expanded(
           child: Text(
@@ -392,24 +368,23 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 
-  Widget _buildCheckboxRowWithButton(String text, bool value, Function(bool?) onChanged) {
+  Widget _buildCheckboxRowWithButton(
+    String text,
+    bool value,
+    Function(bool?) onChanged,
+  ) {
     return Row(
       children: [
         Checkbox(
           value: value,
           onChanged: onChanged,
           activeColor: Color(0xFFFF8A3D),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(4),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
         ),
         Expanded(
           child: Text(
             text,
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.black,
-            ),
+            style: TextStyle(fontSize: 14, color: Colors.black),
           ),
         ),
         TextButton(
@@ -436,7 +411,8 @@ class _SignUpPageState extends State<SignUpPage> {
 
   void _updateMainCheckbox() {
     setState(() {
-      _agreeToTerms = _isAdult && _agreeToService && _agreeToPrivacy && _agreeToLocation;
+      _agreeToTerms =
+          _isAdult && _agreeToService && _agreeToPrivacy && _agreeToLocation;
     });
   }
 
@@ -451,10 +427,13 @@ class _SignUpPageState extends State<SignUpPage> {
         _agreeToLocation;
   }
 
-  void _handleSignUp() {
+  Future<void> _handleSignUp() async {
     if (_formKey.currentState!.validate()) {
       // 회원가입 처리 로직
-      print('회원가입 처리 시작...');
+      await AuthService().signup(
+        email: _emailController.text,
+        password: _passwordController.text,
+      );
 
       // 여기서 실제 회원가입 API 호출
       // 성공하면 다이얼로그 표시

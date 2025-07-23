@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:parkourspotkorea/services/map.dart';
+import 'package:parkourspotkorea/services/geojson_service.dart';
 // 사용자의 현재 위치를 지도에 바로 표시
 
 String? _mapStyle;
@@ -33,7 +33,7 @@ class _MapPageState extends State<MapPage> {
   }
   Future<void> _loadKoreaBundary() async {
     print('경계선 로딩 시작...');
-    Set<Polygon> loadedPolygons = await MapService.loadKoreaBundary();
+    Set<Polygon> loadedPolygons = await GeojsonService.loadKoreaBundary();
     setState(() {
       allPolygons = loadedPolygons;
       isLoading = false;

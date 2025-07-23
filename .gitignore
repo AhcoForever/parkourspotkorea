@@ -46,3 +46,12 @@ app.*.map.json
 /assets/GeoJSON/
 /android/app/src/main/AndroidManifest.xml
 /ios/Runner/AppDelegate.swift
+/ios/Runner/GeneratedPluginRegistrant.h
+/ios/Runner/GeneratedPluginRegistrant.m
+/ios/Runner/Info.plist
+/lib/firebase_options.dart
+/lib/firebase_options.g.dart
+/lib/generated_plugin_registrant.dart
+/lib/data/geojson-uploader/serviceAccountKey.json
+/lib/data/geojson-uploader/package.json
+

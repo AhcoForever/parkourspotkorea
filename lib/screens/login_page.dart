@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:parkourspotkorea/services/auth.dart';
+import 'package:parkourspotkorea/services/auth_service.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -109,11 +109,16 @@ class _LoginPageState extends State<LoginPage> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  onPressed: () {
-                    context.goNamed('map');
+                  onPressed: () async {
+                    await AuthService().signIn(
+                      email: _emailCtrl.text,
+                      password: _pwCtrl.text,
+                      context: context,
+                    );
+                    //context.goNamed('map');
                   },
                   child: const Text(
-                    '로그인',
+                    '로그인 하기',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                 ),

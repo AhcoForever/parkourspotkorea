@@ -1,10 +1,12 @@
+
+
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-class MapService {
+class GeojsonService {
   static Future<Set<Polygon>> loadKoreaBundary() async {
     try {
       String jsonString = await rootBundle.loadString(
@@ -42,13 +44,23 @@ class MapService {
               if (points.length >= 3) {
                 // 유효한 polygon을 위해 최소 3개 점 필요
                 polygons.add(
-                  Polygon(
-                    polygonId: PolygonId('${properties['adm_cd']}_$j'),
-                    points: points,
-                    strokeColor: Colors.red,
-                    strokeWidth: 5,
-                    fillColor: Colors.pink.withOpacity(0.1), //아직 방문하지 않은 지역
-                  ),
+                    Polygon(
+                      polygonId: PolygonId('${properties['adm_cd']}_$j'),
+                      points: points,
+                      strokeColor: Colors.red,
+                      strokeWidth: 5,
+                      fillColor: Colors.pink.withOpacity(0.1),
+                      visible: true,
+                    ),
+                  ///Todo: Polygon 객체 사용하는 것으로 수정해야함.
+                  // Polygon.fromMap({
+                  //     'polygonId': '${properties['adm_cd']}_$j',
+                  //     'points': points,
+                  //     'strokeColor': Colors.red,
+                  //     'strokeWidth': 5,
+                  //     'fillColor': Colors.pink.withOpacity(0.1), //아직 방문하지 않은 지역
+                  // })
+
                 );
               }
             }

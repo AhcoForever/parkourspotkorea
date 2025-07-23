@@ -1,19 +1,27 @@
 import 'package:go_router/go_router.dart';
 
 import '../screens/customer_service_page.dart';
+import '../screens/errorscreen.dart';
 import '../screens/findIDPW_page.dart';
 import '../screens/map_page.dart';
 import '../screens/login_page.dart';
+import '../screens/mapsearch_page.dart';
 import '../screens/nickname_page.dart';
 import '../screens/signup_page.dart';
 
 final GoRouter appRouter = GoRouter(
   initialLocation: '/',
+  errorBuilder: (context, state){
+    return Errorscreen(message:state.error.toString());
+  },
   routes: [
     GoRoute(
       path: '/',
       name: 'login',
-      builder: (context, state) => const LoginPage(),
+      builder: (context, state) =>
+          LoginPage(),
+          //MapPage(),
+
     ),
     GoRoute(
       path: '/signup',
@@ -40,5 +48,6 @@ final GoRouter appRouter = GoRouter(
       name: 'map',
       builder: (context, state) => MapPage(),
     ),
+
   ],
 );

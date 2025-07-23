@@ -1,6 +1,9 @@
-import 'package:flutter/cupertino.dart';
 
 enum meetupStatus { upcoming, canceled, finished }
+
+String formatDateTime(DateTime dateTime) {
+  return '${dateTime.month}/${dateTime.day} ${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}';
+}
 
 class MeetUp {
   //변수
@@ -87,5 +90,3 @@ class MeetUp {
     }
   }
 }
-
-

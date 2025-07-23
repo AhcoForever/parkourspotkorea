@@ -1,52 +1,83 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:flutter/services.dart';
 import 'package:parkourspotkorea/routes/app_router.dart';
-import 'package:parkourspotkorea/screens/account_setting_page.dart';
-import 'package:parkourspotkorea/screens/addedbookmark_page.dart';
-import 'package:parkourspotkorea/screens/bookmark_page.dart';
-import 'package:parkourspotkorea/screens/customer_service_page.dart';
-import 'package:parkourspotkorea/screens/findIDPW_page.dart';
-import 'package:parkourspotkorea/screens/login_page.dart';
-import 'package:parkourspotkorea/screens/map_page.dart';
-import 'package:parkourspotkorea/screens/mapsearch_page.dart';
-import 'package:parkourspotkorea/screens/meetup_page.dart';
-import 'package:parkourspotkorea/screens/nickname_page.dart';
-import 'package:parkourspotkorea/screens/locationPermission_Page.dart';
-import 'package:parkourspotkorea/screens/parkourlevel_page.dart';
-import 'package:parkourspotkorea/screens/profile_page.dart';
-import 'package:parkourspotkorea/screens/signup_page.dart';
+import 'package:parkourspotkorea/services/firebase_service.dart';
+import 'package:parkourspotkorea/const/constants.dart';
 
-void main() {
-  runApp(const MyApp());
+import 'firebase_options.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  //firebase 초기화
+  await _initializeFirebase();
+
+  //세로 모드 고정
+  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  //상태바 스타일 설정
+  SystemChrome.setSystemUIOverlayStyle(
+    SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.dark,
+    ),
+  );
+  runApp(MyApp());
+}
+
+Future<void> _initializeFirebase() async {
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    print('Firebase 초기화 성공');
+
+    // Firebase 서비스 초기화
+    await FirebaseService.instance.initialize();
+  } catch (e) {
+    print('Firebase 초기화 실패: $e');
+  }
 }
 
 class MyApp extends StatelessWidget {
-   const MyApp({super.key});
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
       routerConfig: appRouter,
       debugShowCheckedModeBanner: false,
-      title: 'Parkour Spot',
+      title: 'Parkour Spot in Korea',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: AppConstants.primaryColor,
+        ).copyWith(secondary: AppConstants.accentColor),
+        fontFamily: 'Pretendard',
 
-      //home: MapScreen(),
-      //장소 검색시 공통된 키워드를 갖고 있는 장소가 핀으로 나타남, bottom sheet로 장소 리스트가 나타남.
-      //home: LocationPermissionPage(),
-      //home: ParkourLevel(),
-      //home: AddedNewSpot(),
-      //home: Bookmark(),
-      //home: MapSearchDetailPage(),
-      //home: AccountSettingsPage(),
-      //home: ProfilePage(),
-      //home: NicknamePage(),
-      //home: BasicMapPage(),
-      //home: FindIDPW(),
-      //home: CustomerServicePage(),
-      //home: SignUpPage(),
-      //home: SignupCompleteDialog(),
-      //home: const LoginPage()
+        //App bar 테마
+        appBarTheme: AppBarTheme(
+          backgroundColor: AppConstants.primaryColor,
+          foregroundColor: Colors.white,
+          elevation: 0,
+          //음영 0
+          centerTitle: true,
+          titleTextStyle: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
+          ),
+        ),
+
+        //ElevatedButton 테마
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppConstants.primaryColor,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          ),
+        ),
+      ),
     );
   }
 }
-
