@@ -35,7 +35,7 @@ class FirebaseService {
     // 기본값 설정
     await _remoteConfig.setDefaults({
       'geojson_version': '1.0.0',
-      'geojson_path': 'korea/HangJeongDong_ver20250401.geojson',
+      'geojson_path': 'assets/GeoJSON/HangJeongDong_ver20250401.geojson',
       'enable_caching': true,
       'cache_duration_days': 30,
     });

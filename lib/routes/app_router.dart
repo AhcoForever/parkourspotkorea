@@ -5,23 +5,32 @@ import '../screens/errorscreen.dart';
 import '../screens/findIDPW_page.dart';
 import '../screens/map_page.dart';
 import '../screens/login_page.dart';
-import '../screens/mapsearch_page.dart';
 import '../screens/nickname_page.dart';
 import '../screens/signup_page.dart';
+import '../widgets/app_initializer.dart';
 
 final GoRouter appRouter = GoRouter(
   initialLocation: '/',
-  errorBuilder: (context, state){
-    return Errorscreen(message:state.error.toString());
+  errorBuilder: (context, state) {
+    return Errorscreen(message: state.error.toString());
   },
   routes: [
+    // GoRoute(
+    //   path: '/',
+    //   name: 'initializer',
+    //   builder: (context, state) =>
+    //   AppInitializer()
+    //   // LoginPage(),
+    //       //MapPage(),
+    //
+    //
+    // ),
     GoRoute(
       path: '/',
       name: 'login',
-      builder: (context, state) =>
-          LoginPage(),
-          //MapPage(),
+      builder: (context, state) => LoginPage(),
 
+      //MapPage(),
     ),
     GoRoute(
       path: '/signup',
@@ -36,18 +45,13 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/find',
       name: 'find',
-      builder: (context, state) =>  FindIDPW(),
+      builder: (context, state) => FindIDPW(),
     ),
     GoRoute(
       path: '/customer-service',
       name: 'customerService',
       builder: (context, state) => CustomerServicePage(),
     ),
-    GoRoute(
-      path: '/map',
-      name: 'map',
-      builder: (context, state) => MapPage(),
-    ),
-
+    GoRoute(path: '/map', name: 'map', builder: (context, state) => MapPage()),
   ],
 );

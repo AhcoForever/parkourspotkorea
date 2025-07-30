@@ -3,7 +3,7 @@
 part of 'app_database.dart';
 
 // ignore_for_file: type=lint
-class $UsersTable extends Users with TableInfo<$UsersTable, User> {
+class $UsersTable extends Users with TableInfo<$UsersTable, LocalUser> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
@@ -215,7 +215,7 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
   static const String $name = 'users';
   @override
   VerificationContext validateIntegrity(
-    Insertable<User> instance, {
+    Insertable<LocalUser> instance, {
     bool isInserting = false,
   }) {
     final context = VerificationContext();
@@ -368,9 +368,9 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
   @override
   Set<GeneratedColumn> get $primaryKey => {uid};
   @override
-  User map(Map<String, dynamic> data, {String? tablePrefix}) {
+  LocalUser map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return User(
+    return LocalUser(
       uid: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}uid'],
@@ -448,7 +448,7 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
   }
 }
 
-class User extends DataClass implements Insertable<User> {
+class LocalUser extends DataClass implements Insertable<LocalUser> {
   final String uid;
   final String email;
   final String displayName;
@@ -466,7 +466,7 @@ class User extends DataClass implements Insertable<User> {
   final String? visitedRegions;
   final int totalVisitedCount;
   final DateTime? lastLocationUpdate;
-  const User({
+  const LocalUser({
     required this.uid,
     required this.email,
     required this.displayName,
@@ -550,12 +550,12 @@ class User extends DataClass implements Insertable<User> {
     );
   }
 
-  factory User.fromJson(
+  factory LocalUser.fromJson(
     Map<String, dynamic> json, {
     ValueSerializer? serializer,
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return User(
+    return LocalUser(
       uid: serializer.fromJson<String>(json['uid']),
       email: serializer.fromJson<String>(json['email']),
       displayName: serializer.fromJson<String>(json['displayName']),
@@ -603,7 +603,7 @@ class User extends DataClass implements Insertable<User> {
     };
   }
 
-  User copyWith({
+  LocalUser copyWith({
     String? uid,
     String? email,
     String? displayName,
@@ -621,7 +621,7 @@ class User extends DataClass implements Insertable<User> {
     Value<String?> visitedRegions = const Value.absent(),
     int? totalVisitedCount,
     Value<DateTime?> lastLocationUpdate = const Value.absent(),
-  }) => User(
+  }) => LocalUser(
     uid: uid ?? this.uid,
     email: email ?? this.email,
     displayName: displayName ?? this.displayName,
@@ -646,8 +646,8 @@ class User extends DataClass implements Insertable<User> {
         ? lastLocationUpdate.value
         : this.lastLocationUpdate,
   );
-  User copyWithCompanion(UsersCompanion data) {
-    return User(
+  LocalUser copyWithCompanion(UsersCompanion data) {
+    return LocalUser(
       uid: data.uid.present ? data.uid.value : this.uid,
       email: data.email.present ? data.email.value : this.email,
       displayName: data.displayName.present
@@ -684,7 +684,7 @@ class User extends DataClass implements Insertable<User> {
 
   @override
   String toString() {
-    return (StringBuffer('User(')
+    return (StringBuffer('LocalUser(')
           ..write('uid: $uid, ')
           ..write('email: $email, ')
           ..write('displayName: $displayName, ')
@@ -729,7 +729,7 @@ class User extends DataClass implements Insertable<User> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is User &&
+      (other is LocalUser &&
           other.uid == this.uid &&
           other.email == this.email &&
           other.displayName == this.displayName &&
@@ -749,7 +749,7 @@ class User extends DataClass implements Insertable<User> {
           other.lastLocationUpdate == this.lastLocationUpdate);
 }
 
-class UsersCompanion extends UpdateCompanion<User> {
+class UsersCompanion extends UpdateCompanion<LocalUser> {
   final Value<String> uid;
   final Value<String> email;
   final Value<String> displayName;
@@ -818,7 +818,7 @@ class UsersCompanion extends UpdateCompanion<User> {
        phoneNum = Value(phoneNum),
        latitude = Value(latitude),
        longitude = Value(longitude);
-  static Insertable<User> custom({
+  static Insertable<LocalUser> custom({
     Expression<String>? uid,
     Expression<String>? email,
     Expression<String>? displayName,
@@ -1314,14 +1314,14 @@ class $$UsersTableTableManager
         RootTableManager<
           _$AppDatabase,
           $UsersTable,
-          User,
+          LocalUser,
           $$UsersTableFilterComposer,
           $$UsersTableOrderingComposer,
           $$UsersTableAnnotationComposer,
           $$UsersTableCreateCompanionBuilder,
           $$UsersTableUpdateCompanionBuilder,
-          (User, BaseReferences<_$AppDatabase, $UsersTable, User>),
-          User,
+          (LocalUser, BaseReferences<_$AppDatabase, $UsersTable, LocalUser>),
+          LocalUser,
           PrefetchHooks Function()
         > {
   $$UsersTableTableManager(_$AppDatabase db, $UsersTable table)
@@ -1427,14 +1427,14 @@ typedef $$UsersTableProcessedTableManager =
     ProcessedTableManager<
       _$AppDatabase,
       $UsersTable,
-      User,
+      LocalUser,
       $$UsersTableFilterComposer,
       $$UsersTableOrderingComposer,
       $$UsersTableAnnotationComposer,
       $$UsersTableCreateCompanionBuilder,
       $$UsersTableUpdateCompanionBuilder,
-      (User, BaseReferences<_$AppDatabase, $UsersTable, User>),
-      User,
+      (LocalUser, BaseReferences<_$AppDatabase, $UsersTable, LocalUser>),
+      LocalUser,
       PrefetchHooks Function()
     >;
 

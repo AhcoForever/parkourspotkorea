@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:parkourspotkorea/services/geojson_service.dart';
+import 'package:parkourspotkorea/services/local_geojson_service.dart';
 // 사용자의 현재 위치를 지도에 바로 표시
 
 String? _mapStyle;

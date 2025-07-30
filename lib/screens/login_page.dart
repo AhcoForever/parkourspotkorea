@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
 import 'package:parkourspotkorea/services/auth_service.dart';
 
@@ -11,8 +12,9 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final TextEditingController _emailCtrl = TextEditingController();
-  final TextEditingController _pwCtrl = TextEditingController();
+  final AuthService _authService = AuthService();
+  final _emailCtrl = TextEditingController();
+  final _pwCtrl = TextEditingController();
   bool _isLoading = false;
   String? _error;
 
@@ -24,15 +26,59 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   //로그인 함수
-  Future<void> _login() async {
-    setState(() {
-      _isLoading = true;
-      _error = null;
-    });
+  Future<void> _signin() async {
+    //입력 체크
+    if (_emailCtrl.text.trim().isEmpty || _pwCtrl.text.trim().isEmpty) {
+      Fluttertoast.showToast(
+        msg: '이메일과 비밀번호를 모두 입력해주세요.',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.SNACKBAR,
+        backgroundColor: Colors.black54,
+        textColor: Colors.white,
+        fontSize: 14.0,
+      );
+      return;
+    }
+    setState(() => _isLoading = true);
+    FocusScope.of(context).unfocus();
+    try {
+      final user = await _authService.signIn(
+        email: _emailCtrl.text.trim(),
+        password: _pwCtrl.text.trim(),
+      );
 
-    // try{
-    //   final userCred = await FirebaseAuth.i
-    // }
+      if (user != null) {
+        // 로그인 성공 시 지도 페이지로 이동
+        context.goNamed('/map');
+      }
+    } catch (e) {
+      Fluttertoast.showToast(
+        msg: '로그인 중 오류가 발생했습니다.:$e',
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.SNACKBAR,
+        backgroundColor: Colors.black54,
+        textColor: Colors.white,
+        fontSize: 14.0,
+      );
+    }
+
+    setState(() => _isLoading = false);
+  }
+
+  ///구글 로그인
+  Future<void> _signInWithGoogle() async {
+    setState(() => _isLoading = true);
+
+    try {
+      //var user = await _authService.signInWithGoogle();
+
+      // if (user != null) {
+      //   //로그인 성공시 지도 페이지도 이동
+      //   context.goNamed('/map');
+      // }
+    } catch (e) {}
+
+    setState(() => _isLoading = false);
   }
 
   @override
@@ -49,10 +95,7 @@ class _LoginPageState extends State<LoginPage> {
               const SizedBox(height: 60),
 
               // 로고 이미지
-              Image.asset(
-                'assets/logo/parkour_logo.png', // 로고 이미지 경로
-                height: 300,
-              ),
+              Image.asset('assets/logo/parkour_logo.png', height: 300),
 
               const SizedBox(height: 40),
 
@@ -110,17 +153,22 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                   onPressed: () async {
-                    await AuthService().signIn(
-                      email: _emailCtrl.text,
-                      password: _pwCtrl.text,
-                      context: context,
-                    );
-                    //context.goNamed('map');
+                    _isLoading ? null : _signin();
+                    // await AuthService().signIn(
+                    //   email: _emailCtrl.text,
+                    //   password: _pwCtrl.text,
+                    // );
+                    context.goNamed('map');
                   },
-                  child: const Text(
-                    '로그인 하기',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
+                  child: _isLoading
+                      ? const CircularProgressIndicator()
+                      : Text(
+                          '로그인 하기',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                 ),
               ),
 
@@ -136,16 +184,16 @@ class _LoginPageState extends State<LoginPage> {
                   // 구글 버튼
                   InkWell(
                     onTap: () {
-                      print('구글 로그인 클릭');
+                      //_isLoading ? null : _googleSignIn();
                     },
                     borderRadius: BorderRadius.circular(8),
                     child: Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Colors.white, // ✅ 배경 흰색
+                        color: Colors.white,
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: const Color(0xFFE8ECF4), // ✅ 테두리 색
+                          color: const Color(0xFFE8ECF4), //  테두리 색
                           width: 1,
                         ),
                       ),
@@ -232,3 +280,5 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 }
+
+

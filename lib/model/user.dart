@@ -1,10 +1,8 @@
 import 'dart:math' as math;
 
-import 'package:drift/drift.dart';
-
 enum UserStatus { active, inactive, banned }
 
-class Users {
+class User {
   //변수 선언
   final String uid;
   final String email;
@@ -13,7 +11,6 @@ class Users {
   final DateTime signupDate;
   DateTime lastLogin; //서비스 디렉토리로 따로 분류하는 것이 좋다.
   UserStatus status;
-  final int age;
   final int phoneNum;
   List<String> favoriteSpotID;
   String? userImage;
@@ -26,7 +23,7 @@ class Users {
   DateTime? lastLocationUpdate; //마지막 위치 업데이트 시간
 
   //  생성자
-  Users({
+  User({
     required this.uid,
     required this.email,
     required this.displayName,
@@ -34,7 +31,6 @@ class Users {
     required this.signupDate,
     required this.lastLogin,
     required this.status,
-    required this.age,
     required this.phoneNum,
     this.favoriteSpotID = const [],
     this.userImage,
@@ -56,7 +52,6 @@ class Users {
       'signupDate': signupDate,
       'lastLogin': lastLogin,
       'status': status.name,
-      'age': age,
       'phoneNum': phoneNum,
       'favoriteSpotID': favoriteSpotID,
       'userImage': userImage,
@@ -70,8 +65,8 @@ class Users {
   }
 
   //map에서 객체로 바꿔주는 함수
-  static Users fromMap(Map<String, dynamic> map) {
-    return Users(
+  static User fromMap(Map<String, dynamic> map) {
+    return User(
       uid: map['uid'] ?? '',
       displayName: map['displayName'] ?? '',
       email: map['email'] ?? '',
@@ -79,7 +74,6 @@ class Users {
       signupDate: map['signupDate'] ?? DateTime.now(),
       lastLogin: map['lastLogin'] ?? '',
       status: statusFromString(map['status']),
-      age: map['age'] ?? 0,
       phoneNum: map['phoneNum'] ?? 0,
       favoriteSpotID: List<String>.from(map['favoriteSpotID'] ?? []),
       userImage: map['userImage'] ?? '',
@@ -150,7 +144,7 @@ class Users {
 
 
   /// User 복사본 생성 (일부 필드 업데이트용)
-  Users copyWith({
+  User copyWith({
     String? displayName,
     String? parkourProficiency,
     DateTime? lastLogin,
@@ -166,7 +160,7 @@ class Users {
     DateTime? lastLocationUpdate,
     double? totalDistanceTraveled,
   }) {
-    return Users(
+    return User(
       uid: uid,
       email: email,
       displayName: displayName ?? this.displayName,
@@ -174,7 +168,6 @@ class Users {
       signupDate: signupDate,
       lastLogin: lastLogin ?? this.lastLogin,
       status: status ?? this.status,
-      age: age,
       phoneNum: phoneNum,
       favoriteSpotID: favoriteSpotID ?? this.favoriteSpotID,
       userImage: userImage ?? this.userImage,

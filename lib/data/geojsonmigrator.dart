@@ -1,18 +1,22 @@
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
 
-///파일 -> 객체 -> Firestore
+import '../model/geofeature.dart';
+
 class GeoJsonMigrator {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  // GeoJSON 파일을 Firestore로 마이그레이션하는 메인 함수
+  /// test_dong.geojson 파일을 Firestore로 마이그레이션
   Future<void> migrateGeoJsonToFirestore({
     required String geoJsonFilePath,
     required String collectionName,
   }) async {
     try {
+      print('🚀 마이그레이션 시작: $geoJsonFilePath -> $collectionName');
+
       // 1. GeoJSON 파일 읽기
       String geoJsonString = await _readGeoJsonFile(geoJsonFilePath);
 
@@ -22,22 +26,27 @@ class GeoJsonMigrator {
       // 3. Features 추출
       List<dynamic> features = geoJsonData['features'] ?? [];
 
-      print('총 ${features.length}개의 Feature를 마이그레이션합니다.');
+      print('📊 총 ${features.length}개의 Feature를 마이그레이션합니다.');
 
-      // 4. 각 Feature를 Firestore에 저장
+      // 4. 각 Feature를 Geofeature 객체로 변환하고 Firestore에 저장
       for (int i = 0; i < features.length; i++) {
-        await _saveFeatureToFirestore(features[i], collectionName);
-        print('Progress: ${i + 1}/${features.length}');
+        await _saveGeofeatureToFirestore(features[i], collectionName);
+
+        // 진행률 출력 (10개마다)
+        if ((i + 1) % 10 == 0 || i == features.length - 1) {
+          print('📈 Progress: ${i + 1}/${features.length} (${((i + 1) / features.length * 100).toStringAsFixed(1)}%)');
+        }
       }
 
-      print('마이그레이션이 완료되었습니다!');
+      print('✅ 마이그레이션이 완료되었습니다!');
+
     } catch (e) {
-      print('마이그레이션 중 오류가 발생했습니다: $e');
+      print('❌ 마이그레이션 중 오류가 발생했습니다: $e');
       rethrow;
     }
   }
 
-  // GeoJSON 파일 읽기 (assets 또는 로컬 파일)
+  /// GeoJSON 파일 읽기
   Future<String> _readGeoJsonFile(String filePath) async {
     try {
       // assets에서 읽기
@@ -54,41 +63,17 @@ class GeoJsonMigrator {
     }
   }
 
-  // 개별 Feature를 Firestore에 저장
-  Future<void> _saveFeatureToFirestore(
-    Map<String, dynamic> feature,
-    String collectionName,
-  ) async {
+  /// 개별 Feature를 Geofeature 객체로 변환하고 Firestore에 저장
+  Future<void> _saveGeofeatureToFirestore(
+      Map<String, dynamic> feature,
+      String collectionName
+      ) async {
     try {
-      // properties와 geometry 추출
-      Map<String, dynamic> properties = feature['properties'] ?? {};
-      Map<String, dynamic> geometry = feature['geometry'] ?? {};
+      // GeoJSON Feature를 Geofeature 객체로 변환
+      Geofeature geofeature = Geofeature.fromGeoJson(feature);
 
-      // coordinates를 String으로 변환
-      String coordinatesString = '';
-      if (geometry['coordinates'] != null) {
-        coordinatesString = json.encode(geometry['coordinates']);
-      }
-
-      // Firestore에 저장할 데이터 구성
-      Map<String, dynamic> firestoreData = {
-        // Feature 기본 정보
-        'type': feature['type'] ?? 'Feature',
-
-        // Properties 정보
-        'adm_nm': properties['adm_nm'] ?? '',
-        'adm_cd2': properties['adm_cd2'] ?? '',
-        'sgg': properties['sgg'] ?? '',
-        'sido': properties['sido'] ?? '',
-        'sidonm': properties['sidonm'] ?? '',
-        'sggnm': properties['sggnm'] ?? '',
-        'adm_cd': properties['adm_cd'] ?? '',
-
-        // Geometry 정보
-        'geometry_type': geometry['type'] ?? '',
-        'coordinates': coordinatesString, // String으로 저장
-
-      };
+      // Firestore에 저장할 데이터로 변환
+      Map<String, dynamic> firestoreData = geofeature.toMap();
 
       // Firestore에 문서 추가 (ID 자동 생성)
       DocumentReference docRef = await _firestore
@@ -96,35 +81,44 @@ class GeoJsonMigrator {
           .add(firestoreData);
 
       // 생성된 문서 ID를 필드에도 추가
-      await docRef.update({'document_id': docRef.id});
+      await docRef.update({
+        'document_id': docRef.id,
+      });
 
-      print('저장 완료 - ID: ${docRef.id}, 지역: ${properties['adm_nm']}');
+      print('💾 저장 완료 - ID: ${docRef.id}, 지역: ${geofeature.adm_nm}');
+
     } catch (e) {
-      print('Feature 저장 중 오류: $e');
+      print('❌ Feature 저장 중 오류: $e');
       rethrow;
     }
   }
 
-  // 마이그레이션 상태 확인
+  /// 마이그레이션 상태 확인
   Future<void> checkMigrationStatus(String collectionName) async {
     try {
-      QuerySnapshot snapshot = await _firestore
-          .collection(collectionName)
-          .get();
-      print('컬렉션 "$collectionName"에 ${snapshot.docs.length}개의 문서가 있습니다.');
+      QuerySnapshot snapshot = await _firestore.collection(collectionName).get();
+      print('📊 컬렉션 "$collectionName"에 ${snapshot.docs.length}개의 문서가 있습니다.');
 
       // 첫 번째 문서 샘플 출력
       if (snapshot.docs.isNotEmpty) {
-        print('샘플 문서:');
-        print(snapshot.docs.first.data());
+        print('📄 샘플 문서:');
+        Map<String, dynamic> sampleData = snapshot.docs.first.data() as Map<String, dynamic>;
+
+        // Geofeature 객체로 변환해서 출력
+        Geofeature sampleGeofeature = Geofeature.fromMap(sampleData, docId: snapshot.docs.first.id);
+        print('   - ID: ${sampleGeofeature.id}');
+        print('   - 지역명: ${sampleGeofeature.adm_nm}');
+        print('   - 시도: ${sampleGeofeature.sidonm}');
+        print('   - 시군구: ${sampleGeofeature.sggnm}');
+        print('   - 좌표 길이: ${sampleGeofeature.coordinate.length} characters');
       }
     } catch (e) {
-      print('상태 확인 중 오류: $e');
+      print('❌ 상태 확인 중 오류: $e');
     }
   }
 
-  // 특정 조건으로 데이터 조회
-  Future<List<Map<String, dynamic>>> queryByRegion({
+  /// 지역별 Geofeature 조회
+  Future<List<Geofeature>> getGeofeaturesByRegion({
     required String collectionName,
     required String sidonm,
     String? sggnm,
@@ -140,29 +134,48 @@ class GeoJsonMigrator {
 
       QuerySnapshot snapshot = await query.get();
 
-      return snapshot.docs
-          .map((doc) => {'id': doc.id, ...doc.data() as Map<String, dynamic>})
-          .toList();
+      return snapshot.docs.map((doc) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        return Geofeature.fromMap(data, docId: doc.id);
+      }).toList();
+
     } catch (e) {
-      print('조회 중 오류: $e');
+      print('❌ 조회 중 오류: $e');
       return [];
     }
   }
-}
 
-// 사용 예제
-class MigrationExample {
-  final GeoJsonMigrator migrator = GeoJsonMigrator();
-
-  // 마이그레이션 실행
-  Future<void> runMigration() async {
+  /// 특정 행정구역 코드로 조회
+  Future<Geofeature?> getGeofeatureByAdmCd({
+    required String collectionName,
+    required int admCd,
+  }) async {
     try {
-      await migrator.migrateGeoJsonToFirestore(
-        geoJsonFilePath: 'assets/GeoJSON/test_dong.geojson', // assets 파일 경로
-        collectionName: 'dong_boundaries',
-      );
+      QuerySnapshot snapshot = await _firestore
+          .collection(collectionName)
+          .where('adm_cd', isEqualTo: admCd)
+          .limit(1)
+          .get();
+
+      if (snapshot.docs.isNotEmpty) {
+        Map<String, dynamic> data = snapshot.docs.first.data() as Map<String, dynamic>;
+        return Geofeature.fromMap(data, docId: snapshot.docs.first.id);
+      }
+
+      return null;
     } catch (e) {
-      print('마이그레이션 실패: $e');
+      print('❌ 조회 중 오류: $e');
+      return null;
+    }
+  }
+
+  /// 좌표 문자열을 다시 List로 변환하는 유틸리티
+  List<dynamic> parseCoordinates(String coordinateString) {
+    try {
+      return json.decode(coordinateString) as List<dynamic>;
+    } catch (e) {
+      print('❌ 좌표 파싱 오류: $e');
+      return [];
     }
   }
 }

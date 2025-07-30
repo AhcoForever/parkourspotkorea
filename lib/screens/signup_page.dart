@@ -98,16 +98,20 @@ class _SignupCompleteDialogState extends State<SignupCompleteDialog> {
 
 // 사용 예시
 class SignUpPage extends StatefulWidget {
+  const SignUpPage({super.key});
+
   @override
-  _SignUpPageState createState() => _SignUpPageState();
+  SignUpPageState createState() => SignUpPageState();
 }
 
-class _SignUpPageState extends State<SignUpPage> {
+class SignUpPageState extends State<SignUpPage> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   final _phoneController = TextEditingController();
+  final _displaynmController = TextEditingController();
+  final _parkourProficiencyController = TextEditingController();
 
   bool _agreeToTerms = false;
   bool _isAdult = false;
@@ -121,6 +125,8 @@ class _SignUpPageState extends State<SignUpPage> {
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     _phoneController.dispose();
+    _displaynmController.dispose();
+    _parkourProficiencyController.dispose();
     super.dispose();
   }
 
@@ -390,7 +396,6 @@ class _SignUpPageState extends State<SignUpPage> {
         TextButton(
           onPressed: () {
             // 약관 보기 기능
-            print('$text 보기');
           },
           style: TextButton.styleFrom(
             padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -433,6 +438,9 @@ class _SignUpPageState extends State<SignUpPage> {
       await AuthService().signup(
         email: _emailController.text,
         password: _passwordController.text,
+        displayName: _displaynmController.text,
+        parkourProficiency: _parkourProficiencyController.text,
+        phoneNum: int.parse(_phoneController.text.trim()),
       );
 
       // 여기서 실제 회원가입 API 호출
