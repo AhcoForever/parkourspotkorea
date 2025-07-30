@@ -70,7 +70,7 @@ class _LoginPageState extends State<LoginPage> {
     setState(() => _isLoading = true);
 
     try {
-      //var user = await _authService.signInWithGoogle();
+      // var user = await _authService.signInWithGoogle();
 
       // if (user != null) {
       //   //로그인 성공시 지도 페이지도 이동
@@ -87,95 +87,75 @@ class _LoginPageState extends State<LoginPage> {
       backgroundColor: Colors.white,
       body: SafeArea(
         child: SingleChildScrollView(
-          // 스크롤 가능하게 만들어주는 위젯
           padding: const EdgeInsets.symmetric(horizontal: 32),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const SizedBox(height: 60),
-
               // 로고 이미지
               Image.asset('assets/logo/parkour_logo.png', height: 300),
 
-              const SizedBox(height: 40),
-
-              // // 이메일 로그인 텍스트
-              // const Align(
-              //   alignment: Alignment.centerLeft,
-              //   child: Text(
-              //     '이메일로 로그인',
-              //     style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-              //   ),
-              // ),
-              const SizedBox(height: 10),
-
               // 이메일 입력창
-              TextField(
-                controller: _emailCtrl,
-                decoration: InputDecoration(
-                  labelText: '이메일',
-                  hintText: 'abc@example.com',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 20.0),
+                child: TextField(
+                  controller: _emailCtrl,
+                  decoration: InputDecoration(
+                    label: Align(
+                      alignment: Alignment.center,
+                      child: Text('아이디(이메일)을 입력해주세요.'),
+                    ),
+                    hintText: 'parkourspot@gmail.com',
                   ),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16),
                 ),
               ),
-
-              const SizedBox(height: 12),
 
               // 비밀번호 입력창
               TextField(
                 controller: _pwCtrl,
                 obscureText: true,
                 decoration: InputDecoration(
-                  labelText: '비밀번호',
-                  hintText: '비밀번호를 입력해주세요.',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                  label: Align(
+                    alignment: Alignment.center,
+                    child: Text('비밀번호를 입력해주세요.'),
                   ),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                  hintText: '비밀번호를 입력해주세요.',
                 ),
               ),
 
-              const SizedBox(height: 24),
+
 
               // 로그인 버튼
-              SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    backgroundColor: const Color(0xFFFF8C00), // 다크 오렌지
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
+              Padding(
+                padding: const EdgeInsets.only(top: 20.0),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 56,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(),
+                    onPressed: () async {
+                      _isLoading ? null : _signin();
+                      await AuthService().signIn(
+                        email: _emailCtrl.text,
+                        password: _pwCtrl.text,
+                      );
+                      context.goNamed('map');
+                    },
+                    child: _isLoading
+                        ? const CircularProgressIndicator()
+                        : Text('로그인'),
                   ),
-                  onPressed: () async {
-                    _isLoading ? null : _signin();
-                    // await AuthService().signIn(
-                    //   email: _emailCtrl.text,
-                    //   password: _pwCtrl.text,
-                    // );
-                    context.goNamed('map');
-                  },
-                  child: _isLoading
-                      ? const CircularProgressIndicator()
-                      : Text(
-                          '로그인 하기',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
                 ),
               ),
 
-              const SizedBox(height: 20),
-
-              const Text('또는'),
-              const SizedBox(height: 20),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 20.0, top: 25.0),
+                child: Text(
+                  '다른 방법으로 로그인',
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodySmall?.copyWith(color: Color(0xFF6A707C)),
+                ),
+              ),
 
               // 소셜 로그인 (구글 & 애플)
               Row(
@@ -184,9 +164,9 @@ class _LoginPageState extends State<LoginPage> {
                   // 구글 버튼
                   InkWell(
                     onTap: () {
-                      //_isLoading ? null : _googleSignIn();
+                      //_isLoading ? null : googleSignIn();
                     },
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(12),
                     child: Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
@@ -204,14 +184,27 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 40),
+                  const SizedBox(width: 50),
+
+
+                  // ClipOval(
+                  //
+                  //   child: Container(
+                  //     width: 200,
+                  //     height: 100,
+                  //     color: Colors.blue,
+                  //     child: Container(
+                  //       padding: EdgeInsets.all(12),
+                  //
+                  //     ),
+                  //   ),
+                  // ),
 
                   // 애플 버튼
                   InkWell(
                     onTap: () {
                       print('애플 로그인 클릭');
                     },
-                    borderRadius: BorderRadius.circular(8),
                     child: Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
@@ -232,47 +225,57 @@ class _LoginPageState extends State<LoginPage> {
                 ],
               ),
 
-              const SizedBox(height: 24),
               // 하단 버튼 3개
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  TextButton(
-                    onPressed: () {
-                      context.goNamed('find');
-                    },
-                    child: const Text(
-                      '아이디 / 비밀번호 찾기',
-                      style: TextStyle(color: Colors.black87),
+              Padding(
+                padding: const EdgeInsets.only(top: 20.0, bottom: 10.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        context.goNamed('find');
+                      },
+                      child:  Text(
+                        '아이디 / 비밀번호 찾기',
+                        style: Theme.of(
+                          context,
+                        ).textTheme.bodyMedium?.copyWith(color: Color(0xFF6A707C)),
+                      ),
                     ),
-                  ),
 
-                  const Text('|', style: TextStyle(color: Colors.black54)),
-                  TextButton(
-                    onPressed: () {
-                      context.goNamed('signup');
-                    },
-                    child: const Text(
-                      '회원 가입',
-                      style: TextStyle(color: Colors.black87),
+                    Text(
+                      ' | ',
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodyMedium?.copyWith(color: Color(0xFF6A707C)),
                     ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 12),
-
-              TextButton(
-                onPressed: () {
-                  context.goNamed('customerService');
-                },
-                child: const Text(
-                  '로그인에 어려움이 있나요?',
-                  style: TextStyle(color: Colors.black45),
+                    TextButton(
+                      onPressed: () {
+                        context.goNamed('signup');
+                      },
+                      child: Text(
+                        '회원 가입',
+                        style: Theme.of(
+                          context,
+                        ).textTheme.bodyMedium?.copyWith(color: Color(0xFF6A707C)),
+                      ),
+                    ),
+                  ],
                 ),
               ),
 
-              const SizedBox(height: 32),
+              Padding(
+                padding: const EdgeInsets.only(top: 20.0),
+                child: TextButton(
+                  onPressed: () {
+                    context.goNamed('customerService');
+                  },
+                  child: Text(
+                    '로그인에 어려움이 있나요?',
+                    style: TextStyle(decoration: TextDecoration.underline),
+                  ),
+                ),
+              ),
             ],
           ),
         ),
@@ -280,5 +283,3 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 }
-
-

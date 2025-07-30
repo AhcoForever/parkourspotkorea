@@ -25,10 +25,6 @@ class AppConstants {
   static const int DATABASE_VERSION = 1;
   static const int LOCATION_HISTORY_RETENTION_DAYS = 90; // 90일간 보관
 
-  // 색상 테마
-  static const Color primaryColor = Color(0xFF0064FF);
-  static const Color accentColor = Color(0xFF202632);
-
   static const Color visitedStrokeColor = Colors.green;
   static const Color unvisitedStrokeColor = Colors.blue;
   static const Color unvisitedFillColor = Colors.purple;

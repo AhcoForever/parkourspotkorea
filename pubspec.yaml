@@ -121,7 +121,7 @@ flutter:
   # example:
   fonts:
     #보여질 폰트 이름
-    - family: Pretender
+    - family: Pretendard
       fonts:
         - asset: assets/fonts/Pretendard/Pretendard-Regular.ttf
           weight: 100

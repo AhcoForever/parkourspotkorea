@@ -46,3 +46,8 @@ android {
 flutter {
     source = "../.."
 }
+//
+//dependencies {
+//    implementation ("org.jetbrains.kotlin:kotlin-stdlib")
+//    implementation("com.google.android.gms:play-services-auth:21.3.0")
+//}

@@ -248,13 +248,3 @@ class _LevelInfo {
     required this.backgroundColor,
   });
 }
-
-// 사용 예시
-void main() {
-  runApp(MaterialApp(
-    home: ParkourLevel(nickname: "보라돌이"), // 닉네임 전달
-    theme: ThemeData(
-      fontFamily: 'NotoSans',
-    ),
-  ));
-}

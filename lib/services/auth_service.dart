@@ -9,7 +9,7 @@ import '../database/app_database.dart';
 
 class AuthService {
   final firebase_auth.FirebaseAuth _auth = firebase_auth.FirebaseAuth.instance;
- // final GoogleSignIn _googleSignIn = GoogleSignIn();
+  final GoogleSignIn _googleSignIn = GoogleSignIn.instance;
 
   //현재 로그인된 사용자 확인
   firebase_auth.User? get currentFirebaseUser => _auth.currentUser;
@@ -117,14 +117,14 @@ class AuthService {
   // Future<firebase_auth.User?> signInWithGoogle() async {
   //   try {
   //     // 1. 구글 로그인
-  //     final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+  //     //final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
   //     if (googleUser == null) return null;
   //
   //     final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
   //
   //     // 2. Firebase 인증
   //     final credential = firebase_auth.GoogleAuthProvider.credential(
-  //       accessToken: googleAuth.accessToken,
+  //       accessToken: googleAuth?.accessToken,
   //       idToken: googleAuth.idToken,
   //     );
   //
@@ -148,7 +148,7 @@ class AuthService {
   //로그아웃
   Future<void> signOut({required BuildContext context}) async {
     await _auth.signOut();
-    //await _googleSignIn.signOut();
+    await _googleSignIn.signOut();
     await Future.delayed(const Duration(seconds: 1));
     Navigator.pushReplacement(
       context,
