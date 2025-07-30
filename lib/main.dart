@@ -2,7 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:parkourspotkorea/routes/app_router.dart';
-import 'package:parkourspotkorea/const/constants.dart';
+import 'package:parkourspotkorea/theme/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,29 +27,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-
       routerConfig: appRouter,
       debugShowCheckedModeBanner: false,
       title: 'Parkour Spot in Korea',
-
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: AppConstants.primaryColor,
-        ).copyWith(secondary: AppConstants.accentColor),
-        fontFamily: 'Pretendard',
-
-        //ElevatedButton 테마
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppConstants.primaryColor,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          ),
-        ),
-      ),
-
+      theme: AppTheme.light,
     );
   }
 }
