@@ -6,15 +6,24 @@ class AppTheme {
       brightness: Brightness.light,
       //primary 색상군
       seedColor: Color(0xFF0064FF),
-    ).copyWith(secondary: Color(0xFF202632)),
+    ).copyWith(secondary: Color(0xFF202632), ),
 
     //폰트
     fontFamily: 'Pretendard',
+    //App bat 테마
+    appBarTheme: const AppBarTheme(
+      backgroundColor: Colors.white,
+      centerTitle: true,
+      titleTextStyle: TextStyle(
+        fontSize: 20,
+        fontWeight: FontWeight.w600,
+        //color:
+      ),
+    ),
 
     ///ElevatedButton 테마
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-
         backgroundColor: const Color(0xFF0064FF),
         foregroundColor: Colors.white,
         textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
@@ -25,13 +34,13 @@ class AppTheme {
 
     //Text 테마
     textTheme: TextTheme(
-      displayLarge: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-      displaySmall: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
-      headlineMedium: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
-      bodyLarge: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
-      bodyMedium: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
-      bodySmall: TextStyle(fontSize: 12, fontWeight: FontWeight.w400),
-      labelLarge: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+      displayLarge: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Color(0xFF202632)),
+      displaySmall: TextStyle(fontSize: 24, fontWeight: FontWeight.w600,color: Color(0xFF202632)),
+      headlineMedium: TextStyle(fontSize: 20, fontWeight: FontWeight.w600,color: Color(0xFF202632)),
+      bodyLarge: TextStyle(fontSize: 16, fontWeight: FontWeight.w400,color: Color(0xFF202632)),
+      bodyMedium: TextStyle(fontSize: 14, fontWeight: FontWeight.w400,color: Color(0xFF202632)),
+      bodySmall: TextStyle(fontSize: 12, fontWeight: FontWeight.w400,color: Color(0xFF202632)),
+      labelLarge: TextStyle(fontSize: 14, fontWeight: FontWeight.w600,color: Color(0xFF202632))
     ),
 
     //텍스트 버튼 테마
@@ -74,6 +83,5 @@ class AppTheme {
         borderSide: BorderSide(color: Color(0xFF0064FF), width: 2),
       ),
     ),
-
   );
 }

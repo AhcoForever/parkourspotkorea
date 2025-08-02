@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../utils/back_button.dart';
+import '../widgets/back_button.dart';
 
 class CustomerServicePage extends StatelessWidget {
   const CustomerServicePage({Key? key}) : super(key: key);

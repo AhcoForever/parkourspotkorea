@@ -1,110 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:parkourspotkorea/services/auth_service.dart';
-import '../utils/back_button.dart';
+import 'package:parkourspotkorea/widgets/confirm_button.dart';
+import '../widgets/back_button.dart';
 
-class SignupCompleteDialog extends StatefulWidget {
-  final VoidCallback? onConfirm;
-
-  //final TextEditingController _emailCtrl;
-  const SignupCompleteDialog({super.key, this.onConfirm});
-
-  @override
-  State<SignupCompleteDialog> createState() => _SignupCompleteDialogState();
-
-  static void show(BuildContext context, {VoidCallback? onConfirm}) {
-    showDialog(
-      context: context,
-      barrierDismissible: false, // 배경 터치로 닫기 불가
-      builder: (BuildContext context) =>
-          SignupCompleteDialog(onConfirm: () => smartBack(context)),
-    );
-  }
-}
-
-class _SignupCompleteDialogState extends State<SignupCompleteDialog> {
-  @override
-  Widget build(BuildContext context) {
-    return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      backgroundColor: Colors.white,
-      child: Container(
-        padding: const EdgeInsets.all(32),
-        decoration: BoxDecoration(
-          color: Colors.grey[50],
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const SizedBox(height: 20),
-
-            // 제목
-            Text(
-              '회원가입 완료',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
-            ),
-
-            const SizedBox(height: 16),
-
-            // 부제목
-            Text(
-              '이제 로그인이 가능합니다',
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey[600],
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-
-            const SizedBox(height: 32),
-
-            // 확인 버튼
-            SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  if (widget.onConfirm != null) {
-                    widget.onConfirm!();
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFFFF8A3D),
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  elevation: 0,
-                ),
-                child: Text(
-                  '확인',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 8),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// 사용 예시
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
 
   @override
-  SignUpPageState createState() => SignUpPageState();
+  State<SignUpPage> createState() => _SignUpPageState();
 }
 
-class SignUpPageState extends State<SignUpPage> {
+class _SignUpPageState extends State<SignUpPage> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -133,27 +40,16 @@ class SignUpPageState extends State<SignUpPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: Colors.black, size: 20),
+          icon: Icon(Icons.arrow_back_ios, size: 20, color: Color(0xFF202632)),
           onPressed: () => smartBack(context),
         ),
-        title: Text(
-          '회원가입',
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        centerTitle: true,
+        title: Text('회원가입', style: Theme.of(context).textTheme.headlineMedium),
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(20.0),
+          padding: const EdgeInsets.all(16.0),
           child: Form(
             key: _formKey,
             child: Column(
@@ -413,6 +309,42 @@ class SignUpPageState extends State<SignUpPage> {
       ],
     );
   }
+//
+  Future<void> _showSignupCompleteDialog(BuildContext context) {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+
+      builder: (_) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: Padding(
+          padding: EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                '회원가입 완료',
+                style: Theme.of(context).dialogTheme.titleTextStyle,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                '이제 로그인이 가능합니다!',
+                style: Theme.of(context).dialogTheme.contentTextStyle,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
+              ConfirmButton(
+                onPressed: () {
+                  context.goNamed('/login');
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
   void _updateMainCheckbox() {
     setState(() {
@@ -445,17 +377,7 @@ class SignUpPageState extends State<SignUpPage> {
 
       // 여기서 실제 회원가입 API 호출
       // 성공하면 다이얼로그 표시
-      _showSignupCompleteDialog();
+      await _showSignupCompleteDialog(context);
     }
-  }
-
-  void _showSignupCompleteDialog() {
-    SignupCompleteDialog.show(
-      context,
-      onConfirm: () {
-        // 확인 버튼 클릭 시 로그인 화면으로 이동
-        Navigator.of(context).popUntil((route) => route.isFirst);
-      },
-    );
   }
 }

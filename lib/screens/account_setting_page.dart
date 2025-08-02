@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:parkourspotkorea/utils/back_button.dart';
+import 'package:parkourspotkorea/widgets/back_button.dart';
 
 class AccountSettingsPage extends StatelessWidget {
   const AccountSettingsPage({Key? key}) : super(key: key);

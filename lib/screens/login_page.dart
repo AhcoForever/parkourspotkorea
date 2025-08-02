@@ -122,8 +122,6 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
 
-
-
               // 로그인 버튼
               Padding(
                 padding: const EdgeInsets.only(top: 20.0),
@@ -186,20 +184,6 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(width: 50),
 
-
-                  // ClipOval(
-                  //
-                  //   child: Container(
-                  //     width: 200,
-                  //     height: 100,
-                  //     color: Colors.blue,
-                  //     child: Container(
-                  //       padding: EdgeInsets.all(12),
-                  //
-                  //     ),
-                  //   ),
-                  // ),
-
                   // 애플 버튼
                   InkWell(
                     onTap: () {
@@ -235,19 +219,19 @@ class _LoginPageState extends State<LoginPage> {
                       onPressed: () {
                         context.goNamed('find');
                       },
-                      child:  Text(
+                      child: Text(
                         '아이디 / 비밀번호 찾기',
-                        style: Theme.of(
-                          context,
-                        ).textTheme.bodyMedium?.copyWith(color: Color(0xFF6A707C)),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Color(0xFF6A707C),
+                        ),
                       ),
                     ),
 
                     Text(
                       ' | ',
-                      style: Theme.of(
-                        context,
-                      ).textTheme.bodyMedium?.copyWith(color: Color(0xFF6A707C)),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Color(0xFF6A707C),
+                      ),
                     ),
                     TextButton(
                       onPressed: () {
@@ -255,9 +239,9 @@ class _LoginPageState extends State<LoginPage> {
                       },
                       child: Text(
                         '회원 가입',
-                        style: Theme.of(
-                          context,
-                        ).textTheme.bodyMedium?.copyWith(color: Color(0xFF6A707C)),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Color(0xFF6A707C),
+                        ),
                       ),
                     ),
                   ],
