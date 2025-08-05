@@ -49,5 +49,24 @@
 	<true/>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>백그라운드에서도 이동 경로를 기록하고 알림을 보내기 위해 위치 정보를 항상 사용합니다.</string>
+	<key>GIDClientID</key>
+    <!-- TODO Replace this value: -->
+    <!-- Copied from GoogleService-Info.plist key CLIENT_ID -->
+    <string>1095125086960-9pp9lm12f4ktbslqgeim7g8t8ksgmam3.apps.googleusercontent.com</string>
+	<key>GIDServerClientID</key>
+    <string>1095125086960-o6km1nffgub8gh2na1h1fdope3rdihrh.apps.googleusercontent.com</string>
+	<key>CFBundleURLTypes</key>
+    <array>
+    	<dict>
+    		<key>CFBundleTypeRole</key>
+    		<string>Editor</string>
+    		<key>CFBundleURLSchemes</key>
+    		<array>
+    			<!-- TODO Replace this value: -->
+    			<!-- Copied from GoogleService-Info.plist key REVERSED_CLIENT_ID -->
+    			<string>com.googleusercontent.apps.1095125086960-9pp9lm12f4ktbslqgeim7g8t8ksgmam3</string>
+    		</array>
+    	</dict>
+    </array>
 </dict>
 </plist>

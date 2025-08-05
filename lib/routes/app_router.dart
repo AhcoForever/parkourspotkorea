@@ -2,11 +2,11 @@ import 'package:go_router/go_router.dart';
 
 import '../screens/customer_service_page.dart';
 import '../screens/errorscreen.dart';
-import '../screens/findIDPW_page.dart';
-import '../screens/map_page.dart';
-import '../screens/login_page.dart';
+import '../screens/auth/findIDPW_page.dart';
+import '../screens/spot/map_page.dart';
+import '../screens/auth/login_page.dart';
 import '../screens/nickname_page.dart';
-import '../screens/signup_page.dart';
+import '../screens/auth/signup_page.dart';
 import '../widgets/app_initializer.dart';
 
 final GoRouter appRouter = GoRouter(

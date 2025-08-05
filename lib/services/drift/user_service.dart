@@ -1,6 +1,6 @@
 import 'package:drift/drift.dart';
 
-import '../database/app_database.dart';
+import '../../database/app_database.dart';
 
 
 class UserService {

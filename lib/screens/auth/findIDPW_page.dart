@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../widgets/back_button.dart';
+import '../../widgets/back_button.dart';
 
 class FindIDPW extends StatefulWidget {
   @override
@@ -11,29 +11,27 @@ class FindIDPW extends StatefulWidget {
 class _FindIDPWState extends State<FindIDPW> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordPhoneController = TextEditingController();
+  final TextEditingController _passwordPhoneController =
+      TextEditingController();
   bool _isPhoneTabSelected = true;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Color(0xFFF4F7FE),
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
+          icon: Icon(
+            Icons.arrow_back_ios,
+            color: Theme.of(context).colorScheme.primary,
+          ),
           onPressed: () {
-          context.goNamed('login');
-          }
+            context.goNamed('login');
+          },
         ),
         title: Text(
           _isPhoneTabSelected ? '아이디 찾기' : '비밀번호 찾기',
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-          ),
+          style: Theme.of(context).textTheme.bodyLarge,
         ),
         centerTitle: true,
       ),
@@ -57,8 +55,8 @@ class _FindIDPWState extends State<FindIDPW> {
                         border: Border(
                           bottom: BorderSide(
                             color: _isPhoneTabSelected
-                                ? Colors.black
-                                : Colors.transparent,
+                                ? Theme.of(context).colorScheme.primary
+                                : Theme.of(context).colorScheme.tertiary,
                             width: 2,
                           ),
                         ),
@@ -68,7 +66,7 @@ class _FindIDPWState extends State<FindIDPW> {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: _isPhoneTabSelected
-                              ? Colors.black
+                              ? Color(0xFF4D4D4D)
                               : Colors.grey,
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
@@ -90,8 +88,8 @@ class _FindIDPWState extends State<FindIDPW> {
                         border: Border(
                           bottom: BorderSide(
                             color: !_isPhoneTabSelected
-                                ? Colors.black
-                                : Colors.transparent,
+                                ? Theme.of(context).colorScheme.primary
+                                : Theme.of(context).colorScheme.tertiary,
                             width: 2,
                           ),
                         ),
@@ -101,7 +99,7 @@ class _FindIDPWState extends State<FindIDPW> {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: !_isPhoneTabSelected
-                              ? Colors.black
+                              ? Color(0xFF4D4D4D)
                               : Colors.grey,
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
@@ -115,15 +113,14 @@ class _FindIDPWState extends State<FindIDPW> {
           ),
 
           // Divider
-          Container(
-            height: 1,
-            color: Colors.grey[300],
-          ),
+          Container(height: 1, color: Colors.grey[300]),
 
           Expanded(
             child: Padding(
               padding: EdgeInsets.all(20),
-              child: _isPhoneTabSelected ? _buildIdFinderTab() : _buildPasswordResetTab(),
+              child: _isPhoneTabSelected
+                  ? _buildIdFinderTab()
+                  : _buildPasswordResetTab(),
             ),
           ),
         ],
@@ -140,130 +137,122 @@ class _FindIDPWState extends State<FindIDPW> {
   }
 
   Widget _buildIdFinderTab() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(height: 40),
+    return Padding(
+      padding: const EdgeInsets.only(top: 30),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Phone number input section
+          Text('휴대폰 번호', style: Theme.of(context).textTheme.bodySmall),
 
-        // Phone number input section
-        Text(
-          '휴대폰 번호',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: Colors.black,
-          ),
-        ),
-        SizedBox(height: 15),
+          SizedBox(height: 15),
 
-        Row(
-          children: [
-            Expanded(
-              child: Container(
+          Row(
+            children: [
+              Expanded(
+                child: Container(
+                  height: 50,
+
+                  child: TextField(
+                    controller: _phoneController,
+                    decoration: InputDecoration(
+                      hintText: '010-0000-0000',
+                      hintStyle: TextStyle(
+                        color: Colors.grey[500],
+                        fontSize: 14,
+                      ),
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 15,
+                        vertical: 15,
+                      ),
+                    ),
+                    keyboardType: TextInputType.phone,
+                  ),
+                ),
+              ),
+              SizedBox(width: 10),
+
+              // Verification button
+              Container(
                 height: 50,
+                padding: EdgeInsets.symmetric(horizontal: 20),
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.grey[300]!),
                   borderRadius: BorderRadius.circular(8),
+                  color: Colors.white,
                 ),
-                child: TextField(
-                  controller: _phoneController,
-                  decoration: InputDecoration(
-                    hintText: '휴대폰번호를 입력해주세요.',
-                    hintStyle: TextStyle(
-                      color: Colors.grey[500],
+                child: Center(
+                  child: Text(
+                    '인증번호',
+                    style: TextStyle(
+                      color: Colors.black,
                       fontSize: 14,
+                      fontWeight: FontWeight.w500,
                     ),
-                    border: InputBorder.none,
-                    contentPadding: EdgeInsets.symmetric(
-                      horizontal: 15,
-                      vertical: 15,
-                    ),
-                  ),
-                  keyboardType: TextInputType.phone,
-                ),
-              ),
-            ),
-            SizedBox(width: 10),
-
-            // Verification button
-            Container(
-              height: 50,
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey[300]!),
-                borderRadius: BorderRadius.circular(8),
-                color: Colors.white,
-              ),
-              child: Center(
-                child: Text(
-                  '인증번호',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ),
-            ),
-          ],
-        ),
-
-        SizedBox(height: 30),
-
-        // Confirm button
-        Container(
-          width: double.infinity,
-          height: 50,
-          decoration: BoxDecoration(
-            color: Color(0xFFFF8C42), // Orange color
-            borderRadius: BorderRadius.circular(8),
+            ],
           ),
-          child: TextButton(
-            onPressed: () {
-              // Handle confirm action
-              print('아이디 찾기 확인 버튼 클릭');
-            },
-            child: Text(
-              '확인',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-        ),
 
-        SizedBox(height: 20),
+          SizedBox(height: 30),
 
-        // Information text
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              width: 4,
-              height: 4,
-              margin: EdgeInsets.only(top: 8, right: 8),
-              decoration: BoxDecoration(
-                color: Colors.grey[600],
-                shape: BoxShape.circle,
-              ),
+          // Confirm button
+          Container(
+            width: double.infinity,
+            height: 50,
+            decoration: BoxDecoration(
+              color: Color(0xFFFF8C42), // Orange color
+              borderRadius: BorderRadius.circular(8),
             ),
-            Expanded(
+            child: TextButton(
+              onPressed: () {
+                // Handle confirm action
+                print('아이디 찾기 확인 버튼 클릭');
+              },
               child: Text(
-                '아이디 찾기에 어려움이 있으시다면 고객센터로 문의 바랍니다.',
+                '확인',
                 style: TextStyle(
-                  color: Colors.grey[600],
-                  fontSize: 12,
-                  height: 1.4,
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ),
-          ],
-        ),
+          ),
 
-        Spacer(),
-      ],
+          SizedBox(height: 20),
+
+          // Information text
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 4,
+                height: 4,
+                margin: EdgeInsets.only(top: 8, right: 8),
+                decoration: BoxDecoration(
+                  color: Colors.grey[600],
+                  shape: BoxShape.circle,
+                ),
+              ),
+              Expanded(
+                child: Text(
+                  '아이디 찾기에 어려움이 있으시다면 고객센터로 문의 바랍니다.',
+                  style: TextStyle(
+                    color: Colors.grey[600],
+                    fontSize: 12,
+                    height: 1.4,
+                  ),
+                ),
+              ),
+            ],
+          ),
+
+          Spacer(),
+        ],
+      ),
     );
   }
 
@@ -294,10 +283,7 @@ class _FindIDPWState extends State<FindIDPW> {
             controller: _emailController,
             decoration: InputDecoration(
               hintText: '@ 까지 정확하게 입력해 주세요.',
-              hintStyle: TextStyle(
-                color: Colors.grey[500],
-                fontSize: 14,
-              ),
+              hintStyle: TextStyle(color: Colors.grey[500], fontSize: 14),
               border: InputBorder.none,
               contentPadding: EdgeInsets.symmetric(
                 horizontal: 15,
@@ -334,10 +320,7 @@ class _FindIDPWState extends State<FindIDPW> {
                   controller: _passwordPhoneController,
                   decoration: InputDecoration(
                     hintText: '휴대폰번호를 입력해주세요.',
-                    hintStyle: TextStyle(
-                      color: Colors.grey[500],
-                      fontSize: 14,
-                    ),
+                    hintStyle: TextStyle(color: Colors.grey[500], fontSize: 14),
                     border: InputBorder.none,
                     contentPadding: EdgeInsets.symmetric(
                       horizontal: 15,
@@ -428,8 +411,6 @@ class _FindIDPWState extends State<FindIDPW> {
         ),
 
         Spacer(),
-
-
       ],
     );
   }

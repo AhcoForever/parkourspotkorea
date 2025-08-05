@@ -2,8 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:parkourspotkorea/screens/login_page.dart';
-import 'package:parkourspotkorea/services/user_service.dart';
+import 'package:parkourspotkorea/screens/auth/login_page.dart';
+import 'package:parkourspotkorea/services/drift/user_service.dart';
 
 import '../database/app_database.dart';
 
@@ -106,44 +106,13 @@ class AuthService {
         textColor: Colors.white,
         fontSize: 14.0,
       );
+      //throw Exception('login error');
       return null;
     } catch (e) {
       print('예기치 못한 로그인 오류: $e');
       return null;
     }
   }
-
-  //구글 로그인
-  // Future<firebase_auth.User?> signInWithGoogle() async {
-  //   try {
-  //     // 1. 구글 로그인
-  //     //final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-  //     if (googleUser == null) return null;
-  //
-  //     final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-  //
-  //     // 2. Firebase 인증
-  //     final credential = firebase_auth.GoogleAuthProvider.credential(
-  //       accessToken: googleAuth?.accessToken,
-  //       idToken: googleAuth.idToken,
-  //     );
-  //
-  //     firebase_auth.UserCredential result = await _auth.signInWithCredential(credential);
-  //     firebase_auth.User? firebaseUser = result.user;
-  //
-  //     if (firebaseUser != null) {
-  //       // 3.  로컬 DB 사용자 확인/생성
-  //       await _ensureLocalUserExists(firebaseUser);
-  //
-  //       print('✅ 구글 로그인 완료: ${firebaseUser.email}');
-  //       return firebaseUser;
-  //     }
-  //   } catch (e) {
-  //     print('❌ 구글 로그인 오류: $e');
-  //     throw e;
-  //   }
-  //   return null;
-  // }
 
   //로그아웃
   Future<void> signOut({required BuildContext context}) async {

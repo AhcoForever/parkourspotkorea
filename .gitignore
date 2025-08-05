@@ -54,4 +54,4 @@ app.*.map.json
 /lib/generated_plugin_registrant.dart
 /lib/data/geojson-uploader/serviceAccountKey.json
 /lib/data/geojson-uploader/package.json
-
+/android/release.keystore

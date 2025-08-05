@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:parkourspotkorea/services/auth_service.dart';
-import 'package:parkourspotkorea/widgets/confirm_button.dart';
-import '../widgets/back_button.dart';
+import '../../widgets/back_button.dart';
+import '../../widgets/dialogs/signup_complete_dialog.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -40,9 +40,14 @@ class _SignUpPageState extends State<SignUpPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xFFF4F7FE),
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, size: 20, color: Color(0xFF202632)),
+          icon: Icon(
+            Icons.arrow_back_ios_sharp,
+            size: 20,
+            color: Theme.of(context).colorScheme.primary,
+          ),
           onPressed: () => smartBack(context),
         ),
         title: Text('회원가입', style: Theme.of(context).textTheme.headlineMedium),
@@ -60,7 +65,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 SizedBox(height: 8),
                 _buildTextField(
                   controller: _emailController,
-                  hintText: '이메일',
+                  hintText: 'parkourspot@gmail.com',
                   keyboardType: TextInputType.emailAddress,
                 ),
                 SizedBox(height: 20),
@@ -80,7 +85,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 SizedBox(height: 8),
                 _buildTextField(
                   controller: _confirmPasswordController,
-                  hintText: '',
+                  hintText: '비밀번호 재입력',
                   obscureText: true,
                 ),
                 SizedBox(height: 20),
@@ -90,15 +95,8 @@ class _SignUpPageState extends State<SignUpPage> {
                 SizedBox(height: 8),
                 _buildTextField(
                   controller: _phoneController,
-                  hintText: '',
+                  hintText: '010-0000-0000',
                   keyboardType: TextInputType.phone,
-                ),
-                SizedBox(height: 30),
-
-                // 약관 동의 안내
-                Text(
-                  '사이트 이용을 위한 약관에 동의해 주세요.',
-                  style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                 ),
                 SizedBox(height: 20),
 
@@ -164,21 +162,21 @@ class _SignUpPageState extends State<SignUpPage> {
                     });
                   },
                 ),
-                SizedBox(height: 40),
+                SizedBox(height: 30),
 
                 // 회원가입 버튼
                 SizedBox(
                   width: double.infinity,
-                  height: 50,
+                  height: 55,
                   child: ElevatedButton(
                     onPressed: _canSignUp() ? _handleSignUp : null,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: _canSignUp()
-                          ? Color(0xFFFF8A3D)
+                          ? Theme.of(context).colorScheme.primary
                           : Colors.grey[300],
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(16),
                       ),
                       elevation: 0,
                     ),
@@ -203,14 +201,7 @@ class _SignUpPageState extends State<SignUpPage> {
   Widget _buildLabel(String text, bool isRequired) {
     return Row(
       children: [
-        Text(
-          text,
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color: Colors.black,
-          ),
-        ),
+        Text(text, style: Theme.of(context).textTheme.bodySmall),
         if (isRequired)
           Text(' *', style: TextStyle(fontSize: 14, color: Colors.red)),
       ],
@@ -223,21 +214,14 @@ class _SignUpPageState extends State<SignUpPage> {
     bool obscureText = false,
     TextInputType keyboardType = TextInputType.text,
   }) {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey[300]!),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: TextField(
-        controller: controller,
-        obscureText: obscureText,
-        keyboardType: keyboardType,
-        decoration: InputDecoration(
-          hintText: hintText,
-          hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
-          border: InputBorder.none,
-          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        ),
+    return TextField(
+      controller: controller,
+      obscureText: obscureText,
+      keyboardType: keyboardType,
+      decoration: InputDecoration(
+        hintText: hintText,
+        hintStyle: Theme.of(context).textTheme.bodySmall,
+        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       ),
     );
   }
@@ -253,16 +237,16 @@ class _SignUpPageState extends State<SignUpPage> {
         Checkbox(
           value: value,
           onChanged: onChanged,
-          activeColor: Color(0xFFFF8A3D),
+          activeColor: Theme.of(context).colorScheme.primary,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
         ),
         Expanded(
           child: Text(
             text,
             style: TextStyle(
-              fontSize: 14,
-              fontWeight: isBold ? FontWeight.w600 : FontWeight.normal,
-              color: Colors.black,
+              fontSize: 15,
+              fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+              color: Color(0xFF4D4D4D),
             ),
           ),
         ),
@@ -280,13 +264,19 @@ class _SignUpPageState extends State<SignUpPage> {
         Checkbox(
           value: value,
           onChanged: onChanged,
-          activeColor: Color(0xFFFF8A3D),
+          activeColor: Theme.of(context).colorScheme.primary,
+          checkColor: Colors.white,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+          side: BorderSide(color: Theme.of(context).colorScheme.primary.withOpacity(0.4)),
         ),
         Expanded(
           child: Text(
             text,
-            style: TextStyle(fontSize: 14, color: Colors.black),
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.normal,
+              color: Color(0xFF4D4D4D),
+            ),
           ),
         ),
         TextButton(
@@ -309,41 +299,12 @@ class _SignUpPageState extends State<SignUpPage> {
       ],
     );
   }
-//
-  Future<void> _showSignupCompleteDialog(BuildContext context) {
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: false,
 
-      builder: (_) => Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        child: Padding(
-          padding: EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(
-                '회원가입 완료',
-                style: Theme.of(context).dialogTheme.titleTextStyle,
-              ),
-              const SizedBox(height: 16),
-              Text(
-                '이제 로그인이 가능합니다!',
-                style: Theme.of(context).dialogTheme.contentTextStyle,
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 24),
-              ConfirmButton(
-                onPressed: () {
-                  context.goNamed('/login');
-                },
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+  //
+  Future<void> _showSignupCompleteDialog(BuildContext context) async {
+    await SignupCompleteDialog.show(context, () {
+      context.goNamed('/login');
+    });
   }
 
   void _updateMainCheckbox() {
@@ -374,10 +335,10 @@ class _SignUpPageState extends State<SignUpPage> {
         parkourProficiency: _parkourProficiencyController.text,
         phoneNum: int.parse(_phoneController.text.trim()),
       );
-
-      // 여기서 실제 회원가입 API 호출
-      // 성공하면 다이얼로그 표시
-      await _showSignupCompleteDialog(context);
     }
+    await SignupCompleteDialog.show(context, () {
+      // 다이얼로그 확인 버튼 누르면 로그인 페이지로 이동
+      context.go('/login');
+    });
   }
 }

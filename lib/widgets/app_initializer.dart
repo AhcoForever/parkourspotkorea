@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:parkourspotkorea/screens/login_page.dart';
-import 'package:parkourspotkorea/screens/map_page.dart';
+import 'package:parkourspotkorea/screens/auth/login_page.dart';
+import 'package:parkourspotkorea/screens/spot/map_page.dart';
 import '../services/auth_service.dart';
 
 
