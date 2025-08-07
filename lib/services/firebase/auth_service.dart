@@ -3,9 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:parkourspotkorea/screens/auth/login_page.dart';
-import 'package:parkourspotkorea/services/drift/user_service.dart';
 
-import '../database/app_database.dart';
 
 class AuthService {
   final firebase_auth.FirebaseAuth _auth = firebase_auth.FirebaseAuth.instance;
@@ -145,20 +143,7 @@ class AuthService {
   }) async {
     try {
       // 현재 위치 가져오기 (기본값으로 서울시청)
-      //TODO: 사용자 현재 위치로 변경
-      double defaultLat = 37.5326;
-      double defaultLng = 126.9906;
 
-      // 🎯 로컬 DB에 사용자 생성
-      await UserService.createUser(
-        uid: firebaseUser.uid,           // Firebase UID 사용
-        email: firebaseUser.email ?? '',
-        displayName: displayName,
-        parkourProficiency: parkourProficiency,
-        phoneNum: phoneNum,
-        latitude: defaultLat,
-        longitude: defaultLng,
-      );
 
       print('🎯 로컬 DB 사용자 생성 완료: $displayName');
     } catch (e) {
@@ -168,35 +153,7 @@ class AuthService {
 
   ///로컬 DB에 사용자가 있는지 확인하고 없으면 생성(로그인 시)
   Future<void> _ensureLocalUserExists(firebase_auth.User firebaseUser) async {
-    try {
-      // 1. 로컬 DB에서 사용자 찾기
-      LocalUser? localUser = await UserService.getUser(firebaseUser.uid);
 
-      if (localUser == null) {
-        // 2. 없으면 기본값으로 생성 (구글 로그인 등에서 발생 가능)
-        await UserService.createUser(
-          uid: firebaseUser.uid,
-          email: firebaseUser.email ?? '',
-          displayName: firebaseUser.displayName ?? '예비닉네임',
-          parkourProficiency: '초급', // 기본값
-          phoneNum: 0,                // 기본값 (나중에 업데이트)
-          latitude: 37.5326,          // 서울시청 기본값
-          longitude: 126.9906,
-        );
-
-        print('🎯 로컬 사용자 자동 생성: ${firebaseUser.displayName}');
-      } else {
-        // 3. 있으면 마지막 로그인 시간 업데이트
-        await UserService.updateUser(
-          firebaseUser.uid,
-          // lastLogin은 UserService에서 자동으로 업데이트됨
-        );
-
-        print('🔄 기존 로컬 사용자 로그인 시간 업데이트');
-      }
-    } catch (e) {
-      print('❌ 로컬 사용자 확인/생성 오류: $e');
-    }
   }
 }
 

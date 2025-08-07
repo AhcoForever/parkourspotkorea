@@ -6,8 +6,8 @@ class AppTheme {
       brightness: Brightness.light,
       //primary 색상군
       seedColor: Color(0xFF3A59D1),
-      tertiary: Color(0xFFCAD2F3)
-    ).copyWith(secondary: Color(0xFF202632), ),
+      tertiary: Color(0xFFCAD2F3),
+    ).copyWith(secondary: Color(0xFF202632)),
 
     //폰트
     fontFamily: 'Pretendard',
@@ -35,14 +35,46 @@ class AppTheme {
 
     //Text 테마
     textTheme: TextTheme(
-      displayLarge: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Color(0xFF202632)),
-      displaySmall: TextStyle(fontSize: 24, fontWeight: FontWeight.w600,color: Color(0xFF202632)),
-      headlineMedium: TextStyle(fontSize: 20, fontWeight: FontWeight.w600,color: Color(0xFF202632)),
-      bodyLarge: TextStyle(fontSize: 16, fontWeight: FontWeight.w400,color: Color(0xFF202632)),
-      bodyMedium: TextStyle(fontSize: 14, fontWeight: FontWeight.w400,color: Color(0xFF202632)),
-      bodySmall: TextStyle(fontSize: 12, fontWeight: FontWeight.normal,color: Color(0xFF9E9E9E)),
-      labelLarge: TextStyle(fontSize: 14, fontWeight: FontWeight.w600,color: Color(0xFF202632)),
-      titleLarge: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Color(0xFF3A59D1))
+      displayLarge: TextStyle(
+        fontSize: 32,
+        fontWeight: FontWeight.bold,
+        color: Color(0xFF202632),
+      ),
+      displaySmall: TextStyle(
+        fontSize: 24,
+        fontWeight: FontWeight.w600,
+        color: Color(0xFF202632),
+      ),
+      headlineMedium: TextStyle(
+        fontSize: 20,
+        fontWeight: FontWeight.w600,
+        color: Color(0xFF202632),
+      ),
+      bodyLarge: TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.w400,
+        color: Color(0xFF202632),
+      ),
+      bodyMedium: TextStyle(
+        fontSize: 14,
+        fontWeight: FontWeight.w400,
+        color: Color(0xFF202632),
+      ),
+      bodySmall: TextStyle(
+        fontSize: 12,
+        fontWeight: FontWeight.normal,
+        color: Color(0xFF9E9E9E),
+      ),
+      labelLarge: TextStyle(
+        fontSize: 14,
+        fontWeight: FontWeight.w600,
+        color: Color(0xFF202632),
+      ),
+      titleLarge: TextStyle(
+        fontSize: 32,
+        fontWeight: FontWeight.bold,
+        color: Color(0xFF3A59D1),
+      ),
     ),
 
     //텍스트 버튼 테마
@@ -87,6 +119,14 @@ class AppTheme {
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide(color: Color(0xFF0064FF), width: 2),
+      ),
+    ),
+    floatingActionButtonTheme: FloatingActionButtonThemeData(
+      backgroundColor: Color(0x99F4F7FE),
+      elevation: 5,
+      shape: RoundedRectangleBorder(
+        side: BorderSide(color: Color(0xFFCAD2F3)),
+        borderRadius: BorderRadius.circular(50),
       ),
     ),
   );

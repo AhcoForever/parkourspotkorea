@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:parkourspotkorea/services/auth_service.dart';
+import '../../services/firebase/auth_service.dart';
 import '../../widgets/back_button.dart';
 import '../../widgets/dialogs/signup_complete_dialog.dart';
 
@@ -121,8 +121,8 @@ class _SignUpPageState extends State<SignUpPage> {
 
                 // 개별 약관들
                 _buildCheckboxRowWithButton('[필수] 만 14세 이상입니다.', _isAdult, (
-                  value,
-                ) {
+                    value,
+                    ) {
                   setState(() {
                     _isAdult = value ?? false;
                     _updateMainCheckbox();
@@ -131,8 +131,8 @@ class _SignUpPageState extends State<SignUpPage> {
                 SizedBox(height: 10),
 
                 _buildCheckboxRowWithButton('[필수] 서비스 이용약관', _agreeToService, (
-                  value,
-                ) {
+                    value,
+                    ) {
                   setState(() {
                     _agreeToService = value ?? false;
                     _updateMainCheckbox();
@@ -143,7 +143,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 _buildCheckboxRowWithButton(
                   '[필수] 개인정보 수집/이용동의',
                   _agreeToPrivacy,
-                  (value) {
+                      (value) {
                     setState(() {
                       _agreeToPrivacy = value ?? false;
                       _updateMainCheckbox();
@@ -155,7 +155,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 _buildCheckboxRowWithButton(
                   '[필수]위치기반 서비스 이용약관',
                   _agreeToLocation,
-                  (value) {
+                      (value) {
                     setState(() {
                       _agreeToLocation = value ?? false;
                       _updateMainCheckbox();
@@ -227,11 +227,11 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   Widget _buildCheckboxRow(
-    String text,
-    bool value,
-    Function(bool?) onChanged, {
-    bool isBold = false,
-  }) {
+      String text,
+      bool value,
+      Function(bool?) onChanged, {
+        bool isBold = false,
+      }) {
     return Row(
       children: [
         Checkbox(
@@ -255,10 +255,10 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   Widget _buildCheckboxRowWithButton(
-    String text,
-    bool value,
-    Function(bool?) onChanged,
-  ) {
+      String text,
+      bool value,
+      Function(bool?) onChanged,
+      ) {
     return Row(
       children: [
         Checkbox(

@@ -6,35 +6,30 @@ class Users extends Table {
 
   TextColumn get email => text()();
 
-  TextColumn get displayName => text()();
+  // 현재 위치 좌표
+  RealColumn get currentLatitude => real()();
 
-  TextColumn get parkourProficiency => text()();
+  RealColumn get currentLongitude => real()();
 
-  DateTimeColumn get signupDate => dateTime()();
+  /// 방문한 지역 ID들 (comma-separated string)
+  /// 예: "11110,11140,11170" (서울 종로구, 중구, 용산구)
+  TextColumn get visitedRegions => text().withDefault(const Constant(''))();
 
-  DateTimeColumn get lastLogin => dateTime()();
-
-  TextColumn get status => text()();
-
-  IntColumn get age => integer()();
-
-  IntColumn get phoneNum => integer()();
-
-  TextColumn get favoriteSpotID => text().nullable()();
-
-  TextColumn get userImage => text().nullable()();
-
-  TextColumn get placeId => text().nullable()();
-
-  RealColumn get latitude => real()();
-
-  RealColumn get longitude => real()();
-
-  TextColumn get visitedRegions => text().nullable()();
-
+  // 방문한 지역 개수 (성과 추적용)
   IntColumn get totalVisitedCount => integer().withDefault(const Constant(0))();
 
+  // 탐험 진행률 (전체 대한민국 지역 대비)
+  RealColumn get explorationProgress =>
+      real().withDefault(const Constant(0.0))();
+
+  // 마지막 위치 업데이트 시간
   DateTimeColumn get lastLocationUpdate => dateTime().nullable()();
+
+  // 계정 생성 시간
+  DateTimeColumn get createdAt => dateTime()();
+
+  // Firebase와 마지막 동기화 시간
+  DateTimeColumn get lastSyncAt => dateTime().nullable()();
 
   @override
   Set<Column> get primaryKey => {uid};

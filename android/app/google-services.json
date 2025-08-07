@@ -12,7 +12,12 @@
           "package_name": "com.ahcoworld.parkourspotkorea"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "192453302521-2ejvf089h05mts037hjp6p9jsd58ktf7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCrlbyFma5qtdGx_W0x40_SS3LOomMv23w"
@@ -20,7 +25,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "192453302521-2ejvf089h05mts037hjp6p9jsd58ktf7.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "192453302521-05qj76rbb3dgft0of093k6193ljm7br0.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.ahcoworld.parkourspotkorea"
+              }
+            }
+          ]
         }
       }
     }

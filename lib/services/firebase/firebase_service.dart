@@ -1,251 +1,115 @@
+
+// class FirebaseService {
+//   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+//
+//   // Firestore에서 모든 행정구역 경계 데이터를 가져오는 함수
+//   Future<List<Polygon>> fetchAdministrativeBoundaries() async {
+//     try {
+//       QuerySnapshot snapshot = await _firestore
+//           .collection('dong_features')
+//           .get();
+//
+//       List<Polygon> polygons = [];
+//
+//       for (var doc in snapshot.docs) {
+//         final data = doc.data() as Map<String, dynamic>;
+//         final String admName = data['adm_nm'];
+//         final String docId = doc.id;
+//         final String coordinatesJson = data['coordinates'];
+//
+//         final coordinates = _parseCoordinates(coordinatesJson);
+//
+//         // 지도에 사용할 Polygon 생성
+//         final polygon = Polygon(
+//           polygonId: PolygonId(docId),
+//           points: coordinates,
+//           strokeColor: const Color(0xFF0000FF),
+//           fillColor: const Color(0x220000FF),
+//           strokeWidth: 2,
+//           consumeTapEvents: true,
+//           onTap: () {
+//             print('Tapped on $admName');
+//           },
+//         );
+//
+//         polygons.add(polygon);
+//       }
+//
+//       return polygons;
+//     } catch (e) {
+//       print('Error fetching administrative boundaries: $e');
+//       return [];
+//     }
+//   }
+//
+//   // 문자열 형태의 coordinates를 List<LatLng>로 변환
+//   List<LatLng> _parseCoordinates(String coordinatesString) {
+//     final decoded = json.decode(coordinatesString);
+//
+//     // coordinates 구조는 [[[[lng, lat], ...]]] 형태이므로 깊이 확인 필요
+//     final List<dynamic> outer = decoded[0][0];
+//
+//     return outer
+//         .map<LatLng>((coordPair) =>
+//         LatLng(coordPair[1] as double, coordPair[0] as double))
+//         .toList();
+//   }
+// }
+
+// lib/services/firebase_service.dart
 import 'dart:convert';
-import 'dart:io';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:firebase_remote_config/firebase_remote_config.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:dio/dio.dart';
+import 'dart:ui';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-/// Firebase 관련 서비스
 class FirebaseService {
-  static final FirebaseService instance = FirebaseService._init();
+  static final FirebaseFirestore _firestore =
+  FirebaseFirestore.instanceFor(app: Firebase.app(),);
 
-  late final FirebaseStorage _storage;
-  late final FirebaseRemoteConfig _remoteConfig;
-  final Dio _dio = Dio();
+  static Future<Set<Polygon>> loadKoreaBoundaryPolygons() async {
+    final snapshot = await _firestore
+        .collection('dong_features')
+        .get();
 
-  FirebaseService._init();
+    Set<Polygon> polygons = {};
 
-  /// Firebase 서비스 초기화
-  Future<void> initialize() async {
-    _storage = FirebaseStorage.instance;
-    _remoteConfig = FirebaseRemoteConfig.instance;
+    for (var doc in snapshot.docs) {
+      final data = doc.data();
+      final coordinatesStr = data['coordinates'];
+      final admNm = data['adm_nm'] ?? 'unknown';
+      final docId = doc.id;
 
-    // Remote Config 초기화
-    await _initRemoteConfig();
-  }
+      final coords = _parseCoordinates(coordinatesStr);
 
-  /// Remote Config 초기화
-  Future<void> _initRemoteConfig() async {
-    await _remoteConfig.setConfigSettings(RemoteConfigSettings(
-      fetchTimeout: const Duration(minutes: 1),
-      minimumFetchInterval: const Duration(hours: 1), // 1시간마다 업데이트 체크
-    ));
-
-    // 기본값 설정
-    await _remoteConfig.setDefaults({
-      'geojson_version': '1.0.0',
-      'geojson_path': 'assets/GeoJSON/HangJeongDong_ver20250401.geojson',
-      'enable_caching': true,
-      'cache_duration_days': 30,
-    });
-
-    // 설정 가져오기
-    await _remoteConfig.fetchAndActivate();
-  }
-
-  /// GeoJSON 파일 경로 가져오기
-  String get geoJsonPath => _remoteConfig.getString('geojson_path');
-  String get geoJsonVersion => _remoteConfig.getString('geojson_version');
-  bool get enableCaching => _remoteConfig.getBool('enable_caching');
-  int get cacheDurationDays => _remoteConfig.getInt('cache_duration_days');
-
-  /// 네트워크 연결 상태 확인
-  Future<bool> isNetworkAvailable() async {
-    final connectivityResult = await Connectivity().checkConnectivity();
-    return connectivityResult != ConnectivityResult.none;
-  }
-
-  /// GeoJSON 데이터 로드 (캐시 우선)
-  Future<Map<String, dynamic>> loadKoreaGeoJson() async {
-    try {
-      // 1. 캐시 확인
-      final cachedData = await _loadCachedGeoJson();
-      if (cachedData != null) {
-        print('캐시된 GeoJSON 사용');
-        return cachedData;
+      if (coords.isNotEmpty) {
+        polygons.add(
+          Polygon(
+            polygonId: PolygonId(docId),
+            points: coords,
+            strokeColor: const Color(0xFF007AFF),
+            fillColor: const Color(0x22007AFF),
+            strokeWidth: 1,
+            consumeTapEvents: true,
+            onTap: () => print('Tapped: $admNm'),
+          ),
+        );
       }
-
-      // 2. 네트워크 확인
-      final isOnline = await isNetworkAvailable();
-      if (!isOnline) {
-        throw Exception('네트워크 연결이 필요합니다.');
-      }
-
-      // 3. Firebase Storage에서 다운로드
-      print('Firebase Storage에서 GeoJSON 다운로드 시작...');
-      final data = await _downloadGeoJsonFromFirebase();
-
-      // 4. 캐시 저장
-      if (enableCaching) {
-        await _saveCacheGeoJson(data);
-      }
-
-      return data;
-
-    } catch (e) {
-      print('GeoJSON 로드 실패: $e');
-
-      // 오프라인 폴백: 이전 캐시 사용 (만료되었더라도)
-      final oldCache = await _loadCachedGeoJson(ignoreExpiry: true);
-      if (oldCache != null) {
-        print('만료된 캐시 사용 (오프라인 모드)');
-        return oldCache;
-      }
-
-      throw e;
     }
+
+    return polygons;
   }
 
-  /// Firebase Storage에서 GeoJSON 다운로드
-  Future<Map<String, dynamic>> _downloadGeoJsonFromFirebase() async {
+  static List<LatLng> _parseCoordinates(String jsonStr) {
     try {
-      // Storage 참조
-      final ref = _storage.ref(geoJsonPath);
-
-      // 다운로드 URL 가져오기
-      final downloadUrl = await ref.getDownloadURL();
-
-      // 메타데이터 확인 (파일 크기 등)
-      final metadata = await ref.getMetadata();
-      print('GeoJSON 파일 크기: ${(metadata.size! / 1024 / 1024).toStringAsFixed(2)} MB');
-
-      // 다운로드 (진행률 표시)
-      final response = await _dio.get(
-        downloadUrl,
-        onReceiveProgress: (received, total) {
-          if (total != -1) {
-            final progress = (received / total * 100).toStringAsFixed(0);
-            print('다운로드 진행률: $progress%');
-          }
-        },
-        options: Options(
-          responseType: ResponseType.json,
-          receiveTimeout: Duration(minutes: 5),
-        ),
-      );
-
-      return response.data as Map<String, dynamic>;
-
+      final decoded = json.decode(jsonStr);
+      final List<dynamic> rawCoords = decoded[0][0];
+      return rawCoords
+          .map<LatLng>((pair) => LatLng(pair[1], pair[0]))
+          .toList();
     } catch (e) {
-      print('Firebase Storage 다운로드 실패: $e');
-      throw e;
+      print('좌표 파싱 오류: $e');
+      return [];
     }
-  }
-
-  /// 캐시된 GeoJSON 로드
-  Future<Map<String, dynamic>?> _loadCachedGeoJson({bool ignoreExpiry = false}) async {
-    try {
-      final cacheDir = await getApplicationDocumentsDirectory();
-      final cacheFile = File('${cacheDir.path}/korea_geojson_cache.json');
-      final metaFile = File('${cacheDir.path}/korea_geojson_meta.json');
-
-      if (!cacheFile.existsSync() || !metaFile.existsSync()) {
-        return null;
-      }
-
-      // 메타데이터 확인
-      final metaData = json.decode(await metaFile.readAsString());
-      final cachedVersion = metaData['version'] as String;
-      final cacheTime = DateTime.parse(metaData['timestamp'] as String);
-
-      // 버전 확인
-      if (cachedVersion != geoJsonVersion) {
-        print('캐시 버전 불일치: $cachedVersion != $geoJsonVersion');
-        return null;
-      }
-
-      // 만료 확인
-      if (!ignoreExpiry) {
-        final expiryDate = cacheTime.add(Duration(days: cacheDurationDays));
-        if (DateTime.now().isAfter(expiryDate)) {
-          print('캐시 만료됨');
-          return null;
-        }
-      }
-
-      // 캐시 데이터 로드
-      final jsonString = await cacheFile.readAsString();
-      return json.decode(jsonString) as Map<String, dynamic>;
-
-    } catch (e) {
-      print('캐시 로드 실패: $e');
-      return null;
-    }
-  }
-
-  /// GeoJSON 캐시 저장
-  Future<void> _saveCacheGeoJson(Map<String, dynamic> data) async {
-    try {
-      final cacheDir = await getApplicationDocumentsDirectory();
-      final cacheFile = File('${cacheDir.path}/korea_geojson_cache.json');
-      final metaFile = File('${cacheDir.path}/korea_geojson_meta.json');
-
-      // 메타데이터 저장
-      final metaData = {
-        'version': geoJsonVersion,
-        'timestamp': DateTime.now().toIso8601String(),
-      };
-      await metaFile.writeAsString(json.encode(metaData));
-
-      // 데이터 저장
-      await cacheFile.writeAsString(json.encode(data));
-
-      print('GeoJSON 캐시 저장 완료');
-
-    } catch (e) {
-      print('캐시 저장 실패: $e');
-    }
-  }
-
-  /// 캐시 삭제
-  Future<void> clearGeoJsonCache() async {
-    try {
-      final cacheDir = await getApplicationDocumentsDirectory();
-      final cacheFile = File('${cacheDir.path}/korea_geojson_cache.json');
-      final metaFile = File('${cacheDir.path}/korea_geojson_meta.json');
-
-      if (cacheFile.existsSync()) await cacheFile.delete();
-      if (metaFile.existsSync()) await metaFile.delete();
-
-      print('캐시 삭제 완료');
-    } catch (e) {
-      print('캐시 삭제 실패: $e');
-    }
-  }
-
-  /// 업데이트 확인
-  Future<bool> checkForUpdates() async {
-    try {
-      await _remoteConfig.fetchAndActivate();
-
-      // 현재 캐시된 버전과 비교
-      final cachedData = await _loadCachedGeoJson(ignoreExpiry: true);
-      if (cachedData == null) return true; // 캐시가 없으면 업데이트 필요
-
-      final cacheDir = await getApplicationDocumentsDirectory();
-      final metaFile = File('${cacheDir.path}/korea_geojson_meta.json');
-
-      if (metaFile.existsSync()) {
-        final metaData = json.decode(await metaFile.readAsString());
-        final cachedVersion = metaData['version'] as String;
-
-        return cachedVersion != geoJsonVersion;
-      }
-
-      return true;
-    } catch (e) {
-      print('업데이트 확인 실패: $e');
-      return false;
-    }
-  }
-
-  /// 사용자 데이터 백업 (Firestore 사용)
-  Future<void> backupUserData(String userId, Map<String, dynamic> data) async {
-    // TODO: Firestore 연동 시 구현
-    // FirebaseFirestore.instance
-    //   .collection('users')
-    //   .doc(userId)
-    //   .set(data);
   }
 }

@@ -66,6 +66,7 @@ dependencies:
   dio: ^5.8.0+1  # HTTP 클라이언트
   path_provider: ^2.1.5  # 캐시 저장용
   connectivity_plus: ^6.1.4 # 네트워크 상태 체크
+  provider: ^6.1.5
 
   #DB
   drift: ^2.28.0

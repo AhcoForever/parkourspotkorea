@@ -6,7 +6,8 @@ import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:parkourspotkorea/services/auth_service.dart';
+
+import '../../services/firebase/auth_service.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -54,14 +55,14 @@ class _LoginPageState extends State<LoginPage> {
     unawaited(
       signIn
           .initialize(
-            clientId: _getClientId,
-            serverClientId: _serverClientId,
-          )
+        clientId: _getClientId,
+        serverClientId: _serverClientId,
+      )
           .then((_) {
-            signIn.authenticationEvents
-                .listen(_handleAuthenticationEvent)
-                .onError(_handleAuthenticationError);
-          }),
+        signIn.authenticationEvents
+            .listen(_handleAuthenticationEvent)
+            .onError(_handleAuthenticationError);
+      }),
     );
   }
 
@@ -77,15 +78,15 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _handleAuthenticationEvent(
-    GoogleSignInAuthenticationEvent event,
-  ) async {
+      GoogleSignInAuthenticationEvent event,
+      ) async {
     // #docregion CheckAuthorization
     final GoogleSignInAccount? user = // ...
-        // #enddocregion CheckAuthorization
-        switch (event) {
-          GoogleSignInAuthenticationEventSignIn() => event.user,
-          GoogleSignInAuthenticationEventSignOut() => null,
-        };
+    // #enddocregion CheckAuthorization
+    switch (event) {
+      GoogleSignInAuthenticationEventSignIn() => event.user,
+      GoogleSignInAuthenticationEventSignOut() => null,
+    };
 
     // Check for existing authorization.
     // #docregion CheckAuthorization
@@ -138,7 +139,7 @@ class _LoginPageState extends State<LoginPage> {
 
       if (user != null) {
         // 로그인 성공 시 지도 페이지로 이동
-        context.goNamed('/map');
+        context.goNamed('map');
       }
     } catch (e) {
       Fluttertoast.showToast(
@@ -154,21 +155,7 @@ class _LoginPageState extends State<LoginPage> {
     setState(() => _isLoading = false);
   }
 
-  ///구글 로그인
-  Future<void> _signInWithGoogle() async {
-    setState(() => _isLoading = true);
 
-    try {
-      // var user = await _authService.signInWithGoogle();
-
-      // if (user != null) {
-      //   //로그인 성공시 지도 페이지도 이동
-      //   context.goNamed('/map');
-      // }
-    } catch (e) {}
-
-    setState(() => _isLoading = false);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -219,14 +206,7 @@ class _LoginPageState extends State<LoginPage> {
                   height: 56,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(),
-                    onPressed: () async {
-                      _isLoading ? null : _signin();
-                      await AuthService().signIn(
-                        email: _emailCtrl.text,
-                        password: _pwCtrl.text,
-                      );
-                      context.goNamed('map');
-                    },
+                    onPressed: _isLoading ? null : _signin,
                     child: _isLoading
                         ? const CircularProgressIndicator()
                         : Text('로그인'),

@@ -7,6 +7,7 @@ import '../screens/spot/map_page.dart';
 import '../screens/auth/login_page.dart';
 import '../screens/nickname_page.dart';
 import '../screens/auth/signup_page.dart';
+import '../screens/spot/map_page2.dart';
 import '../widgets/app_initializer.dart';
 
 final GoRouter appRouter = GoRouter(
@@ -52,6 +53,8 @@ final GoRouter appRouter = GoRouter(
       name: 'customerService',
       builder: (context, state) => CustomerServicePage(),
     ),
-    GoRoute(path: '/map', name: 'map', builder: (context, state) => MapPage()),
+    GoRoute(path: '/map', name: 'map', builder: (context, state) => MapPage2()
+        //MapPage()
+    ),
   ],
 );
