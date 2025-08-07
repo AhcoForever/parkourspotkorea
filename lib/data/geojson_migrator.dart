@@ -148,12 +148,12 @@ class GeoJsonMigrator {
   /// 특정 행정구역 코드로 조회
   Future<Geofeature?> getGeofeatureByAdmCd({
     required String collectionName,
-    required int admCd,
+    required int admCd2,
   }) async {
     try {
       QuerySnapshot snapshot = await _firestore
           .collection(collectionName)
-          .where('adm_cd', isEqualTo: admCd)
+          .where('adm_cd2', isEqualTo: admCd2)
           .limit(1)
           .get();
 

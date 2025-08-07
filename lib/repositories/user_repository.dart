@@ -98,6 +98,14 @@ class UserRepository {
 
     return LatLng(localUser.currentLatitude, localUser.currentLongitude);
   }
+  // 현재 로그인된 Firebase 사용자 ID 반환
+  Future<String> getUserId() async {
+    final firebaseUser = FirebaseAuth.instance.currentUser;
+    if (firebaseUser == null) {
+      throw Exception('❌ 로그인된 사용자가 없습니다.');
+    }
+    return firebaseUser.uid;
+  }
 
   /// 🔄 동기화 시간 업데이트
   Future<void> updateSyncTime(String uid) async {
