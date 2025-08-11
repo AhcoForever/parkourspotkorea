@@ -11,6 +11,7 @@ class Geofeature {
   final String sidonm;
   final int sgg;
   final String sggnm;
+  final int adm_cd2;
 
   Geofeature({
     this.id,
@@ -21,6 +22,7 @@ class Geofeature {
     required this.sidonm,
     required this.sgg,
     required this.sggnm,
+    required this.adm_cd2,
   });
 
   //GeoJSON -> Geofeaure
@@ -38,6 +40,7 @@ class Geofeature {
       sidonm: props['sidonm'] as String? ?? '',
       sgg: int.tryParse(props['sgg'] as String? ?? '') ?? 0,
       sggnm: props['sggnm'] as String? ?? '',
+      adm_cd2:int.parse(props['adm_cd2'] as String? ?? '') ?? 0,
     );
   }
 
@@ -53,6 +56,7 @@ class Geofeature {
       sidonm: map['sidonm'] as String? ?? '',
       sgg: map['sgg'] as int? ?? 0,
       sggnm: map['sggnm'] as String? ?? '',
+      adm_cd2: map['adm_cd2'] as int? ?? 0,
     );
   }
 
@@ -68,6 +72,7 @@ class Geofeature {
       'sgg': sgg,
       'sggnm': sggnm,
       'migration_date': FieldValue.serverTimestamp(),
+      'adm_cd2' : adm_cd2,
     };
   }
 }

@@ -655,15 +655,386 @@ class UsersCompanion extends UpdateCompanion<LocalUser> {
   }
 }
 
+class $PolygonsTable extends Polygons
+    with TableInfo<$PolygonsTable, PolygonRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $PolygonsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _docIdMeta = const VerificationMeta('docId');
+  @override
+  late final GeneratedColumn<String> docId = GeneratedColumn<String>(
+    'doc_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _sidoMeta = const VerificationMeta('sido');
+  @override
+  late final GeneratedColumn<int> sido = GeneratedColumn<int>(
+    'sido',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _sggPrefixMeta = const VerificationMeta(
+    'sggPrefix',
+  );
+  @override
+  late final GeneratedColumn<int> sggPrefix = GeneratedColumn<int>(
+    'sgg_prefix',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _coordinatesJsonMeta = const VerificationMeta(
+    'coordinatesJson',
+  );
+  @override
+  late final GeneratedColumn<String> coordinatesJson = GeneratedColumn<String>(
+    'coordinates_json',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    docId,
+    sido,
+    sggPrefix,
+    coordinatesJson,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'polygons';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<PolygonRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('doc_id')) {
+      context.handle(
+        _docIdMeta,
+        docId.isAcceptableOrUnknown(data['doc_id']!, _docIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_docIdMeta);
+    }
+    if (data.containsKey('sido')) {
+      context.handle(
+        _sidoMeta,
+        sido.isAcceptableOrUnknown(data['sido']!, _sidoMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_sidoMeta);
+    }
+    if (data.containsKey('sgg_prefix')) {
+      context.handle(
+        _sggPrefixMeta,
+        sggPrefix.isAcceptableOrUnknown(data['sgg_prefix']!, _sggPrefixMeta),
+      );
+    }
+    if (data.containsKey('coordinates_json')) {
+      context.handle(
+        _coordinatesJsonMeta,
+        coordinatesJson.isAcceptableOrUnknown(
+          data['coordinates_json']!,
+          _coordinatesJsonMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_coordinatesJsonMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {docId};
+  @override
+  PolygonRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return PolygonRow(
+      docId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}doc_id'],
+      )!,
+      sido: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}sido'],
+      )!,
+      sggPrefix: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}sgg_prefix'],
+      ),
+      coordinatesJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}coordinates_json'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $PolygonsTable createAlias(String alias) {
+    return $PolygonsTable(attachedDatabase, alias);
+  }
+}
+
+class PolygonRow extends DataClass implements Insertable<PolygonRow> {
+  final String docId;
+  final int sido;
+  final int? sggPrefix;
+  final String coordinatesJson;
+  final DateTime updatedAt;
+  const PolygonRow({
+    required this.docId,
+    required this.sido,
+    this.sggPrefix,
+    required this.coordinatesJson,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['doc_id'] = Variable<String>(docId);
+    map['sido'] = Variable<int>(sido);
+    if (!nullToAbsent || sggPrefix != null) {
+      map['sgg_prefix'] = Variable<int>(sggPrefix);
+    }
+    map['coordinates_json'] = Variable<String>(coordinatesJson);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  PolygonsCompanion toCompanion(bool nullToAbsent) {
+    return PolygonsCompanion(
+      docId: Value(docId),
+      sido: Value(sido),
+      sggPrefix: sggPrefix == null && nullToAbsent
+          ? const Value.absent()
+          : Value(sggPrefix),
+      coordinatesJson: Value(coordinatesJson),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory PolygonRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return PolygonRow(
+      docId: serializer.fromJson<String>(json['docId']),
+      sido: serializer.fromJson<int>(json['sido']),
+      sggPrefix: serializer.fromJson<int?>(json['sggPrefix']),
+      coordinatesJson: serializer.fromJson<String>(json['coordinatesJson']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'docId': serializer.toJson<String>(docId),
+      'sido': serializer.toJson<int>(sido),
+      'sggPrefix': serializer.toJson<int?>(sggPrefix),
+      'coordinatesJson': serializer.toJson<String>(coordinatesJson),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  PolygonRow copyWith({
+    String? docId,
+    int? sido,
+    Value<int?> sggPrefix = const Value.absent(),
+    String? coordinatesJson,
+    DateTime? updatedAt,
+  }) => PolygonRow(
+    docId: docId ?? this.docId,
+    sido: sido ?? this.sido,
+    sggPrefix: sggPrefix.present ? sggPrefix.value : this.sggPrefix,
+    coordinatesJson: coordinatesJson ?? this.coordinatesJson,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  PolygonRow copyWithCompanion(PolygonsCompanion data) {
+    return PolygonRow(
+      docId: data.docId.present ? data.docId.value : this.docId,
+      sido: data.sido.present ? data.sido.value : this.sido,
+      sggPrefix: data.sggPrefix.present ? data.sggPrefix.value : this.sggPrefix,
+      coordinatesJson: data.coordinatesJson.present
+          ? data.coordinatesJson.value
+          : this.coordinatesJson,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PolygonRow(')
+          ..write('docId: $docId, ')
+          ..write('sido: $sido, ')
+          ..write('sggPrefix: $sggPrefix, ')
+          ..write('coordinatesJson: $coordinatesJson, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(docId, sido, sggPrefix, coordinatesJson, updatedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is PolygonRow &&
+          other.docId == this.docId &&
+          other.sido == this.sido &&
+          other.sggPrefix == this.sggPrefix &&
+          other.coordinatesJson == this.coordinatesJson &&
+          other.updatedAt == this.updatedAt);
+}
+
+class PolygonsCompanion extends UpdateCompanion<PolygonRow> {
+  final Value<String> docId;
+  final Value<int> sido;
+  final Value<int?> sggPrefix;
+  final Value<String> coordinatesJson;
+  final Value<DateTime> updatedAt;
+  final Value<int> rowid;
+  const PolygonsCompanion({
+    this.docId = const Value.absent(),
+    this.sido = const Value.absent(),
+    this.sggPrefix = const Value.absent(),
+    this.coordinatesJson = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  PolygonsCompanion.insert({
+    required String docId,
+    required int sido,
+    this.sggPrefix = const Value.absent(),
+    required String coordinatesJson,
+    required DateTime updatedAt,
+    this.rowid = const Value.absent(),
+  }) : docId = Value(docId),
+       sido = Value(sido),
+       coordinatesJson = Value(coordinatesJson),
+       updatedAt = Value(updatedAt);
+  static Insertable<PolygonRow> custom({
+    Expression<String>? docId,
+    Expression<int>? sido,
+    Expression<int>? sggPrefix,
+    Expression<String>? coordinatesJson,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (docId != null) 'doc_id': docId,
+      if (sido != null) 'sido': sido,
+      if (sggPrefix != null) 'sgg_prefix': sggPrefix,
+      if (coordinatesJson != null) 'coordinates_json': coordinatesJson,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  PolygonsCompanion copyWith({
+    Value<String>? docId,
+    Value<int>? sido,
+    Value<int?>? sggPrefix,
+    Value<String>? coordinatesJson,
+    Value<DateTime>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return PolygonsCompanion(
+      docId: docId ?? this.docId,
+      sido: sido ?? this.sido,
+      sggPrefix: sggPrefix ?? this.sggPrefix,
+      coordinatesJson: coordinatesJson ?? this.coordinatesJson,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (docId.present) {
+      map['doc_id'] = Variable<String>(docId.value);
+    }
+    if (sido.present) {
+      map['sido'] = Variable<int>(sido.value);
+    }
+    if (sggPrefix.present) {
+      map['sgg_prefix'] = Variable<int>(sggPrefix.value);
+    }
+    if (coordinatesJson.present) {
+      map['coordinates_json'] = Variable<String>(coordinatesJson.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PolygonsCompanion(')
+          ..write('docId: $docId, ')
+          ..write('sido: $sido, ')
+          ..write('sggPrefix: $sggPrefix, ')
+          ..write('coordinatesJson: $coordinatesJson, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
   late final $UsersTable users = $UsersTable(this);
+  late final $PolygonsTable polygons = $PolygonsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities => [users];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [users, polygons];
 }
 
 typedef $$UsersTableCreateCompanionBuilder =
@@ -968,10 +1339,211 @@ typedef $$UsersTableProcessedTableManager =
       LocalUser,
       PrefetchHooks Function()
     >;
+typedef $$PolygonsTableCreateCompanionBuilder =
+    PolygonsCompanion Function({
+      required String docId,
+      required int sido,
+      Value<int?> sggPrefix,
+      required String coordinatesJson,
+      required DateTime updatedAt,
+      Value<int> rowid,
+    });
+typedef $$PolygonsTableUpdateCompanionBuilder =
+    PolygonsCompanion Function({
+      Value<String> docId,
+      Value<int> sido,
+      Value<int?> sggPrefix,
+      Value<String> coordinatesJson,
+      Value<DateTime> updatedAt,
+      Value<int> rowid,
+    });
+
+class $$PolygonsTableFilterComposer
+    extends Composer<_$AppDatabase, $PolygonsTable> {
+  $$PolygonsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get docId => $composableBuilder(
+    column: $table.docId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get sido => $composableBuilder(
+    column: $table.sido,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get sggPrefix => $composableBuilder(
+    column: $table.sggPrefix,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get coordinatesJson => $composableBuilder(
+    column: $table.coordinatesJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$PolygonsTableOrderingComposer
+    extends Composer<_$AppDatabase, $PolygonsTable> {
+  $$PolygonsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get docId => $composableBuilder(
+    column: $table.docId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get sido => $composableBuilder(
+    column: $table.sido,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get sggPrefix => $composableBuilder(
+    column: $table.sggPrefix,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get coordinatesJson => $composableBuilder(
+    column: $table.coordinatesJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$PolygonsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $PolygonsTable> {
+  $$PolygonsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get docId =>
+      $composableBuilder(column: $table.docId, builder: (column) => column);
+
+  GeneratedColumn<int> get sido =>
+      $composableBuilder(column: $table.sido, builder: (column) => column);
+
+  GeneratedColumn<int> get sggPrefix =>
+      $composableBuilder(column: $table.sggPrefix, builder: (column) => column);
+
+  GeneratedColumn<String> get coordinatesJson => $composableBuilder(
+    column: $table.coordinatesJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$PolygonsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $PolygonsTable,
+          PolygonRow,
+          $$PolygonsTableFilterComposer,
+          $$PolygonsTableOrderingComposer,
+          $$PolygonsTableAnnotationComposer,
+          $$PolygonsTableCreateCompanionBuilder,
+          $$PolygonsTableUpdateCompanionBuilder,
+          (
+            PolygonRow,
+            BaseReferences<_$AppDatabase, $PolygonsTable, PolygonRow>,
+          ),
+          PolygonRow,
+          PrefetchHooks Function()
+        > {
+  $$PolygonsTableTableManager(_$AppDatabase db, $PolygonsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$PolygonsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$PolygonsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$PolygonsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> docId = const Value.absent(),
+                Value<int> sido = const Value.absent(),
+                Value<int?> sggPrefix = const Value.absent(),
+                Value<String> coordinatesJson = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => PolygonsCompanion(
+                docId: docId,
+                sido: sido,
+                sggPrefix: sggPrefix,
+                coordinatesJson: coordinatesJson,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String docId,
+                required int sido,
+                Value<int?> sggPrefix = const Value.absent(),
+                required String coordinatesJson,
+                required DateTime updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => PolygonsCompanion.insert(
+                docId: docId,
+                sido: sido,
+                sggPrefix: sggPrefix,
+                coordinatesJson: coordinatesJson,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$PolygonsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $PolygonsTable,
+      PolygonRow,
+      $$PolygonsTableFilterComposer,
+      $$PolygonsTableOrderingComposer,
+      $$PolygonsTableAnnotationComposer,
+      $$PolygonsTableCreateCompanionBuilder,
+      $$PolygonsTableUpdateCompanionBuilder,
+      (PolygonRow, BaseReferences<_$AppDatabase, $PolygonsTable, PolygonRow>),
+      PolygonRow,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
   $AppDatabaseManager(this._db);
   $$UsersTableTableManager get users =>
       $$UsersTableTableManager(_db, _db.users);
+  $$PolygonsTableTableManager get polygons =>
+      $$PolygonsTableTableManager(_db, _db.polygons);
 }

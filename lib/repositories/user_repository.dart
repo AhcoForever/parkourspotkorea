@@ -6,13 +6,14 @@ import '../database/app_database.dart';
 
 /// 로컬 사용자 데이터 Repository
 class UserRepository {
-  static final UserRepository _instance = UserRepository._internal();
-
-  factory UserRepository() => _instance;
-
-  UserRepository._internal();
-
-  final AppDatabase _database = AppDatabase();
+  // static final UserRepository _instance = UserRepository._internal();
+  //
+  // factory UserRepository() => _instance;
+  // 내부에서 새로 쓰는 방법
+  // UserRepository._internal();
+// 외부에서 받아 쓰도록 변경
+  final AppDatabase _database;
+  UserRepository(this._database);
 
   /// 🔍 사용자 조회
   Future<LocalUser?> getUser(String uid) async {

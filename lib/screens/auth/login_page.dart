@@ -1,5 +1,6 @@
 import 'dart:async';
-
+import 'package:provider/provider.dart';
+import 'package:parkourspotkorea/repositories/user_repository.dart';
 import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -22,7 +23,7 @@ class _LoginPageState extends State<LoginPage> {
   final _pwCtrl = TextEditingController();
   bool _isLoading = false;
   GoogleSignInAccount? _currentUser;
-  bool _isAuthorized = false; // has granted permissions?
+  bool _isAuthorized = false;
   String _contactText = '';
   String _errorMessage = '';
   String _serverAuthCode = '';
@@ -104,6 +105,9 @@ class _LoginPageState extends State<LoginPage> {
     // If the user has already granted access to the required scopes, call the
     // REST API.
     if (user != null && authorization != null) {
+      // 구글 로그인 성공 시 로컬 사용자 생성/동기화
+      final userRepo = context.read<UserRepository>();
+      await userRepo.ensureUserExists(uid: user.id, email: user.email);
       context.goNamed('map');
     }
   }
@@ -138,6 +142,9 @@ class _LoginPageState extends State<LoginPage> {
       );
 
       if (user != null) {
+        // 로그인 성공 시 로컬 사용자 생성/동기화
+        final userRepo = context.read<UserRepository>();
+        await userRepo.ensureUserExists(uid: user.uid, email: user.email ?? 'no-email@unknown');
         // 로그인 성공 시 지도 페이지로 이동
         context.goNamed('map');
       }
@@ -163,47 +170,45 @@ class _LoginPageState extends State<LoginPage> {
       backgroundColor: Colors.white,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 32),
+
+          padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
+            spacing: 8,
             children: [
               // 로고 이미지
               Image.asset('assets/logo/parkour_logo.png', height: 300),
-
+              //Text('이메일로 로그인', style: Theme.of(context).textTheme.labelSmall),
               // 이메일 입력창
-              Padding(
-                padding: const EdgeInsets.only(bottom: 20.0),
-                child: TextField(
-                  controller: _emailCtrl,
-                  decoration: InputDecoration(
-                    label: Align(
-                      alignment: Alignment.center,
-                      child: Text('아이디(이메일)을 입력해주세요.'),
-                    ),
-                    hintText: 'parkourspot@gmail.com',
-                  ),
+              TextField(
+                controller: _emailCtrl,
+                decoration: InputDecoration(
+                  label: Text('아이디(이메일)을 입력해주세요.'),
+                  hintText: 'parkourspot@gmail.com',
+
                 ),
+
               ),
 
               // 비밀번호 입력창
               TextField(
+
                 controller: _pwCtrl,
                 obscureText: true,
                 decoration: InputDecoration(
-                  label: Align(
-                    alignment: Alignment.center,
-                    child: Text('비밀번호를 입력해주세요.'),
-                  ),
+                  label: Text('비밀번호를 입력해주세요.'),
                   hintText: '비밀번호를 입력해주세요.',
                 ),
               ),
 
               // 로그인 버튼
               Padding(
-                padding: const EdgeInsets.only(top: 20.0),
+                padding: const EdgeInsets.only(top: 10.0),
                 child: SizedBox(
                   width: double.infinity,
-                  height: 56,
+                  height: 50,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(),
                     onPressed: _isLoading ? null : _signin,

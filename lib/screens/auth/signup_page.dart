@@ -121,8 +121,8 @@ class _SignUpPageState extends State<SignUpPage> {
 
                 // 개별 약관들
                 _buildCheckboxRowWithButton('[필수] 만 14세 이상입니다.', _isAdult, (
-                    value,
-                    ) {
+                  value,
+                ) {
                   setState(() {
                     _isAdult = value ?? false;
                     _updateMainCheckbox();
@@ -131,8 +131,8 @@ class _SignUpPageState extends State<SignUpPage> {
                 SizedBox(height: 10),
 
                 _buildCheckboxRowWithButton('[필수] 서비스 이용약관', _agreeToService, (
-                    value,
-                    ) {
+                  value,
+                ) {
                   setState(() {
                     _agreeToService = value ?? false;
                     _updateMainCheckbox();
@@ -143,7 +143,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 _buildCheckboxRowWithButton(
                   '[필수] 개인정보 수집/이용동의',
                   _agreeToPrivacy,
-                      (value) {
+                  (value) {
                     setState(() {
                       _agreeToPrivacy = value ?? false;
                       _updateMainCheckbox();
@@ -155,7 +155,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 _buildCheckboxRowWithButton(
                   '[필수]위치기반 서비스 이용약관',
                   _agreeToLocation,
-                      (value) {
+                  (value) {
                     setState(() {
                       _agreeToLocation = value ?? false;
                       _updateMainCheckbox();
@@ -203,7 +203,13 @@ class _SignUpPageState extends State<SignUpPage> {
       children: [
         Text(text, style: Theme.of(context).textTheme.bodySmall),
         if (isRequired)
-          Text(' *', style: TextStyle(fontSize: 14, color: Colors.red)),
+          Text(
+            ' *',
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.red,
+            ),
+          ),
       ],
     );
   }
@@ -227,11 +233,11 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   Widget _buildCheckboxRow(
-      String text,
-      bool value,
-      Function(bool?) onChanged, {
-        bool isBold = false,
-      }) {
+    String text,
+    bool value,
+    Function(bool?) onChanged, {
+    bool isBold = false,
+  }) {
     return Row(
       children: [
         Checkbox(
@@ -255,10 +261,10 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   Widget _buildCheckboxRowWithButton(
-      String text,
-      bool value,
-      Function(bool?) onChanged,
-      ) {
+    String text,
+    bool value,
+    Function(bool?) onChanged,
+  ) {
     return Row(
       children: [
         Checkbox(
@@ -267,7 +273,9 @@ class _SignUpPageState extends State<SignUpPage> {
           activeColor: Theme.of(context).colorScheme.primary,
           checkColor: Colors.white,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-          side: BorderSide(color: Theme.of(context).colorScheme.primary.withOpacity(0.4)),
+          side: BorderSide(
+            color: Theme.of(context).colorScheme.primary.withOpacity(0.4),
+          ),
         ),
         Expanded(
           child: Text(

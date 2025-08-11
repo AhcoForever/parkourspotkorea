@@ -27,7 +27,8 @@ class AppTheme {
       style: ElevatedButton.styleFrom(
         backgroundColor: const Color(0xFF3A59D1),
         foregroundColor: Colors.white,
-        textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+
+        textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         padding: EdgeInsets.symmetric(horizontal: 17, vertical: 12),
       ),
@@ -110,7 +111,7 @@ class AppTheme {
       filled: true,
       fillColor: Color(0xFFF9F9F9),
       labelStyle: TextStyle(color: Color(0xFF6A707C)),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 17),
       //비포커스 상태의 테두리
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
@@ -121,6 +122,8 @@ class AppTheme {
         borderSide: BorderSide(color: Color(0xFF0064FF), width: 2),
       ),
     ),
+
+
     floatingActionButtonTheme: FloatingActionButtonThemeData(
       backgroundColor: Color(0x99F4F7FE),
       elevation: 5,

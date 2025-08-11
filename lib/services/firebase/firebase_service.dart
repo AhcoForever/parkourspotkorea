@@ -1,62 +1,3 @@
-
-// class FirebaseService {
-//   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-//
-//   // Firestore에서 모든 행정구역 경계 데이터를 가져오는 함수
-//   Future<List<Polygon>> fetchAdministrativeBoundaries() async {
-//     try {
-//       QuerySnapshot snapshot = await _firestore
-//           .collection('dong_features')
-//           .get();
-//
-//       List<Polygon> polygons = [];
-//
-//       for (var doc in snapshot.docs) {
-//         final data = doc.data() as Map<String, dynamic>;
-//         final String admName = data['adm_nm'];
-//         final String docId = doc.id;
-//         final String coordinatesJson = data['coordinates'];
-//
-//         final coordinates = _parseCoordinates(coordinatesJson);
-//
-//         // 지도에 사용할 Polygon 생성
-//         final polygon = Polygon(
-//           polygonId: PolygonId(docId),
-//           points: coordinates,
-//           strokeColor: const Color(0xFF0000FF),
-//           fillColor: const Color(0x220000FF),
-//           strokeWidth: 2,
-//           consumeTapEvents: true,
-//           onTap: () {
-//             print('Tapped on $admName');
-//           },
-//         );
-//
-//         polygons.add(polygon);
-//       }
-//
-//       return polygons;
-//     } catch (e) {
-//       print('Error fetching administrative boundaries: $e');
-//       return [];
-//     }
-//   }
-//
-//   // 문자열 형태의 coordinates를 List<LatLng>로 변환
-//   List<LatLng> _parseCoordinates(String coordinatesString) {
-//     final decoded = json.decode(coordinatesString);
-//
-//     // coordinates 구조는 [[[[lng, lat], ...]]] 형태이므로 깊이 확인 필요
-//     final List<dynamic> outer = decoded[0][0];
-//
-//     return outer
-//         .map<LatLng>((coordPair) =>
-//         LatLng(coordPair[1] as double, coordPair[0] as double))
-//         .toList();
-//   }
-// }
-
-// lib/services/firebase_service.dart
 import 'dart:convert';
 import 'dart:ui';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -64,13 +5,50 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class FirebaseService {
-  static final FirebaseFirestore _firestore =
-  FirebaseFirestore.instanceFor(app: Firebase.app(),);
+  static final FirebaseFirestore _firestore = FirebaseFirestore.instanceFor(
+    app: Firebase.app(),
+  );
 
-  static Future<Set<Polygon>> loadKoreaBoundaryPolygons() async {
+  /// 시/도 코드로 문서 로드 (Raw 데이터)
+  static Future<List<Map<String, dynamic>>> loadDocsBySidoRaw(int sido) async {
     final snapshot = await _firestore
         .collection('dong_features')
+        .where('sido', isEqualTo: sido)
         .get();
+
+    return snapshot.docs.map((doc) {
+      final data = doc.data();
+      return {
+        'docId': doc.id,
+        'sido': data['sido'],
+        'sgg': data['sgg'],
+        'coordinates': data['coordinates'],
+        'updated_at': data['updated_at'],
+        'adm_nm': data['adm_nm'],
+      };
+    }).toList();
+  }
+  /// 시군구 prefix 코드로 문서 로드 (Raw 데이터)
+  static Future<List<Map<String, dynamic>>> loadDocsBySggPrefixRaw(int sggPrefix) async {
+    final snapshot = await _firestore
+        .collection('dong_features')
+        .where('sgg', isEqualTo: sggPrefix)
+        .get();
+
+    return snapshot.docs.map((doc) {
+      final data = doc.data();
+      return {
+        'docId': doc.id,
+        'sido': data['sido'],
+        'sgg': data['sgg'],
+        'coordinates': data['coordinates'],
+        'updated_at': data['updated_at'],
+        'adm_nm': data['adm_nm'],
+      };
+    }).toList();
+  }
+  static Future<Set<Polygon>> loadKoreaBoundaryPolygons() async {
+    final snapshot = await _firestore.collection('dong_features').get();
 
     Set<Polygon> polygons = {};
 
@@ -104,12 +82,15 @@ class FirebaseService {
     try {
       final decoded = json.decode(jsonStr);
       final List<dynamic> rawCoords = decoded[0][0];
-      return rawCoords
-          .map<LatLng>((pair) => LatLng(pair[1], pair[0]))
-          .toList();
+      return rawCoords.map<LatLng>((pair) => LatLng(pair[1], pair[0])).toList();
     } catch (e) {
       print('좌표 파싱 오류: $e');
       return [];
     }
   }
+  // firebase_service.dart (클래스 내부)
+  static List<LatLng> parseCoordinates(String jsonStr) => _parseCoordinates(jsonStr);
+
 }
+
+//Todo: static 없이 객체화로 변경

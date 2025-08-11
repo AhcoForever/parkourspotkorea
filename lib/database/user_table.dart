@@ -34,3 +34,15 @@ class Users extends Table {
   @override
   Set<Column> get primaryKey => {uid};
 }
+
+// Drift가 생성할 데이터클래스 이름: PolygonRow
+@DataClassName('PolygonRow')
+class Polygons extends Table {
+  TextColumn get docId => text()();                 // Firestore docId
+  IntColumn get sido => integer()();                // 시/도 코드 (예: 29)
+  IntColumn get sggPrefix => integer().nullable()();// 시군구 prefix (예: 29200)
+  TextColumn get coordinatesJson => text()();       // 좌표 JSON 문자열(그대로 저장)
+  DateTimeColumn get updatedAt => dateTime()();     // 저장/갱신 시각
+  @override
+  Set<Column> get primaryKey => {docId};
+}

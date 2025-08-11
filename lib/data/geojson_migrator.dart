@@ -9,7 +9,6 @@ import '../model/geofeature.dart';
 class GeoJsonMigrator {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  /// test_dong.geojson 파일을 Firestore로 마이그레이션
   Future<void> migrateGeoJsonToFirestore({
     required String geoJsonFilePath,
     required String collectionName,

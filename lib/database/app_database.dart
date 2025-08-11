@@ -7,7 +7,8 @@ import 'package:path/path.dart' as p;
 
 part 'app_database.g.dart';
 
-@DriftDatabase(tables: [Users])
+// 변경 전: @DriftDatabase(tables: [Users])
+@DriftDatabase(tables: [Users, Polygons])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
@@ -28,14 +29,34 @@ class AppDatabase extends _$AppDatabase {
     },
   );
 
+
+  //todo: jh app_database 그대로 놔두고, business logic 포함된 method는 services/drift/drift_map_service.dart로 이동. , /services/drift/drift_user_service.dart 로 분리
   /// 🔍 사용자 조회
   Future<LocalUser?> getUser(String uid) async {
-    return await (select(users)..where((tbl) => tbl.uid.equals(uid))).getSingleOrNull();
+    return await (select(
+      users,
+    )..where((tbl) => tbl.uid.equals(uid))).getSingleOrNull();
   }
 
   /// ✍️ 사용자 생성 또는 업데이트
   Future<void> insertOrUpdateUser(UsersCompanion user) async {
     await into(users).insertOnConflictUpdate(user);
+  }
+
+  /// ===== Polygons (로컬 캐시) =====
+  Future<List<PolygonRow>> getPolygonsBySido(int sido) {
+    return (select(polygons)..where((t) => t.sido.equals(sido))).get();
+  }
+
+  Future<List<PolygonRow>> getPolygonsBySggPrefix(int sggPrefix) {
+    return (select(polygons)..where((t) => t.sggPrefix.equals(sggPrefix))).get();
+  }
+
+  Future<void> upsertPolygonsCompanions(List<PolygonsCompanion> items) async {
+    if (items.isEmpty) return;
+    await batch((b) {
+      b.insertAllOnConflictUpdate(polygons, items);
+    });
   }
 
   /// 📍 현재 위치 업데이트
@@ -74,7 +95,9 @@ class AppDatabase extends _$AppDatabase {
       ),
     );
 
-    print('🎯 새 지역 방문: $regionId (총 ${newCount}개, ${progress.toStringAsFixed(1)}% 완료)');
+    print(
+      '🎯 새 지역 방문: $regionId (총 ${newCount}개, ${progress.toStringAsFixed(1)}% 완료)',
+    );
   }
 
   /// 📊 방문한 지역 목록 조회

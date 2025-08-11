@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:parkourspotkorea/widgets/confirm_button.dart';
 
 import '../../widgets/back_button.dart';
 
@@ -17,13 +18,14 @@ class _FindIDPWState extends State<FindIDPW> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme=Theme.of(context).colorScheme;
     return Scaffold(
       backgroundColor: Color(0xFFF4F7FE),
       appBar: AppBar(
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back_ios,
-            color: Theme.of(context).colorScheme.primary,
+            color: colorScheme.primary,
           ),
           onPressed: () {
             context.goNamed('login');
@@ -199,28 +201,10 @@ class _FindIDPWState extends State<FindIDPW> {
           SizedBox(height: 30),
 
           // Confirm button
-          Container(
-            width: double.infinity,
-            height: 50,
-            decoration: BoxDecoration(
-              color: Color(0xFFFF8C42), // Orange color
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: TextButton(
-              onPressed: () {
-                // Handle confirm action
-                print('아이디 찾기 확인 버튼 클릭');
-              },
-              child: Text(
-                '확인',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ),
+          ConfirmButton(onPressed: () {
+            print('확인 버튼 클릭');
+            context.go('');
+          },),
 
           SizedBox(height: 20),
 

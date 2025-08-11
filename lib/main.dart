@@ -1,8 +1,12 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:parkourspotkorea/repositories/user_repository.dart';
 import 'package:parkourspotkorea/routes/app_router.dart';
 import 'package:parkourspotkorea/theme/app_theme.dart';
+import 'package:provider/provider.dart';
+
+import 'database/app_database.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,7 +22,16 @@ void main() async {
       statusBarIconBrightness: Brightness.dark,
     ),
   );
-  runApp(MyApp());
+  final db = AppDatabase();
+  runApp(
+    MultiProvider(
+      providers: [
+        Provider<AppDatabase>.value(value: db),
+        Provider<UserRepository>(create: (_) => UserRepository(db)),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
