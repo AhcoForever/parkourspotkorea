@@ -6,6 +6,7 @@ import 'package:parkourspotkorea/routes/app_router.dart';
 import 'package:parkourspotkorea/theme/app_theme.dart';
 import 'package:provider/provider.dart';
 
+import 'core/app_db.dart';
 import 'database/app_database.dart';
 
 void main() async {
@@ -22,12 +23,12 @@ void main() async {
       statusBarIconBrightness: Brightness.dark,
     ),
   );
-  final db = AppDatabase();
+  final db = AppDB.instance;
   runApp(
     MultiProvider(
       providers: [
         Provider<AppDatabase>.value(value: db),
-        Provider<UserRepository>(create: (_) => UserRepository(db)),
+        Provider<UserRepository>(create: (_) => UserRepository()),
       ],
       child: const MyApp(),
     ),

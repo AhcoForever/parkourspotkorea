@@ -2,7 +2,9 @@ import 'package:drift/drift.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import '../core/app_db.dart';
 import '../database/app_database.dart';
+import '../services/drift/drift_user_service.dart';
 
 /// 로컬 사용자 데이터 Repository
 class UserRepository {
@@ -12,12 +14,11 @@ class UserRepository {
   // 내부에서 새로 쓰는 방법
   // UserRepository._internal();
 // 외부에서 받아 쓰도록 변경
-  final AppDatabase _database;
-  UserRepository(this._database);
+  final DriftUserService _userSvc = DriftUserService(AppDB.instance);
 
   /// 🔍 사용자 조회
   Future<LocalUser?> getUser(String uid) async {
-    return await _database.getUser(uid);
+    return await _userSvc.getUser(uid);
   }
 
   /// ✍️ 사용자 생성
@@ -39,7 +40,7 @@ class UserRepository {
       createdAt: Value(DateTime.now()),
     );
 
-    await _database.insertOrUpdateUser(companion);
+    await _userSvc.insertOrUpdateUser(companion);
     print('✅ 로컬 사용자 생성: $email');
   }
 
@@ -65,22 +66,22 @@ class UserRepository {
     double latitude,
     double longitude,
   ) async {
-    await _database.updateCurrentLocation(uid, latitude, longitude);
+    await _userSvc.updateCurrentLocation(uid, latitude, longitude);
   }
 
   /// 🎯 새로운 지역 방문
   Future<void> visitRegion(String uid, String regionId) async {
-    await _database.visitNewRegion(uid, regionId);
+    await _userSvc.visitNewRegion(uid, regionId);
   }
 
   /// 📊 탐험 통계 조회
   Future<Map<String, dynamic>> getExplorationStats(String uid) async {
-    return await _database.getExplorationStats(uid);
+    return await _userSvc.getExplorationStats(uid);
   }
 
   /// 🗺️ 방문한 지역 목록 조회
   Future<List<String>> getVisitedRegions(String uid) async {
-    return await _database.getVisitedRegions(uid);
+    return await _userSvc.getVisitedRegions(uid);
   }
 
   /// 🧭 사용자 위치 기반 초기 카메라 위치 반환
@@ -110,12 +111,12 @@ class UserRepository {
 
   /// 🔄 동기화 시간 업데이트
   Future<void> updateSyncTime(String uid) async {
-    await _database.updateSyncTime(uid);
+    await _userSvc.updateSyncTime(uid);
   }
 
   /// 🗑️ 사용자 삭제
   Future<void> deleteUser(String uid) async {
-    await _database.deleteUser(uid);
+    await _userSvc.deleteUser(uid);
   }
 
   /// 📍 현재 위치 가져오기 (유틸리티)
@@ -144,8 +145,5 @@ class UserRepository {
     }
   }
 
-  /// 🔒 데이터베이스 닫기
-  void dispose() {
-    _database.close();
-  }
+
 }

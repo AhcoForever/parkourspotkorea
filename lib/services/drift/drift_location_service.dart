@@ -2,13 +2,16 @@ import 'dart:async';
 import 'package:geolocator/geolocator.dart';
 import 'package:parkourspotkorea/database/app_database.dart';
 
+import '../../core/app_db.dart';
+import 'drift_user_service.dart';
+
 /// 위치 추적 및 Scratch Map 업데이트 서비스
 class LocationService {
   static final LocationService _instance = LocationService._internal();
   factory LocationService() => _instance;
   LocationService._internal();
 
-  final AppDatabase _database = AppDatabase();
+  final DriftUserService _userSvc = DriftUserService(AppDB.instance);
   StreamSubscription<Position>? _positionStream;
 
   // 위치 업데이트 설정
@@ -77,18 +80,18 @@ class LocationService {
 
   /// 📊 사용자의 탐험 통계 조회
   Future<Map<String, dynamic>> getExplorationStats(String uid) async {
-    return await _database.getExplorationStats(uid);
+    return await _userSvc.getExplorationStats(uid);
   }
 
   /// 🗺️ 방문한 지역 목록 조회
   Future<List<String>> getVisitedRegions(String uid) async {
-    return await _database.getVisitedRegions(uid);
+    return await _userSvc.getVisitedRegions(uid);
   }
 
   /// 🔄 위치 업데이트 처리
   Future<void> _handleLocationUpdate(String uid, Position position) async {
     // 1. 현재 위치 업데이트
-    await _database.updateCurrentLocation(
+    await _userSvc.updateCurrentLocation(
       uid,
       position.latitude,
       position.longitude,
@@ -102,7 +105,7 @@ class LocationService {
 
     // 3. 새로운 지역이면 방문 기록에 추가
     if (regionId != null) {
-      await _database.visitNewRegion(uid, regionId);
+      await _userSvc.visitNewRegion(uid, regionId);
     }
 
     print('📍 위치 업데이트: (${position.latitude}, ${position.longitude})');

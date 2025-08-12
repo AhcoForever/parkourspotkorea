@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:parkourspotkorea/widgets/confirm_button.dart';
 
-import '../../widgets/back_button.dart';
-
 class FindIDPW extends StatefulWidget {
   @override
   _FindIDPWState createState() => _FindIDPWState();

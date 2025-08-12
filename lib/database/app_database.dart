@@ -7,18 +7,25 @@ import 'package:path/path.dart' as p;
 
 part 'app_database.g.dart';
 
-// 변경 전: @DriftDatabase(tables: [Users])
 @DriftDatabase(tables: [Users, Polygons])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 2; // 스키마 버전 증가 (마이그레이션용)
+  int get schemaVersion => 3; // 스키마 버전 증가 (마이그레이션용)
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
     onCreate: (Migrator m) async {
       await m.createAll();
+
+      //인덱스 생성
+      await customStatement(
+          'CREATE INDEX IF NOT EXISTS idx_polygons_sido ON polygons(sido);'
+      );
+      await customStatement(
+          'CREATE INDEX IF NOT EXISTS idx_polygons_sgg_prefix ON polygons(sgg_prefix);'
+      );
     },
     onUpgrade: (Migrator m, int from, int to) async {
       // 기존 테이블에서 새 테이블로 마이그레이션
@@ -70,42 +77,8 @@ class AppDatabase extends _$AppDatabase {
     );
   }
 
-  /// 🎯 새로운 지역 방문 처리
-  Future<void> visitNewRegion(String uid, String regionId) async {
-    final user = await getUser(uid);
-    if (user == null) return;
 
-    // 이미 방문한 지역인지 확인
-    final visitedList = _parseVisitedRegions(user.visitedRegions);
-    if (visitedList.contains(regionId)) return;
 
-    // 새 지역 추가
-    visitedList.add(regionId);
-    final newCount = visitedList.length;
-
-    // 전체 지역 수 (추후 constants에서 가져올 예정)
-    const totalRegions = 3500; // 대한민국 전체 읍면동 개수 (예시)
-    final progress = (newCount / totalRegions) * 100;
-
-    await (update(users)..where((tbl) => tbl.uid.equals(uid))).write(
-      UsersCompanion(
-        visitedRegions: Value(visitedList.join(',')),
-        totalVisitedCount: Value(newCount),
-        explorationProgress: Value(progress),
-      ),
-    );
-
-    print(
-      '🎯 새 지역 방문: $regionId (총 ${newCount}개, ${progress.toStringAsFixed(1)}% 완료)',
-    );
-  }
-
-  /// 📊 방문한 지역 목록 조회
-  Future<List<String>> getVisitedRegions(String uid) async {
-    final user = await getUser(uid);
-    if (user == null) return [];
-    return _parseVisitedRegions(user.visitedRegions);
-  }
 
   /// 🔄 Firebase와 동기화 시간 업데이트
   Future<void> updateSyncTime(String uid) async {
@@ -114,29 +87,12 @@ class AppDatabase extends _$AppDatabase {
     );
   }
 
-  /// 🏆 탐험 통계 조회
-  Future<Map<String, dynamic>> getExplorationStats(String uid) async {
-    final user = await getUser(uid);
-    if (user == null) return {};
-
-    return {
-      'totalVisited': user.totalVisitedCount,
-      'progress': user.explorationProgress,
-      'lastUpdate': user.lastLocationUpdate,
-      'visitedRegions': _parseVisitedRegions(user.visitedRegions),
-    };
-  }
 
   /// 🗑️ 사용자 삭제
   Future<void> deleteUser(String uid) async {
     await (delete(users)..where((tbl) => tbl.uid.equals(uid))).go();
   }
 
-  /// 유틸리티: 방문 지역 문자열 파싱
-  List<String> _parseVisitedRegions(String regions) {
-    if (regions.isEmpty) return [];
-    return regions.split(',').where((s) => s.isNotEmpty).toList();
-  }
 }
 
 // 데이터베이스 연결 설정
