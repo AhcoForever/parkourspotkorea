@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:parkourspotkorea/screens/auth/login_page.dart';
 import 'package:parkourspotkorea/screens/spot/map_page.dart';
 
-import '../screens/spot/map_page2.dart';
+import '../screens/spot/scratch_map_page.dart';
 
 class AppInitializer extends StatefulWidget {
   const AppInitializer({super.key});
@@ -59,6 +59,6 @@ class _AppInitializerState extends State<AppInitializer> {
     }
 
     // 로그인 상태에 따라 MapPage (로그인 성공) 또는 LoginPage (로그인 필요) 분기
-    return _isLoggedIn ?  MapPage2() : const LoginPage();
+    return _isLoggedIn ?  ScratchMapPage() : const LoginPage();
   }
 }

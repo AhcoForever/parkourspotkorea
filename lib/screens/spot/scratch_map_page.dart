@@ -12,12 +12,12 @@ import '../../services/drift/drift_user_service.dart';
 import '../../services/firebase/firebase_service.dart';
 import '../../utils/hex_helper.dart';
 
-class MapPage2 extends StatefulWidget {
+class ScratchMapPage extends StatefulWidget {
   @override
-  _MapPage2State createState() => _MapPage2State();
+  _ScratchMapPageState createState() => _ScratchMapPageState();
 }
 
-class _MapPage2State extends State<MapPage2> {
+class _ScratchMapPageState extends State<ScratchMapPage> {
   late final AppDatabase _db;
   late final DriftMapService _mapSvc;
   late final DriftUserService _userSvc;
@@ -25,18 +25,14 @@ class _MapPage2State extends State<MapPage2> {
   Set<Polygon> polygons = {};
   LatLng? cameraPosition;
   bool isLoading = true;
+  LatLng? _hexGridOrigin;        // 첫 헥사곤을 만든 원점
+  final double _hexSizeM = 100;  // generateHexagon과 동일 반경(m)
 
   // 육각형 모양 폴리곤 그리기
   Set<Polygon> _hexagonPolygons = {};
   bool _isHexagonVisible = false;
   bool _visitedLoaded = false; // 방문 기록 로드 여부
 
-  // Helper to generate hexagon ID based on center LatLng
-  String _generateHexagonId(LatLng center) {
-    final lat = center.latitude.toStringAsFixed(3);
-    final lng = center.longitude.toStringAsFixed(3);
-    return 'hex_${lat}_$lng';
-  }
 
   @override
   void initState() {
@@ -216,10 +212,17 @@ class _MapPage2State extends State<MapPage2> {
 
   Future<void> _showHexagonAtMyLocation() async {
     final position = await Geolocator.getCurrentPosition();
-    final center = LatLng(position.latitude, position.longitude);
-    final hexId = _generateHexagonId(center);
-    final hexPoints = generateHexagon(center, 100);
+    final current = LatLng(position.latitude, position.longitude);
 
+    // 1) 원점이 없다면 현재 위치를 원점으로 고정 (최초 1회)
+    _hexGridOrigin ??= current;
+
+    // 2) 스냅된 중심 + 새 ID(h_q_r)
+    final snappedCenter = snapToHexCenter(_hexGridOrigin!, current, _hexSizeM);
+    final hexId = hexIdFromLatLng(_hexGridOrigin!, current, _hexSizeM);
+    final hexPoints = generateHexagon(snappedCenter, _hexSizeM);
+
+    // 3) 방문 여부 확인
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) {
       print('로그인 정보 없음 - 방문 기록을 저장할 수 없습니다.');
@@ -228,6 +231,7 @@ class _MapPage2State extends State<MapPage2> {
     final visitedHexIds = await _userSvc.getVisitedRegions(uid);
     final isVisited = visitedHexIds.contains(hexId);
 
+    // 4) 폴리곤 반영 (중복 제거 후 추가)
     final hexPolygon = Polygon(
       polygonId: PolygonId(hexId),
       points: hexPoints,
@@ -241,8 +245,10 @@ class _MapPage2State extends State<MapPage2> {
       _hexagonPolygons.add(hexPolygon);
     });
 
-    mapController?.animateCamera(CameraUpdate.newLatLngZoom(center, 15));
+    // 보기 좋게 스냅된 중심으로 이동 (선택)
+    mapController?.animateCamera(CameraUpdate.newLatLngZoom(snappedCenter, 15));
 
+    // 5) 방문 기록 저장
     if (!isVisited) {
       await _userSvc.visitNewRegion(uid, hexId);
       print("🟢 방문 이력 저장됨: $hexId");
@@ -259,16 +265,36 @@ class _MapPage2State extends State<MapPage2> {
 
     final toAdd = <Polygon>{};
     for (final hexId in visitedHexIds) {
-      final coords = hexId.replaceFirst('hex_', '').split('_');
-      if (coords.length != 2) continue;
+      LatLng? center;
 
-      final lat = double.tryParse(coords[0]);
-      final lng = double.tryParse(coords[1]);
-      if (lat == null || lng == null) continue;
+      if (hexId.startsWith('h_')) {
+        // 새 포맷: h_q_r
+        final parts = hexId.split('_');
+        if (parts.length == 3) {
+          final q = int.tryParse(parts[1]);
+          final r = int.tryParse(parts[2]);
+          if (q != null && r != null) {
+            // 원점 없으면 카메라 초기 위치(또는 서울)로
+            _hexGridOrigin ??=
+                cameraPosition ?? const LatLng(37.5665, 126.9780);
+            center = hexCenterFromIndex(_hexGridOrigin!, q, r, _hexSizeM);
+          }
+        }
+      } else if (hexId.startsWith('hex_')) {
+        // 옛 포맷: hex_lat_lng
+        final coords = hexId.replaceFirst('hex_', '').split('_');
+        if (coords.length == 2) {
+          final lat = double.tryParse(coords[0]);
+          final lng = double.tryParse(coords[1]);
+          if (lat != null && lng != null) {
+            center = LatLng(lat, lng);
+          }
+        }
+      }
 
-      final center = LatLng(lat, lng);
-      final hexPoints = generateHexagon(center, 100);
+      if (center == null) continue;
 
+      final hexPoints = generateHexagon(center, _hexSizeM);
       toAdd.add(
         Polygon(
           polygonId: PolygonId(hexId),
@@ -278,16 +304,15 @@ class _MapPage2State extends State<MapPage2> {
           strokeWidth: 2,
         ),
       );
+
+      setState(() {
+        _hexagonPolygons.addAll(toAdd);
+        _visitedLoaded = true;
+      });
+
+      print("✅ 방문한 헥사곤 복원 완료 (${visitedHexIds.length}개)");
     }
-
-    setState(() {
-      _hexagonPolygons.addAll(toAdd);
-      _visitedLoaded = true;
-    });
-
-    print("✅ 방문한 헥사곤 복원 완료 (${visitedHexIds.length}개)");
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

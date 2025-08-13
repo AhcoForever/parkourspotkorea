@@ -11,7 +11,7 @@ class DriftUserService {
     if (user == null) return [];
     return _parseVisitedRegions(user.visitedRegions);
   }
-Future<LocalUser?> getUser(String uid) => db.getUser(uid);
+  Future<LocalUser?> getUser(String uid) => db.getUser(uid);
 
 
 

@@ -6,7 +6,7 @@ import '../screens/auth/findIDPW_page.dart';
 import '../screens/auth/login_page.dart';
 import '../screens/nickname_page.dart';
 import '../screens/auth/signup_page.dart';
-import '../screens/spot/map_page2.dart';
+import '../screens/spot/scratch_map_page.dart';
 
 final GoRouter appRouter = GoRouter(
   initialLocation: '/',
@@ -51,7 +51,7 @@ final GoRouter appRouter = GoRouter(
       name: 'customerService',
       builder: (context, state) => CustomerServicePage(),
     ),
-    GoRoute(path: '/map', name: 'map', builder: (context, state) => MapPage2()
+    GoRoute(path: '/map', name: 'map', builder: (context, state) => ScratchMapPage()
         //MapPage()
     ),
   ],

@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:geolocator/geolocator.dart';
-import 'package:parkourspotkorea/database/app_database.dart';
 
 import '../../core/app_db.dart';
 import 'drift_user_service.dart';
