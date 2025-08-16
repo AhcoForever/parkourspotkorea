@@ -5,12 +5,14 @@ import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 
+import '../../const/constants.dart';
 import '../../core/app_db.dart';
 import '../../database/app_database.dart';
 import '../../services/drift/drift_map_service.dart';
 import '../../services/drift/drift_user_service.dart';
 import '../../services/firebase/firebase_service.dart';
-import '../../utils/hex_helper.dart';
+import '../../utils/hex_helper.dart'
+    show generateHexagon, snapToHexCenter, hexIdFromLatLng, hexCenterFromIndex;
 
 class ScratchMapPage extends StatefulWidget {
   @override
@@ -25,14 +27,12 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
   Set<Polygon> polygons = {};
   LatLng? cameraPosition;
   bool isLoading = true;
-  LatLng? _hexGridOrigin;        // 첫 헥사곤을 만든 원점
-  final double _hexSizeM = 100;  // generateHexagon과 동일 반경(m)
+  final double _hexSizeM = 100;
 
   // 육각형 모양 폴리곤 그리기
   Set<Polygon> _hexagonPolygons = {};
   bool _isHexagonVisible = false;
   bool _visitedLoaded = false; // 방문 기록 로드 여부
-
 
   @override
   void initState() {
@@ -46,7 +46,6 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
   /// 1) 초기화: 내 위치 → sido 계산 → Drift 캐시 우선 표시 → 원격 최신화 후 갱신
   Future<void> _initializeMapSidoLocalFirst() async {
     final pos = await _getInitialCameraPositionFromLocal();
-    //todo: jh , service 객체 직접생성. provider 태우지 않기. provier는 나중에 view model 태울 예정임. 필요한 method는 service에서 가져오기.
     // 1) 카메라 초기 위치
     setState(() {
       cameraPosition = pos;
@@ -54,11 +53,9 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
     });
 
     // 2) 내 위치로 sido 코드 계산
-    //todo: jh geocoding도 backend로 여기고 refactoring
     final sido = await _resolveSidoCode(pos);
 
     // 3) Drift 캐시 먼저 표시
-
     final localRows = await _mapSvc.getPolygonsBySido(sido);
     if (localRows.isNotEmpty) {
       final localPolys = _buildPolygonsFromRows(localRows);
@@ -68,7 +65,6 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
       });
     } else {
       //empty 상황
-      //todo JH : drift에 polygon정보가 없으면 firebase에서 읽어와서 drift에 넣고, drift로부터 다시 읽어야함.
     }
 
     // 4) 원격 최신화 → 캐시 upsert → 화면 갱신
@@ -214,15 +210,19 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
     final position = await Geolocator.getCurrentPosition();
     final current = LatLng(position.latitude, position.longitude);
 
-    // 1) 원점이 없다면 현재 위치를 원점으로 고정 (최초 1회)
-    _hexGridOrigin ??= current;
 
     // 2) 스냅된 중심 + 새 ID(h_q_r)
-    final snappedCenter = snapToHexCenter(_hexGridOrigin!, current, _hexSizeM);
-    final hexId = hexIdFromLatLng(_hexGridOrigin!, current, _hexSizeM);
+    final snappedCenter = snapToHexCenter(AppConstants.GLOBAL_HEX_ORIGIN, current, AppConstants.GLOBAL_HEX_SIZE_METERS);
+    final hexId        = hexIdFromLatLng(AppConstants.GLOBAL_HEX_ORIGIN, current, AppConstants.GLOBAL_HEX_SIZE_METERS);
+// 3) 이미 해당 헥사곤이 표시되어 있다면 중복 생성하지 않음
+    if (_hexagonPolygons.any((p) => p.polygonId.value == hexId)) {
+      print('이미 표시된 헥사곤: $hexId');
+      return;
+    }
+
     final hexPoints = generateHexagon(snappedCenter, _hexSizeM);
 
-    // 3) 방문 여부 확인
+    // 4) 방문 여부 확인
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) {
       print('로그인 정보 없음 - 방문 기록을 저장할 수 없습니다.');
@@ -258,6 +258,7 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
   }
 
   Future<void> _loadVisitedHexagons() async {
+
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) return;
 
@@ -274,10 +275,11 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
           final q = int.tryParse(parts[1]);
           final r = int.tryParse(parts[2]);
           if (q != null && r != null) {
-            // 원점 없으면 카메라 초기 위치(또는 서울)로
-            _hexGridOrigin ??=
-                cameraPosition ?? const LatLng(37.5665, 126.9780);
-            center = hexCenterFromIndex(_hexGridOrigin!, q, r, _hexSizeM);
+
+            // _hexGridOrigin ??=
+            //     cameraPosition ?? const LatLng(37.5665, 126.9780);
+            // center = hexCenterFromIndex(_hexGridOrigin!, q, r, _hexSizeM);
+            center = hexCenterFromIndex(AppConstants.GLOBAL_HEX_ORIGIN, q, r, AppConstants.GLOBAL_HEX_SIZE_METERS);
           }
         }
       } else if (hexId.startsWith('hex_')) {
@@ -294,7 +296,7 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
 
       if (center == null) continue;
 
-      final hexPoints = generateHexagon(center, _hexSizeM);
+      final hexPoints = generateHexagon(center, AppConstants.GLOBAL_HEX_SIZE_METERS);
       toAdd.add(
         Polygon(
           polygonId: PolygonId(hexId),
@@ -305,6 +307,7 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
         ),
       );
 
+
       setState(() {
         _hexagonPolygons.addAll(toAdd);
         _visitedLoaded = true;
@@ -313,6 +316,7 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
       print("✅ 방문한 헥사곤 복원 완료 (${visitedHexIds.length}개)");
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -409,7 +413,7 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
                   heroTag: 'globe_button',
                   onPressed: () async {
                     print('지구본 버튼 클릭');
-                   await _toggleHexagons();
+                    await _toggleHexagons();
                   },
                   child: Icon(Icons.public, color: Color(0xFF3A59D1)),
                 ),

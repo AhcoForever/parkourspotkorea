@@ -9,12 +9,10 @@ class AppConstants {
   static const double KOREA_MIN_LNG = 124.0;
   static const double KOREA_MAX_LNG = 132.0;
 
-  // 대한민국 중심 좌표
-  static const LatLng KOREA_CENTER = LatLng(36.5, 127.5);
-  static const double KOREA_DEFAULT_ZOOM = 7.0;
+  // 전역 고정 헥사 격자 원점 및 크기
+  static const LatLng GLOBAL_HEX_ORIGIN = LatLng(33.0, 124.0);
+  static const double GLOBAL_HEX_SIZE_METERS = 100.0;
 
-  // 육각형 그리드 크기 (약 1km)
-  static const double HEX_GRID_SIZE = 0.01;
 
   // 위치 업데이트 설정
   static const double LOCATION_UPDATE_DISTANCE = 50.0; // 미터

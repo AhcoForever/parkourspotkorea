@@ -1,5 +1,5 @@
 
-class Polygon {
+class PolygonModel {
   double latitude;
   double longitude;
   Map<String, dynamic> coordinate;  // GeoJSON coordinates
@@ -10,7 +10,7 @@ class Polygon {
   int sgg;
   String sggnm;
 
-  Polygon({
+  PolygonModel({
     required this.latitude,
     required this.longitude,
     required this.coordinate,
@@ -38,8 +38,8 @@ class Polygon {
   }
 
   /// Map에서 객체로 변환
-   factory Polygon.fromMap(Map<String, dynamic> map) {
-    return Polygon(
+   factory PolygonModel.fromMap(Map<String, dynamic> map) {
+    return PolygonModel(
       latitude: map['latitude']?.toDouble(),
       longitude: map['longitude']?.toDouble(),
       coordinate: Map<String, dynamic>.from(map['coordinate']),
