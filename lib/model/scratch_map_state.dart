@@ -6,7 +6,7 @@ class ScratchMapState {
   final bool isHexagonVisible;
   final bool visitedLoaded;
   final Set<Polygon> polygons;
-  final Set<Polygon> hexagonPolygons;
+  final Set<Polygon> hexagons;
   final LatLng? cameraPosition;
   final LatLng? hexGridOrigin;
   final String? errorMessage;
@@ -16,7 +16,7 @@ class ScratchMapState {
     required this.isHexagonVisible,
     required this.visitedLoaded,
     required this.polygons,
-    required this.hexagonPolygons,
+    required this.hexagons,
     this.cameraPosition,
     this.hexGridOrigin,
     this.errorMessage,
@@ -29,7 +29,7 @@ class ScratchMapState {
       isHexagonVisible: false,
       visitedLoaded: false,
       polygons: {},
-      hexagonPolygons: {},
+      hexagons: {},
     );
   }
 
@@ -59,7 +59,7 @@ class ScratchMapState {
       isHexagonVisible: isHexagonVisible ?? this.isHexagonVisible,
       visitedLoaded: visitedLoaded ?? this.visitedLoaded,
       polygons: polygons ?? this.polygons,
-      hexagonPolygons: hexagonPolygons ?? this.hexagonPolygons,
+      hexagons: hexagonPolygons ?? this.hexagons,
       cameraPosition: cameraPosition ?? this.cameraPosition,
       hexGridOrigin: hexGridOrigin ?? this.hexGridOrigin,
       errorMessage: errorMessage ?? this.errorMessage,
@@ -69,7 +69,7 @@ class ScratchMapState {
   /// 모든 폴리곤 반환 (헥사곤 표시 여부에 따라)
   Set<Polygon> get allPolygons {
     return isHexagonVisible
-        ? polygons.union(hexagonPolygons)
+        ? polygons.union(hexagons)
         : polygons;
   }
 
@@ -78,6 +78,6 @@ class ScratchMapState {
     return 'ScratchMapState(isLoading: $isLoading, '
         'isHexagonVisible: $isHexagonVisible, '
         'polygons: ${polygons.length}, '
-        'hexagonPolygons: ${hexagonPolygons.length})';
+        'hexagonPolygons: ${hexagons.length})';
   }
 }

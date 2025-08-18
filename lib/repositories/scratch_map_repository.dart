@@ -11,8 +11,9 @@ import '../database/app_database.dart';
 /// ScratchMap 지도 데이터 Repository 구현체
 class ScratchMapRepository implements IScratchMapRepository {
   final DriftMapService driftMapService;
+  //final FirebaseService firebaseService;
 
-  ScratchMapRepository({required this.driftMapService});
+  ScratchMapRepository({required this.driftMapService,/*required this.firebaseService*/});
 
   @override
   Future<List<PolygonRow>> getPolygonsBySido(int sido) async {
@@ -87,6 +88,7 @@ class ScratchMapRepository implements IScratchMapRepository {
   }
 
   /// PolygonRow들을 Polygon으로 변환
+  @override
   Set<Polygon> convertRowsToPolygons(List<PolygonRow> rows) {
     return rows.map((r) {
       final pts = FirebaseService.parseCoordinates(r.coordinatesJson);

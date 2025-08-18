@@ -103,6 +103,9 @@ flutter:
   assets:
     - assets/icons/appleIcon_loginPage.svg
     - assets/icons/google_ic_loginPage.svg
+    - assets/icons/material-symbols_globe-asia-sharp.svg
+    - assets/icons/person.svg
+    - assets/icons/star.svg
     - assets/logo/
     - assets/QRcode/
     - assets/GeoJSON/

@@ -126,10 +126,12 @@ class AppTheme {
 
     floatingActionButtonTheme: FloatingActionButtonThemeData(
       backgroundColor: Color(0x99F4F7FE),
+
       elevation: 5,
       shape: RoundedRectangleBorder(
         side: BorderSide(color: Color(0xFFCAD2F3)),
         borderRadius: BorderRadius.circular(50),
+
       ),
     ),
   );

@@ -15,7 +15,7 @@ class ScratchMapViewModel extends ChangeNotifier {
   final IScratchMapRepository scratchMapRepository;
   final ILocationService locationService;
   final IUserRepository userRepository;
-  final IHexagonService hexagonService;
+  final IHexagonService hexagonService; //viewmodel에서 service를 직접 access 하는 걸 막기 위해 interface를 사용했는데 풀어놓기.
 
   // 위치 추적 관련
   StreamSubscription<Position>? _positionStreamSubscription;
@@ -232,7 +232,7 @@ class ScratchMapViewModel extends ChangeNotifier {
       }
 
       // 이미 표시된 헥사곤인지 확인
-      if (_state.hexagonPolygons.any((p) => p.polygonId.value == currentHexId)) {
+      if (_state.hexagons.any((p) => p.polygonId.value == currentHexId)) {
         _lastHexagonId = currentHexId;
         return;
       }
@@ -271,7 +271,7 @@ class ScratchMapViewModel extends ChangeNotifier {
       );
 
       // 상태 업데이트
-      final existingHexagons = Set<Polygon>.from(_state.hexagonPolygons);
+      final existingHexagons = Set<Polygon>.from(_state.hexagons);
       existingHexagons.add(polygon);
       _updateState(_state.copyWith(hexagonPolygons: existingHexagons));
 

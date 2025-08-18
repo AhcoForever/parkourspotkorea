@@ -78,24 +78,33 @@ void main() async {
               ScratchMapUserRepository(userRepository: userRepository),
         ),
 
-        // 4. ViewModel 등록
-        ProxyProvider4<IScratchMapRepository, ILocationService, IUserRepository, IHexagonService, ScratchMapViewModel>(
+        // 4. ViewModel 등록 - ChangeNotifierProxyProvider로 변경!
+        ChangeNotifierProxyProvider4<IScratchMapRepository, ILocationService, IUserRepository, IHexagonService, ScratchMapViewModel>(
+          create: (context) {
+            // 초기 생성 시에는 임시 객체들로 생성
+            return ScratchMapViewModel(
+              scratchMapRepository: context.read<IScratchMapRepository>(),
+              locationService: context.read<ILocationService>(),
+              userRepository: context.read<IUserRepository>(),
+              hexagonService: context.read<IHexagonService>(),
+            );
+          },
           update: (
               context,
               scratchMapRepository,
               locationService,
               userRepository,
               hexagonService,
-              _
+              previous,
               ) {
-            return ScratchMapViewModel(
+            // 기존 ViewModel이 있으면 재사용, 없으면 새로 생성
+            return previous ?? ScratchMapViewModel(
               scratchMapRepository: scratchMapRepository,
               locationService: locationService,
               userRepository: userRepository,
               hexagonService: hexagonService,
             );
           },
-          dispose: (context, viewModel) => viewModel.dispose(),
         ),
       ],
       child: const MyApp(),

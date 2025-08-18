@@ -7,6 +7,7 @@ import '../screens/auth/login_page.dart';
 import '../screens/nickname_page.dart';
 import '../screens/auth/signup_page.dart';
 import '../screens/spot/scratch_map_page.dart';
+import '../widgets/app_initializer.dart'; // 추가
 
 final GoRouter appRouter = GoRouter(
   initialLocation: '/',
@@ -14,22 +15,18 @@ final GoRouter appRouter = GoRouter(
     return Errorscreen(message: state.error.toString());
   },
   routes: [
-    // GoRoute(
-    //   path: '/',
-    //   name: 'initializer',
-    //   builder: (context, state) =>
-    //   AppInitializer()
-    //   // LoginPage(),
-    //       //MapPage(),
-    //
-    //
-    // ),
+    // 앱 시작 시 로그인 상태 체크
     GoRoute(
       path: '/',
+      name: 'initializer',
+      builder: (context, state) =>
+          //NicknamePage(),
+          AppInitializer(), // AppInitializer 사용
+    ),
+    GoRoute(
+      path: '/login',
       name: 'login',
       builder: (context, state) => LoginPage(),
-
-      //MapPage(),
     ),
     GoRoute(
       path: '/signup',
@@ -51,8 +48,10 @@ final GoRouter appRouter = GoRouter(
       name: 'customerService',
       builder: (context, state) => CustomerServicePage(),
     ),
-    GoRoute(path: '/map', name: 'map', builder: (context, state) => ScratchMapPage()
-        //MapPage()
+    GoRoute(
+      path: '/map',
+      name: 'map',
+      builder: (context, state) => ScratchMapPage(),
     ),
   ],
 );
