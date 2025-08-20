@@ -20,7 +20,7 @@ final GoRouter appRouter = GoRouter(
       path: '/',
       name: 'initializer',
       builder: (context, state) =>
-          //NicknamePage(),
+          //LoginPage()
           AppInitializer(), // AppInitializer 사용
     ),
     GoRoute(

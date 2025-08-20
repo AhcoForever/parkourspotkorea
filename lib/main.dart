@@ -1,7 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:parkourspotkorea/services/scratch_map_service.dart';
 import 'package:provider/provider.dart';
 
 // Core
@@ -14,6 +13,8 @@ import 'services/drift/drift_map_service.dart';
 // Repositories
 import 'repositories/user_repository.dart';
 import 'repositories/scratch_map_repository.dart';
+import 'repositories/location_repository.dart';
+import 'repositories/user_repository_wrapper.dart';
 
 // Interfaces
 import 'interfaces/scratch_map_interfaces.dart';
@@ -47,64 +48,53 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
-        // 1. 가장 하위 서비스들 (의존성 없는 것들)
+        // === 1. 기본 데이터베이스 (최하위 계층) ===
         Provider<AppDatabase>.value(value: db),
 
+        // === 2. 기본 서비스들 ===
         Provider<DriftMapService>(
-          create: (context) => DriftMapService(db),
+          create: (context) => DriftMapService(context.read<AppDatabase>()),
         ),
 
         Provider<UserRepository>(
           create: (context) => UserRepository(),
         ),
 
-        // 2. 인터페이스 구현체들 등록
-        Provider<ILocationService>(
-          create: (context) => ScratchMapService(),
+        // === 3. Repository 구현체들 ===
+        Provider<ScratchMapRepository>(
+          create: (context) => ScratchMapRepository(
+            driftMapService: context.read<DriftMapService>(),
+          ),
         ),
 
-        Provider<IHexagonService>(
-          create: (context) => HexagonService(),
+        Provider<LocationRepository>(
+          create: (context) => LocationRepository(
+            userRepository: context.read<UserRepository>(),
+          ),
         ),
 
-        // 3. Repository들 등록
-        ProxyProvider<DriftMapService, IScratchMapRepository>(
-          update: (context, driftMapService, _) =>
-              ScratchMapRepository(driftMapService: driftMapService),
+        // === 4. Repository 인터페이스들 (ViewModel이 사용할 것들) ===
+        Provider<IScratchMapRepository>(
+          create: (context) => context.read<ScratchMapRepository>(),
         ),
 
-        ProxyProvider<UserRepository, IUserRepository>(
-          update: (context, userRepository, _) =>
-              ScratchMapUserRepository(userRepository: userRepository),
+        Provider<ILocationRepository>(
+          create: (context) => context.read<LocationRepository>(),
         ),
 
-        // 4. ViewModel 등록 - ChangeNotifierProxyProvider로 변경!
-        ChangeNotifierProxyProvider4<IScratchMapRepository, ILocationService, IUserRepository, IHexagonService, ScratchMapViewModel>(
-          create: (context) {
-            // 초기 생성 시에는 임시 객체들로 생성
-            return ScratchMapViewModel(
-              scratchMapRepository: context.read<IScratchMapRepository>(),
-              locationService: context.read<ILocationService>(),
-              userRepository: context.read<IUserRepository>(),
-              hexagonService: context.read<IHexagonService>(),
-            );
-          },
-          update: (
-              context,
-              scratchMapRepository,
-              locationService,
-              userRepository,
-              hexagonService,
-              previous,
-              ) {
-            // 기존 ViewModel이 있으면 재사용, 없으면 새로 생성
-            return previous ?? ScratchMapViewModel(
-              scratchMapRepository: scratchMapRepository,
-              locationService: locationService,
-              userRepository: userRepository,
-              hexagonService: hexagonService,
-            );
-          },
+        Provider<IUserRepository>(
+          create: (context) => UserRepositoryWrapper(
+            userRepository: context.read<UserRepository>(),
+          ),
+        ),
+
+        // === 5. ViewModel (오직 Repository 인터페이스만 사용) ===
+        ChangeNotifierProvider<ScratchMapViewModel>(
+          create: (context) => ScratchMapViewModel(
+            scratchMapRepository: context.read<IScratchMapRepository>(),
+            userRepository: context.read<IUserRepository>(),
+            locationRepository: context.read<ILocationRepository>(),
+          ),
         ),
       ],
       child: const MyApp(),

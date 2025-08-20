@@ -208,7 +208,7 @@ class _LoginPageState extends State<LoginPage> {
                 padding: const EdgeInsets.only(top: 10.0),
                 child: SizedBox(
                   width: double.infinity,
-                  height: 50,
+                  height: 60,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(),
                     onPressed: _isLoading ? null : _signin,

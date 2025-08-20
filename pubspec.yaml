@@ -107,6 +107,7 @@ flutter:
     - assets/icons/person.svg
     - assets/icons/star.svg
     - assets/logo/
+    - assets/images/
     - assets/QRcode/
     - assets/GeoJSON/
     - assets/fonts/Pretendard/

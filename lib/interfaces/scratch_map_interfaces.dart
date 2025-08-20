@@ -1,6 +1,7 @@
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import '../database/app_database.dart';
+import '../model/hexagon_data.dart';
 
 /// 지도 데이터 Repository 인터페이스
 abstract class IScratchMapRepository {
@@ -10,12 +11,19 @@ abstract class IScratchMapRepository {
   Set<Polygon> convertRowsToPolygons(List<PolygonRow> rows); // 추가
 }
 
-/// 위치 서비스 인터페이스
-abstract class ILocationService {
+// 위치 및 헥사곤 Repository 인터페이스
+abstract class ILocationRepository {
   Future<Position?> getCurrentPosition();
   Future<int> resolveSidoCode(LatLng latLng);
   Future<bool> checkLocationPermission();
+  Stream<Position> getPositionStream();
+
+  Future<String> generateHexId(LatLng position);
+  Future<HexagonData?> createHexagon(LatLng position);
+  Future<Set<Polygon>> restoreVisitedHexagons(List<String> hexIds);
+  Future<Polygon?> createHexagonAtPosition(LatLng position, String uid);
 }
+
 
 /// 사용자 데이터 Repository 인터페이스
 abstract class IUserRepository {
@@ -31,16 +39,10 @@ abstract class IHexagonService {
   HexagonData? restoreHexagon(LatLng origin, String hexId);
   String generateHexId(LatLng origin, LatLng position);
 }
-
-/// 헥사곤 데이터 모델
-class HexagonData {
-  final String id;
-  final LatLng center;
-  final List<LatLng> points;
-
-  const HexagonData({
-    required this.id,
-    required this.center,
-    required this.points,
-  });
+/// 위치 서비스 인터페이스
+abstract class ILocationService {
+  Future<Position?> getCurrentPosition();
+  Future<int> resolveSidoCode(LatLng latLng);
+  Future<bool> checkLocationPermission();
 }
+
