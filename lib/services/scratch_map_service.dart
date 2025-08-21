@@ -3,7 +3,7 @@ import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-import '../interfaces/scratch_map_interfaces.dart';
+import '../interfaces/scratch_map_interface.dart';
 import '../model/hexagon_data.dart';
 import '../repositories/user_repository.dart';
 import '../utils/hex_helper.dart';

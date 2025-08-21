@@ -1,56 +1,87 @@
+// lib/database/app_database.dart
+
 import 'dart:io';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:parkourspotkorea/database/user_table.dart';
+import 'package:parkourspotkorea/database/parkour_table.dart'; // 새로 추가
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 
 part 'app_database.g.dart';
 
-@DriftDatabase(tables: [Users, Polygons])
+// 파쿠르 테이블들을 추가해야 합니다
+@DriftDatabase(tables: [Users, Polygons, ParkourSpots, ParkourSpotIndices])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 3; // 스키마 버전 증가 (마이그레이션용)
+  int get schemaVersion => 4; // 스키마 버전 증가 (파쿠르 테이블 추가)
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
     onCreate: (Migrator m) async {
       await m.createAll();
 
-      //인덱스 생성
+      // 기존 인덱스 생성
       await customStatement(
           'CREATE INDEX IF NOT EXISTS idx_polygons_sido ON polygons(sido);'
       );
       await customStatement(
           'CREATE INDEX IF NOT EXISTS idx_polygons_sgg_prefix ON polygons(sgg_prefix);'
       );
+
+      // 파쿠르 관련 인덱스 생성
+      await customStatement(
+          'CREATE INDEX IF NOT EXISTS idx_parkour_spots_location ON parkour_spots(latitude, longitude);'
+      );
+      await customStatement(
+          'CREATE INDEX IF NOT EXISTS idx_parkour_spots_category ON parkour_spots(category);'
+      );
+      await customStatement(
+          'CREATE INDEX IF NOT EXISTS idx_parkour_spots_rating ON parkour_spots(rating);'
+      );
+      await customStatement(
+          'CREATE INDEX IF NOT EXISTS idx_parkour_search_term ON parkour_spot_indices(search_term);'
+      );
     },
     onUpgrade: (Migrator m, int from, int to) async {
-      // 기존 테이블에서 새 테이블로 마이그레이션
       if (from < 2) {
         // 기존 데이터가 있다면 필요한 필드만 보존
         await m.createAll();
       }
+
+      // 파쿠르 테이블 추가 (버전 4)
+      if (from < 4) {
+        await m.createTable(parkourSpots);
+        await m.createTable(parkourSpotIndices);
+
+        // 파쿠르 관련 인덱스 생성
+        await customStatement(
+            'CREATE INDEX IF NOT EXISTS idx_parkour_spots_location ON parkour_spots(latitude, longitude);'
+        );
+        await customStatement(
+            'CREATE INDEX IF NOT EXISTS idx_parkour_spots_category ON parkour_spots(category);'
+        );
+        await customStatement(
+            'CREATE INDEX IF NOT EXISTS idx_parkour_spots_rating ON parkour_spots(rating);'
+        );
+        await customStatement(
+            'CREATE INDEX IF NOT EXISTS idx_parkour_search_term ON parkour_spot_indices(search_term);'
+        );
+      }
     },
   );
 
-
-  //todo: jh app_database 그대로 놔두고, business logic 포함된 method는 services/drift/drift_map_service.dart로 이동. , /services/drift/drift_user_service.dart 로 분리
-  /// 🔍 사용자 조회
+  // 기존 메소드들 유지
   Future<LocalUser?> getUser(String uid) async {
-    return await (select(
-      users,
-    )..where((tbl) => tbl.uid.equals(uid))).getSingleOrNull();
+    return await (select(users)..where((tbl) => tbl.uid.equals(uid))).getSingleOrNull();
   }
 
-  /// ✍️ 사용자 생성 또는 업데이트
   Future<void> insertOrUpdateUser(UsersCompanion user) async {
     await into(users).insertOnConflictUpdate(user);
   }
 
-  /// ===== Polygons (로컬 캐시) =====
   Future<List<PolygonRow>> getPolygonsBySido(int sido) {
     return (select(polygons)..where((t) => t.sido.equals(sido))).get();
   }
@@ -66,7 +97,6 @@ class AppDatabase extends _$AppDatabase {
     });
   }
 
-  /// 📍 현재 위치 업데이트
   Future<void> updateCurrentLocation(String uid, double lat, double lng) async {
     await (update(users)..where((tbl) => tbl.uid.equals(uid))).write(
       UsersCompanion(
@@ -77,22 +107,15 @@ class AppDatabase extends _$AppDatabase {
     );
   }
 
-
-
-
-  /// 🔄 Firebase와 동기화 시간 업데이트
   Future<void> updateSyncTime(String uid) async {
     await (update(users)..where((tbl) => tbl.uid.equals(uid))).write(
       UsersCompanion(lastSyncAt: Value(DateTime.now())),
     );
   }
 
-
-  /// 🗑️ 사용자 삭제
   Future<void> deleteUser(String uid) async {
     await (delete(users)..where((tbl) => tbl.uid.equals(uid))).go();
   }
-
 }
 
 // 데이터베이스 연결 설정

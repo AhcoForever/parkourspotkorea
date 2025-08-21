@@ -6,6 +6,7 @@ import '../screens/auth/findIDPW_page.dart';
 import '../screens/auth/login_page.dart';
 import '../screens/nickname_page.dart';
 import '../screens/auth/signup_page.dart';
+import '../screens/parkour_migration_page.dart';
 import '../screens/spot/scratch_map_page.dart';
 import '../widgets/app_initializer.dart'; // 추가
 
@@ -20,6 +21,7 @@ final GoRouter appRouter = GoRouter(
       path: '/',
       name: 'initializer',
       builder: (context, state) =>
+
           //LoginPage()
           AppInitializer(), // AppInitializer 사용
     ),

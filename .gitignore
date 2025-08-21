@@ -55,3 +55,4 @@ app.*.map.json
 /lib/data/geojson-uploader/serviceAccountKey.json
 /lib/data/geojson-uploader/package.json
 /android/release.keystore
+/assets/spot/

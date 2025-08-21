@@ -3,7 +3,7 @@ import 'dart:ui';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:drift/drift.dart' as drift;
 
-import '../interfaces/scratch_map_interfaces.dart';
+import '../interfaces/scratch_map_interface.dart';
 import '../services/drift/drift_map_service.dart';
 import '../services/firebase/firebase_service.dart';
 import '../database/app_database.dart';

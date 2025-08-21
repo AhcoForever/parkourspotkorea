@@ -17,7 +17,7 @@ import 'repositories/location_repository.dart';
 import 'repositories/user_repository_wrapper.dart';
 
 // Interfaces
-import 'interfaces/scratch_map_interfaces.dart';
+import 'interfaces/scratch_map_interface.dart';
 
 // ViewModels
 import 'viewmodel/scratch_map_viewmodel.dart';

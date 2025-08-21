@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_maps_flutter_platform_interface/src/types/location.dart';
-import 'package:parkourspotkorea/interfaces/scratch_map_interfaces.dart';
+import 'package:parkourspotkorea/interfaces/scratch_map_interface.dart';
 import 'package:parkourspotkorea/repositories/user_repository.dart';
 
 class UserRepositoryWrapper implements IUserRepository {
