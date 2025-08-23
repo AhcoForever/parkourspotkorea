@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:parkourspotkorea/widgets/confirm_button.dart';
+import 'package:parkourspotkorea/widgets/comfirm_button.dart';
 
 class FindIDPW extends StatefulWidget {
   @override
@@ -11,20 +11,20 @@ class _FindIDPWState extends State<FindIDPW> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordPhoneController =
-      TextEditingController();
+  TextEditingController();
   bool _isPhoneTabSelected = true;
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme=Theme.of(context).colorScheme;
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Scaffold(
       backgroundColor: Color(0xFFF4F7FE),
+      resizeToAvoidBottomInset: true, // 키보드가 올라올 때 화면 크기 조정
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back_ios,
-            color: colorScheme.primary,
-          ),
+          icon: Icon(Icons.arrow_back_ios, color: colorScheme.primary),
           onPressed: () {
             context.goNamed('login');
           },
@@ -37,7 +37,6 @@ class _FindIDPWState extends State<FindIDPW> {
       ),
       body: Column(
         children: [
-          // Tab buttons
           Container(
             padding: EdgeInsets.symmetric(horizontal: 20),
             child: Row(
@@ -115,8 +114,9 @@ class _FindIDPWState extends State<FindIDPW> {
           // Divider
           Container(height: 1, color: Colors.grey[300]),
 
+          // 스크롤 가능한 콘텐츠 영역
           Expanded(
-            child: Padding(
+            child: SingleChildScrollView(
               padding: EdgeInsets.all(20),
               child: _isPhoneTabSelected
                   ? _buildIdFinderTab()
@@ -137,156 +137,18 @@ class _FindIDPWState extends State<FindIDPW> {
   }
 
   Widget _buildIdFinderTab() {
-    return Padding(
-      padding: const EdgeInsets.only(top: 30),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Phone number input section
-          Text('휴대폰 번호', style: Theme.of(context).textTheme.bodySmall),
+    final colorTheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
 
-          SizedBox(height: 15),
-
-          Row(
-            children: [
-              Expanded(
-                child: Container(
-                  height: 50,
-
-                  child: TextField(
-                    controller: _phoneController,
-                    decoration: InputDecoration(
-                      hintText: '010-0000-0000',
-                      hintStyle: TextStyle(
-                        color: Colors.grey[500],
-                        fontSize: 14,
-                      ),
-                      border: InputBorder.none,
-                      contentPadding: EdgeInsets.symmetric(
-                        horizontal: 15,
-                        vertical: 15,
-                      ),
-                    ),
-                    keyboardType: TextInputType.phone,
-                  ),
-                ),
-              ),
-              SizedBox(width: 10),
-
-              // Verification button
-              Container(
-                height: 50,
-                padding: EdgeInsets.symmetric(horizontal: 20),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey[300]!),
-                  borderRadius: BorderRadius.circular(8),
-                  color: Colors.white,
-                ),
-                child: Center(
-                  child: Text(
-                    '인증번호',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-
-          SizedBox(height: 30),
-
-          // Confirm button
-          ConfirmButton(onPressed: () {
-            print('확인 버튼 클릭');
-            context.go('');
-          },),
-
-          SizedBox(height: 20),
-
-          // Information text
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                width: 4,
-                height: 4,
-                margin: EdgeInsets.only(top: 8, right: 8),
-                decoration: BoxDecoration(
-                  color: Colors.grey[600],
-                  shape: BoxShape.circle,
-                ),
-              ),
-              Expanded(
-                child: Text(
-                  '아이디 찾기에 어려움이 있으시다면 고객센터로 문의 바랍니다.',
-                  style: TextStyle(
-                    color: Colors.grey[600],
-                    fontSize: 12,
-                    height: 1.4,
-                  ),
-                ),
-              ),
-            ],
-          ),
-
-          Spacer(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPasswordResetTab() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min, // 필요한 만큼만 공간 차지
       children: [
-        SizedBox(height: 40),
-
-        // Email input section
-        Text(
-          '이메일 아이디',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: Colors.black,
-          ),
-        ),
-        SizedBox(height: 15),
-
-        Container(
-          height: 50,
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey[300]!),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: TextField(
-            controller: _emailController,
-            decoration: InputDecoration(
-              hintText: '@ 까지 정확하게 입력해 주세요.',
-              hintStyle: TextStyle(color: Colors.grey[500], fontSize: 14),
-              border: InputBorder.none,
-              contentPadding: EdgeInsets.symmetric(
-                horizontal: 15,
-                vertical: 15,
-              ),
-            ),
-            keyboardType: TextInputType.emailAddress,
-          ),
-        ),
-
         SizedBox(height: 30),
 
         // Phone number input section
-        Text(
-          '휴대폰 번호',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: Colors.black,
-          ),
-        ),
+        Text('휴대폰 번호', style: Theme.of(context).textTheme.bodySmall),
+
         SizedBox(height: 15),
 
         Row(
@@ -294,15 +156,14 @@ class _FindIDPWState extends State<FindIDPW> {
             Expanded(
               child: Container(
                 height: 50,
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey[300]!),
-                  borderRadius: BorderRadius.circular(8),
-                ),
                 child: TextField(
-                  controller: _passwordPhoneController,
+                  controller: _phoneController,
                   decoration: InputDecoration(
-                    hintText: '휴대폰번호를 입력해주세요.',
-                    hintStyle: TextStyle(color: Colors.grey[500], fontSize: 14),
+                    hintText: '010-1234-5678',
+                    hintStyle: TextStyle(
+                      color: Colors.grey[500],
+                      fontSize: 14,
+                    ),
                     border: InputBorder.none,
                     contentPadding: EdgeInsets.symmetric(
                       horizontal: 15,
@@ -338,30 +199,15 @@ class _FindIDPWState extends State<FindIDPW> {
           ],
         ),
 
-        SizedBox(height: 30),
+        SizedBox(height: 20),
 
         // Confirm button
-        Container(
-          width: double.infinity,
-          height: 50,
-          decoration: BoxDecoration(
-            color: Color(0xFFFF8C42), // Orange color
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: TextButton(
-            onPressed: () {
-              // Handle confirm action
-              print('비밀번호 재설정 확인 버튼 클릭');
-            },
-            child: Text(
-              '확인',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
+        ComfirmButton(
+          text: '인증 요청',
+          onPressed: () {
+            print('확인 버튼 클릭');
+            context.go('');
+          },
         ),
 
         SizedBox(height: 20),
@@ -380,19 +226,142 @@ class _FindIDPWState extends State<FindIDPW> {
               ),
             ),
             Expanded(
-              child: Text(
-                '아이디 찾기에 어려움이 있으시다면 고객센터로 문의 바랍니다.',
-                style: TextStyle(
-                  color: Colors.grey[600],
-                  fontSize: 12,
-                  height: 1.4,
+              child: RichText(
+                text: TextSpan(
+                  style: TextStyle(
+                    color: Colors.grey[600],
+                    fontSize: 12,
+                    height: 1.4,
+                  ),
+                  children: [
+                    TextSpan(text: '아이디 찾기에 어려움이 있으시다면 '),
+                    WidgetSpan(
+                      child: GestureDetector(
+                        onTap: () {
+                          // 고객센터 페이지로 이동
+                          context.goNamed('customerService');
+                        },
+                        child: Text(
+                          '고객센터',
+                          style: TextStyle(
+                            color: Colors.grey[600],
+                            fontSize: 12,
+                            decoration: TextDecoration.underline,
+                            decorationColor: Colors.grey[600],
+                          ),
+                        ),
+                      ),
+                    ),
+                    TextSpan(text: '로 문의 바랍니다.'),
+                  ],
                 ),
               ),
             ),
           ],
         ),
 
-        Spacer(),
+        // 추가 여백으로 스크롤 공간 확보
+        SizedBox(height: 100),
+      ],
+    );
+  }
+
+  Widget _buildPasswordResetTab() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min, // 필요한 만큼만 공간 차지
+      children: [
+        SizedBox(height: 20),
+
+        // Email input section
+        Text(
+          '이메일 아이디',
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Color(0xFF4D4D4D)),
+        ),
+
+        SizedBox(height: 15),
+
+        Container(
+          height: 50,
+          child: TextField(
+            controller: _emailController,
+            decoration: InputDecoration(
+              hintText: '@ 까지 정확하게 입력해 주세요.',
+              hintStyle: TextStyle(color: Colors.grey[500], fontSize: 14),
+              border: InputBorder.none,
+              contentPadding: EdgeInsets.symmetric(
+                horizontal: 15,
+                vertical: 15,
+              ),
+            ),
+            keyboardType: TextInputType.emailAddress,
+          ),
+        ),
+
+        SizedBox(height: 30),
+
+        // Phone number input section
+
+
+
+        // Confirm button
+        ComfirmButton(
+      text: '비밀번호 재설정 이메일 보내기'
+    ,onPressed: () {
+          context.goNamed('customerService');
+        },),
+
+        SizedBox(height: 20),
+
+        // Information text
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: 4,
+              height: 4,
+              margin: EdgeInsets.only(top: 8, right: 8),
+              decoration: BoxDecoration(
+                color: Colors.grey[600],
+                shape: BoxShape.circle,
+              ),
+            ),
+            Expanded(
+              child: RichText(
+                text: TextSpan(
+                  style: TextStyle(
+                    color: Colors.grey[600],
+                    fontSize: 12,
+                    height: 1.4,
+                  ),
+                  children: [
+                    TextSpan(text: '아이디 찾기에 어려움이 있으시다면 '),
+                    WidgetSpan(
+                      child: GestureDetector(
+                        onTap: () {
+                          // 고객센터 페이지로 이동
+                          context.goNamed('customerService');
+                        },
+                        child: Text(
+                          '고객센터',
+                          style: TextStyle(
+                            color: Colors.grey[600],
+                            fontSize: 12,
+                            decoration: TextDecoration.underline,
+                            decorationColor: Colors.grey[600],
+                          ),
+                        ),
+                      ),
+                    ),
+                    TextSpan(text: '로 문의 바랍니다.'),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+        // 추가 여백으로 스크롤 공간 확보
+        SizedBox(height: 100),
       ],
     );
   }

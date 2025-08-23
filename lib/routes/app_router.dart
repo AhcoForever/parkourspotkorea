@@ -22,8 +22,8 @@ final GoRouter appRouter = GoRouter(
       name: 'initializer',
       builder: (context, state) =>
 
-          //LoginPage()
-          AppInitializer(), // AppInitializer 사용
+          LoginPage()
+          //AppInitializer(), // AppInitializer 사용
     ),
     GoRoute(
       path: '/login',

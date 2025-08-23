@@ -57,6 +57,12 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
               GoogleMap(
                 onMapCreated: (controller) {
                   mapController = controller;
+
+                  // 마커 로드 (카메라 중심)
+                  final center =
+                      viewModel.cameraPosition ??
+                      const LatLng(37.5665, 126.9780);
+                  viewModel.loadAndShowSpots(center, radiusKm: 7);
                 },
                 initialCameraPosition: CameraPosition(
                   target:
@@ -64,11 +70,26 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
                       const LatLng(37.5665, 126.9780),
                   zoom: 15,
                 ),
+                //마커 바인딩
+                markers: viewModel.parkourMarkers,
+
                 polygons: viewModel.allPolygons,
                 myLocationEnabled: true,
                 myLocationButtonEnabled: false,
                 onCameraMove: (CameraPosition position) {
-                  // 카메라 이동 시 viewModel에 위치 업데이트 (선택사항)
+                  // 카메라 이동 시 viewModel에 위치 업데이트
+                },
+                onCameraIdle: () async {
+                  // 카메라 멈출 때마다 갱신
+                  if (mapController == null) return;
+                  final size = MediaQuery.of(context).size;
+                  final center = await mapController!.getLatLng(
+                    ScreenCoordinate(
+                      x: (size.width ~/ 2),
+                      y: (size.height ~/ 2),
+                    ),
+                  );
+                  viewModel.loadAndShowSpots(center, radiusKm: 5);
                 },
               ),
 
@@ -129,7 +150,6 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
                 right: 29,
                 child: Column(
                   children: [
-
                     FloatingActionButton(
                       heroTag: 'myPage_button',
                       mini: true,

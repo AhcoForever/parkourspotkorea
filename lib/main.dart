@@ -1,6 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:parkourspotkorea/interfaces/parkour_spot_interface.dart';
+import 'package:parkourspotkorea/repositories/firestore_parkour_spot_repository.dart';
 import 'package:provider/provider.dart';
 
 // Core
@@ -56,9 +58,7 @@ void main() async {
           create: (context) => DriftMapService(context.read<AppDatabase>()),
         ),
 
-        Provider<UserRepository>(
-          create: (context) => UserRepository(),
-        ),
+        Provider<UserRepository>(create: (context) => UserRepository()),
 
         // === 3. Repository 구현체들 ===
         Provider<ScratchMapRepository>(
@@ -72,7 +72,12 @@ void main() async {
             userRepository: context.read<UserRepository>(),
           ),
         ),
-
+        Provider<IParkourSpotRepository>(
+          create: (context) => FirestoreParkourSpotRepository(
+            collectionPath: 'spot',
+            //LocalParkourSpotRepository(db: context.read<AppDatabase>()),
+          ),
+        ),
         // === 4. Repository 인터페이스들 (ViewModel이 사용할 것들) ===
         Provider<IScratchMapRepository>(
           create: (context) => context.read<ScratchMapRepository>(),
@@ -94,6 +99,7 @@ void main() async {
             scratchMapRepository: context.read<IScratchMapRepository>(),
             userRepository: context.read<IUserRepository>(),
             locationRepository: context.read<ILocationRepository>(),
+            spotRepository: context.read<IParkourSpotRepository>(),
           ),
         ),
       ],

@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 
-class ConfirmButton extends StatelessWidget {
+class ComfirmButton extends StatelessWidget {
   final String text;
   final VoidCallback onPressed;
   final double width;
   final double height;
   final Color color;
 
-  const ConfirmButton({
+  const ComfirmButton({
     super.key,
     this.text = '확인',
     required this.onPressed,
-    this.width = 320,
-    this.height = 56,
+    this.width = 358,
+    this.height = 50,
     this.color = Colors.white,
   });
 

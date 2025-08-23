@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:parkourspotkorea/widgets/confirm_button.dart';
+import 'package:parkourspotkorea/widgets/comfirm_button.dart';
 
 ///회원가입 완료 다이얼로그
 ///사용자에게 회원가입 완료를 알리고 로그인 페이지로 이동
@@ -45,7 +45,7 @@ class SignupCompleteDialog extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 18),
-            ConfirmButton(onPressed:()=> context.go('/login'),),
+            ComfirmButton(onPressed:()=> context.go('/login'),),
           ],
         ),
       ),

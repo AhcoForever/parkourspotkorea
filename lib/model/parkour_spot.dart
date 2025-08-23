@@ -1,65 +1,30 @@
+// lib/model/parkour_spot.dart
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-/// 파쿠르 스팟 모델 클래스
 class ParkourSpot {
   // === 기본 정보 ===
-  final String documentId;
+  final String documentId; // Firestore 문서 ID 사용 (필드의 "id"는 보조용으로 읽기만)
   final String name;
-  final String displayName;
+  final String displayName; // 없으면 name으로 폴백
   final String address;
-  final String mappedAddress;
-
-  // === 위치 정보 ===
-  final LatLng location;
-  final String rcode;
-
-  // === 카테고리 ===
-  final String type;
-  final String category;
-  final String subcategory;
-  final String mcid;
-  final String mcidName;
-
-  // === 설명 및 메모 ===
-  final String memo;
-  final String folderMemo;
   final String description;
 
-  // === 네이버 지도 정보 ===
-  final String bookmarkId;
-  final String sid;
-  final String url;
-  final String naverMapUrl;
-
-  // === 폴더 정보 ===
-  final String folderName;
-  final String folderId;
-  final String sharerNickName;
-  final String externalLink;
-  final int bookmarkCount;
-
-  // === 시간 정보 ===
-  final DateTime? creationTime;
-  final DateTime? lastUpdateTime;
-  final DateTime? useTime;
-  final DateTime? uploadedAt;
-
-  // === 상태 정보 ===
-  final bool available;
-  final bool isMatched;
-  final bool isIndoor;
-  final bool isActive;
-
-  // === 파쿠르 관련 ===
-  final List<String> tags;
+  // === 위치 ===
+  final LatLng location; // GeoPoint 또는 latitude/longitude 모두 대응
+  final String category;
   final String difficulty;
-  final List<String> equipment;
 
-  // === 메타데이터 ===
-  final String source;
-  final String version;
-  final Map<String, dynamic>? originalData;
+  // === 메타 ===
+  final List<String> imageUrls;
+  final List<String> tags;
+  final double? rating;
+  final int? reviewCount;
+  final bool isVerified;
+
+  // === 시간 ===
+  final DateTime? createdAt;  // createdAt / Timestamp / ISO8601 모두 대응
+  final DateTime? updatedAt;  // updatedAt / Timestamp / ISO8601 모두 대응
 
   const ParkourSpot({
     required this.documentId,
@@ -67,329 +32,202 @@ class ParkourSpot {
     required this.location,
     this.displayName = '',
     this.address = '',
-    this.mappedAddress = '',
-    this.rcode = '',
-    this.type = 'place',
-    this.category = 'parkour_spot',
-    this.subcategory = 'general',
-    this.mcid = '',
-    this.mcidName = '',
-    this.memo = '',
-    this.folderMemo = '',
     this.description = '',
-    this.bookmarkId = '',
-    this.sid = '',
-    this.url = '',
-    this.naverMapUrl = '',
-    this.folderName = '',
-    this.folderId = '',
-    this.sharerNickName = '',
-    this.externalLink = '',
-    this.bookmarkCount = 0,
-    this.creationTime,
-    this.lastUpdateTime,
-    this.useTime,
-    this.uploadedAt,
-    this.available = true,
-    this.isMatched = true,
-    this.isIndoor = false,
-    this.isActive = true,
-    this.tags = const [],
+    this.category = 'parkour_spot',
     this.difficulty = 'intermediate',
-    this.equipment = const [],
-    this.source = 'naver_map_parkour_collection',
-    this.version = '1.0',
-    this.originalData,
+    this.imageUrls = const [],
+    this.tags = const [],
+    this.rating,
+    this.reviewCount,
+    this.isVerified = false,
+    this.createdAt,
+    this.updatedAt,
   });
 
-  /// Firestore 문서에서 ParkourSpot 객체 생성
+  /// Firestore -> Model (GeoPoint 또는 lat/lng 모두 지원)
   factory ParkourSpot.fromFirestore(DocumentSnapshot doc) {
-    final data = doc.data() as Map<String, dynamic>;
-    final geoPoint = data['location'] as GeoPoint?;
+    final data = (doc.data() as Map<String, dynamic>? ?? {});
+
+    // 위치: GeoPoint 또는 latitude/longitude
+    final geo = data['location'] as GeoPoint?;
+    final lat = _toDouble(data['latitude']);
+    final lng = _toDouble(data['longitude']);
+    final LatLng latLng = geo != null
+        ? LatLng(geo.latitude, geo.longitude)
+        : (lat != null && lng != null
+        ? LatLng(lat, lng)
+        : const LatLng(37.5665, 126.9780)); // 서울시청 폴백
 
     return ParkourSpot(
       documentId: doc.id,
-      name: data['name'] ?? '',
-      displayName: data['displayName'] ?? '',
-      address: data['address'] ?? '',
-      mappedAddress: data['mappedAddress'] ?? '',
-      location: geoPoint != null
-          ? LatLng(geoPoint.latitude, geoPoint.longitude)
-          : const LatLng(37.5665, 126.9780), // 기본값: 서울시청
-      rcode: data['rcode'] ?? '',
-      type: data['type'] ?? 'place',
-      category: data['category'] ?? 'parkour_spot',
-      subcategory: data['subcategory'] ?? 'general',
-      mcid: data['mcid'] ?? '',
-      mcidName: data['mcidName'] ?? '',
-      memo: data['memo'] ?? '',
-      folderMemo: data['folderMemo'] ?? '',
-      description: data['description'] ?? '',
-      bookmarkId: data['bookmarkId'] ?? '',
-      sid: data['sid'] ?? '',
-      url: data['url'] ?? '',
-      naverMapUrl: data['naverMapUrl'] ?? '',
-      folderName: data['folderName'] ?? '',
-      folderId: data['folderId'] ?? '',
-      sharerNickName: data['sharerNickName'] ?? '',
-      externalLink: data['externalLink'] ?? '',
-      bookmarkCount: data['bookmarkCount'] ?? 0,
-      creationTime: (data['creationTime'] as Timestamp?)?.toDate(),
-      lastUpdateTime: (data['lastUpdateTime'] as Timestamp?)?.toDate(),
-      useTime: (data['useTime'] as Timestamp?)?.toDate(),
-      uploadedAt: (data['uploadedAt'] as Timestamp?)?.toDate(),
-      available: data['available'] ?? true,
-      isMatched: data['isMatched'] ?? true,
-      isIndoor: data['isIndoor'] ?? false,
-      isActive: data['isActive'] ?? true,
-      tags: List<String>.from(data['tags'] ?? []),
-      difficulty: data['difficulty'] ?? 'intermediate',
-      equipment: List<String>.from(data['equipment'] ?? []),
-      source: data['source'] ?? 'naver_map_parkour_collection',
-      version: data['version'] ?? '1.0',
-      originalData: data['originalData'] as Map<String, dynamic>?,
+      name: (data['name'] ?? '').toString(),
+      displayName: ((data['displayName'] ?? data['name']) ?? '').toString(),
+      address: (data['address'] ?? '').toString(),
+      description: (data['description'] ?? '').toString(),
+      location: latLng,
+      category: (data['category'] ?? 'parkour_spot').toString(),
+      difficulty: (data['difficulty'] ?? 'beginner').toString(),
+      imageUrls: _toStringList(data['imageUrls']),
+      tags: _toStringList(data['tags']),
+      rating: _toDouble(data['rating']),
+      reviewCount: _toInt(data['reviewCount']),
+      isVerified: _toBool(data['isVerified']) ?? false,
+      createdAt: _toDate(data['createdAt']),
+      updatedAt: _toDate(data['updatedAt']),
     );
   }
 
-  /// JSON Map에서 ParkourSpot 객체 생성
+  /// JSON -> Model (질문에 주신 샘플 JSON 구조 1:1 대응)
   factory ParkourSpot.fromJson(Map<String, dynamic> json) {
+    final lat = _toDouble(json['latitude']);
+    final lng = _toDouble(json['longitude']);
     return ParkourSpot(
-      documentId: json['documentId'] ?? '',
-      name: json['name'] ?? '',
-      displayName: json['displayName'] ?? '',
-      address: json['address'] ?? '',
-      mappedAddress: json['mappedAddress'] ?? '',
-      location: json['location'] != null
-          ? LatLng(json['location']['latitude'], json['location']['longitude'])
+      documentId: (json['id'] ?? '').toString(),
+      name: (json['name'] ?? '').toString(),
+      displayName: ((json['displayName'] ?? json['name']) ?? '').toString(),
+      address: (json['address'] ?? '').toString(),
+      description: (json['description'] ?? '').toString(),
+      location: (lat != null && lng != null)
+          ? LatLng(lat, lng)
           : const LatLng(37.5665, 126.9780),
-      rcode: json['rcode'] ?? '',
-      type: json['type'] ?? 'place',
-      category: json['category'] ?? 'parkour_spot',
-      subcategory: json['subcategory'] ?? 'general',
-      mcid: json['mcid'] ?? '',
-      mcidName: json['mcidName'] ?? '',
-      memo: json['memo'] ?? '',
-      folderMemo: json['folderMemo'] ?? '',
-      description: json['description'] ?? '',
-      bookmarkId: json['bookmarkId'] ?? '',
-      sid: json['sid'] ?? '',
-      url: json['url'] ?? '',
-      naverMapUrl: json['naverMapUrl'] ?? '',
-      folderName: json['folderName'] ?? '',
-      folderId: json['folderId'] ?? '',
-      sharerNickName: json['sharerNickName'] ?? '',
-      externalLink: json['externalLink'] ?? '',
-      bookmarkCount: json['bookmarkCount'] ?? 0,
-      creationTime: json['creationTime'] != null
-          ? DateTime.parse(json['creationTime'])
-          : null,
-      lastUpdateTime: json['lastUpdateTime'] != null
-          ? DateTime.parse(json['lastUpdateTime'])
-          : null,
-      useTime: json['useTime'] != null
-          ? DateTime.parse(json['useTime'])
-          : null,
-      uploadedAt: json['uploadedAt'] != null
-          ? DateTime.parse(json['uploadedAt'])
-          : null,
-      available: json['available'] ?? true,
-      isMatched: json['isMatched'] ?? true,
-      isIndoor: json['isIndoor'] ?? false,
-      isActive: json['isActive'] ?? true,
-      tags: List<String>.from(json['tags'] ?? []),
-      difficulty: json['difficulty'] ?? 'intermediate',
-      equipment: List<String>.from(json['equipment'] ?? []),
-      source: json['source'] ?? 'naver_map_parkour_collection',
-      version: json['version'] ?? '1.0',
-      originalData: json['originalData'] as Map<String, dynamic>?,
+      category: (json['category'] ?? 'parkour_spot').toString(),
+      difficulty: (json['difficulty'] ?? 'beginner').toString(),
+      imageUrls: _toStringList(json['imageUrls']),
+      tags: _toStringList(json['tags']),
+      rating: _toDouble(json['rating']),
+      reviewCount: _toInt(json['reviewCount']),
+      isVerified: _toBool(json['isVerified']) ?? false,
+      createdAt: _toDate(json['createdAt']),
+      updatedAt: _toDate(json['updatedAt']),
     );
   }
 
-  /// ParkourSpot을 Firestore용 Map으로 변환
+  /// Model -> Firestore (호환성을 위해 lat/lng와 GeoPoint 모두 기록 권장)
   Map<String, dynamic> toFirestore() {
     return {
-      'documentId': documentId,
+      'id': documentId, // 선택: 외부 ID로도 쓰고 싶다면 보관
       'name': name,
-      'displayName': displayName,
+      'displayName': displayName.isNotEmpty ? displayName : name,
       'address': address,
-      'mappedAddress': mappedAddress,
-      'location': GeoPoint(location.latitude, location.longitude),
-      'rcode': rcode,
-      'type': type,
-      'category': category,
-      'subcategory': subcategory,
-      'mcid': mcid,
-      'mcidName': mcidName,
-      'memo': memo,
-      'folderMemo': folderMemo,
       'description': description,
-      'bookmarkId': bookmarkId,
-      'sid': sid,
-      'url': url,
-      'naverMapUrl': naverMapUrl,
-      'folderName': folderName,
-      'folderId': folderId,
-      'sharerNickName': sharerNickName,
-      'externalLink': externalLink,
-      'bookmarkCount': bookmarkCount,
-      'creationTime': creationTime != null ? Timestamp.fromDate(creationTime!) : null,
-      'lastUpdateTime': lastUpdateTime != null ? Timestamp.fromDate(lastUpdateTime!) : null,
-      'useTime': useTime != null ? Timestamp.fromDate(useTime!) : null,
-      'uploadedAt': uploadedAt != null ? Timestamp.fromDate(uploadedAt!) : FieldValue.serverTimestamp(),
-      'available': available,
-      'isMatched': isMatched,
-      'isIndoor': isIndoor,
-      'isActive': isActive,
-      'tags': tags,
+      'location': GeoPoint(location.latitude, location.longitude),
+      'latitude': location.latitude,
+      'longitude': location.longitude,
+      'category': category,
       'difficulty': difficulty,
-      'equipment': equipment,
-      'source': source,
-      'version': version,
-      'originalData': originalData,
+      'imageUrls': imageUrls,
+      'tags': tags,
+      'rating': rating,
+      'reviewCount': reviewCount,
+      'isVerified': isVerified,
+      'createdAt': createdAt != null ? Timestamp.fromDate(createdAt!) : null,
+      'updatedAt': updatedAt != null ? Timestamp.fromDate(updatedAt!) : FieldValue.serverTimestamp(),
     };
   }
 
-  /// JSON Map으로 변환
   Map<String, dynamic> toJson() {
     return {
-      'documentId': documentId,
+      'id': documentId,
       'name': name,
-      'displayName': displayName,
+      'displayName': displayName.isNotEmpty ? displayName : name,
       'address': address,
-      'mappedAddress': mappedAddress,
-      'location': {
-        'latitude': location.latitude,
-        'longitude': location.longitude,
-      },
-      'rcode': rcode,
-      'type': type,
-      'category': category,
-      'subcategory': subcategory,
-      'mcid': mcid,
-      'mcidName': mcidName,
-      'memo': memo,
-      'folderMemo': folderMemo,
       'description': description,
-      'bookmarkId': bookmarkId,
-      'sid': sid,
-      'url': url,
-      'naverMapUrl': naverMapUrl,
-      'folderName': folderName,
-      'folderId': folderId,
-      'sharerNickName': sharerNickName,
-      'externalLink': externalLink,
-      'bookmarkCount': bookmarkCount,
-      'creationTime': creationTime?.toIso8601String(),
-      'lastUpdateTime': lastUpdateTime?.toIso8601String(),
-      'useTime': useTime?.toIso8601String(),
-      'uploadedAt': uploadedAt?.toIso8601String(),
-      'available': available,
-      'isMatched': isMatched,
-      'isIndoor': isIndoor,
-      'isActive': isActive,
-      'tags': tags,
+      'latitude': location.latitude,
+      'longitude': location.longitude,
+      'category': category,
       'difficulty': difficulty,
-      'equipment': equipment,
-      'source': source,
-      'version': version,
-      'originalData': originalData,
+      'imageUrls': imageUrls,
+      'tags': tags,
+      'rating': rating,
+      'reviewCount': reviewCount,
+      'isVerified': isVerified,
+      'createdAt': createdAt?.toIso8601String(),
+      'updatedAt': updatedAt?.toIso8601String(),
     };
   }
 
-  /// 복사본 생성 (copyWith)
   ParkourSpot copyWith({
     String? documentId,
     String? name,
     String? displayName,
     String? address,
-    String? mappedAddress,
-    LatLng? location,
-    String? rcode,
-    String? type,
-    String? category,
-    String? subcategory,
-    String? mcid,
-    String? mcidName,
-    String? memo,
-    String? folderMemo,
     String? description,
-    String? bookmarkId,
-    String? sid,
-    String? url,
-    String? naverMapUrl,
-    String? folderName,
-    String? folderId,
-    String? sharerNickName,
-    String? externalLink,
-    int? bookmarkCount,
-    DateTime? creationTime,
-    DateTime? lastUpdateTime,
-    DateTime? useTime,
-    DateTime? uploadedAt,
-    bool? available,
-    bool? isMatched,
-    bool? isIndoor,
-    bool? isActive,
-    List<String>? tags,
+    LatLng? location,
+    String? category,
     String? difficulty,
-    List<String>? equipment,
-    String? source,
-    String? version,
-    Map<String, dynamic>? originalData,
+    List<String>? imageUrls,
+    List<String>? tags,
+    double? rating,
+    int? reviewCount,
+    bool? isVerified,
+    DateTime? createdAt,
+    DateTime? updatedAt,
   }) {
     return ParkourSpot(
       documentId: documentId ?? this.documentId,
       name: name ?? this.name,
       displayName: displayName ?? this.displayName,
       address: address ?? this.address,
-      mappedAddress: mappedAddress ?? this.mappedAddress,
-      location: location ?? this.location,
-      rcode: rcode ?? this.rcode,
-      type: type ?? this.type,
-      category: category ?? this.category,
-      subcategory: subcategory ?? this.subcategory,
-      mcid: mcid ?? this.mcid,
-      mcidName: mcidName ?? this.mcidName,
-      memo: memo ?? this.memo,
-      folderMemo: folderMemo ?? this.folderMemo,
       description: description ?? this.description,
-      bookmarkId: bookmarkId ?? this.bookmarkId,
-      sid: sid ?? this.sid,
-      url: url ?? this.url,
-      naverMapUrl: naverMapUrl ?? this.naverMapUrl,
-      folderName: folderName ?? this.folderName,
-      folderId: folderId ?? this.folderId,
-      sharerNickName: sharerNickName ?? this.sharerNickName,
-      externalLink: externalLink ?? this.externalLink,
-      bookmarkCount: bookmarkCount ?? this.bookmarkCount,
-      creationTime: creationTime ?? this.creationTime,
-      lastUpdateTime: lastUpdateTime ?? this.lastUpdateTime,
-      useTime: useTime ?? this.useTime,
-      uploadedAt: uploadedAt ?? this.uploadedAt,
-      available: available ?? this.available,
-      isMatched: isMatched ?? this.isMatched,
-      isIndoor: isIndoor ?? this.isIndoor,
-      isActive: isActive ?? this.isActive,
-      tags: tags ?? this.tags,
+      location: location ?? this.location,
+      category: category ?? this.category,
       difficulty: difficulty ?? this.difficulty,
-      equipment: equipment ?? this.equipment,
-      source: source ?? this.source,
-      version: version ?? this.version,
-      originalData: originalData ?? this.originalData,
+      imageUrls: imageUrls ?? this.imageUrls,
+      tags: tags ?? this.tags,
+      rating: rating ?? this.rating,
+      reviewCount: reviewCount ?? this.reviewCount,
+      isVerified: isVerified ?? this.isVerified,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
     );
   }
 
   @override
-  String toString() {
-    return 'ParkourSpot(documentId: $documentId, name: $name, address: $address, location: $location)';
-  }
+  String toString() =>
+      'ParkourSpot($documentId, $name, ${location.latitude}, ${location.longitude})';
 
   @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    return other is ParkourSpot && other.documentId == documentId;
-  }
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+          other is ParkourSpot && other.documentId == documentId;
 
   @override
   int get hashCode => documentId.hashCode;
+}
+
+/// ---- Safe casters ----
+double? _toDouble(dynamic v) {
+  if (v == null) return null;
+  if (v is double) return v;
+  if (v is int) return v.toDouble();
+  return double.tryParse(v.toString());
+}
+
+int? _toInt(dynamic v) {
+  if (v == null) return null;
+  if (v is int) return v;
+  if (v is double) return v.toInt();
+  return int.tryParse(v.toString());
+}
+
+bool? _toBool(dynamic v) {
+  if (v == null) return null;
+  if (v is bool) return v;
+  final s = v.toString().toLowerCase();
+  if (s == 'true') return true;
+  if (s == 'false') return false;
+  return null;
+}
+
+DateTime? _toDate(dynamic v) {
+  if (v == null) return null;
+  if (v is Timestamp) return v.toDate();
+  if (v is DateTime) return v;
+  return DateTime.tryParse(v.toString());
+}
+
+List<String> _toStringList(dynamic v) {
+  if (v == null) return const [];
+  if (v is List) return v.map((e) => e.toString()).toList();
+  return const [];
 }

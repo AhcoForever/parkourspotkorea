@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'dart:async'; // StreamSubscription을 위해 추가
-import 'package:geolocator/geolocator.dart'; // Position을 위해 추가
+import 'dart:async';
+import 'package:geolocator/geolocator.dart';
 
+import '../interfaces/parkour_spot_interface.dart';
 import '../interfaces/scratch_map_interface.dart';
 import '../model/scratch_map_state.dart';
 
@@ -10,6 +11,52 @@ class ScratchMapViewModel extends ChangeNotifier {
   final IScratchMapRepository _scratchMapRepository;
   final IUserRepository _userRepository;
   final ILocationRepository _locationRepository;
+  final IParkourSpotRepository _spotRepo;
+
+  // 파쿠르 스팟 마커 상태
+  final Set<Marker> _parkourMarkers = {};
+
+  Set<Marker> get parkourMarkers => _parkourMarkers;
+  bool _isLoadingSpots = false;
+
+  bool get isLoadingSpots => _isLoadingSpots;
+
+  /// 중심 좌표 기준 주변 스팟을 가져와 마커로 표시
+  Future<void> loadAndShowSpots(LatLng center, {double radiusKm = 5.0}) async {
+    if (_isLoadingSpots) return;
+    _isLoadingSpots = true;
+    notifyListeners();
+
+    try {
+      final spots = await _spotRepo.fetchNearby(
+        center: center,
+        radiusKm: radiusKm,
+      );
+
+      _parkourMarkers
+        ..clear()
+        ..addAll(
+          spots.map((s) {
+            return Marker(
+              markerId: MarkerId('spot_${s.documentId}'),
+              position: s.location,
+              infoWindow: InfoWindow(
+                title: s.displayName.isNotEmpty ? s.displayName : s.name,
+                snippet: s.description,
+
+              ),
+            );
+          }),
+        );
+
+      print('✅ 주변 스팟 ${spots.length}개 로드/표시 완료');
+    } catch (e) {
+      print('❌ loadAndShowSpots 실패: $e');
+    } finally {
+      _isLoadingSpots = false;
+      notifyListeners();
+    }
+  }
 
   // 위치 추적 관련
   StreamSubscription<Position>? _positionStreamSubscription;
@@ -19,19 +66,26 @@ class ScratchMapViewModel extends ChangeNotifier {
     required IScratchMapRepository scratchMapRepository,
     required IUserRepository userRepository,
     required ILocationRepository locationRepository,
-  })  : _scratchMapRepository = scratchMapRepository,
-        _userRepository = userRepository,
-        _locationRepository = locationRepository;
+    required IParkourSpotRepository spotRepository,
+  }) : _scratchMapRepository = scratchMapRepository,
+       _userRepository = userRepository,
+       _locationRepository = locationRepository,
+       _spotRepo = spotRepository;
 
   // 현재 상태
   ScratchMapState _state = ScratchMapState.initial();
+
   ScratchMapState get state => _state;
 
   // Getters
   bool get isLoading => _state.isLoading;
+
   bool get isHexagonVisible => _state.isHexagonVisible;
+
   Set<Polygon> get allPolygons => _state.allPolygons;
+
   LatLng? get cameraPosition => _state.cameraPosition;
+
   String? get errorMessage => _state.errorMessage;
 
   /// 초기화
@@ -64,13 +118,17 @@ class ScratchMapViewModel extends ChangeNotifier {
       // 1. 로컬 캐시 먼저 로드
       final localRows = await _scratchMapRepository.getPolygonsBySido(sido);
       if (localRows.isNotEmpty) {
-        final localPolygons = _scratchMapRepository.convertRowsToPolygons(localRows);
+        final localPolygons = _scratchMapRepository.convertRowsToPolygons(
+          localRows,
+        );
         _updateState(_state.copyWith(polygons: localPolygons));
         print('✅ 로컬 폴리곤 로드 완료: ${localPolygons.length}개');
       }
 
       // 2. 원격에서 최신 데이터 가져와서 업데이트
-      final remotePolygons = await _scratchMapRepository.fetchAndCachePolygons(sido);
+      final remotePolygons = await _scratchMapRepository.fetchAndCachePolygons(
+        sido,
+      );
       _updateState(_state.copyWith(polygons: remotePolygons));
       print('✅ 원격 폴리곤 로드 완료: ${remotePolygons.length}개');
     } catch (e) {
@@ -149,12 +207,13 @@ class ScratchMapViewModel extends ChangeNotifier {
       }
 
       // Repository를 통해 헥사곤 복원
-      final hexagons = await _locationRepository.restoreVisitedHexagons(visitedHexIds);
+      final hexagons = await _locationRepository.restoreVisitedHexagons(
+        visitedHexIds,
+      );
 
-      _updateState(_state.copyWith(
-        hexagonPolygons: hexagons,
-        visitedLoaded: true,
-      ));
+      _updateState(
+        _state.copyWith(hexagonPolygons: hexagons, visitedLoaded: true),
+      );
 
       print("✅ 방문한 헥사곤 복원 완료 (${visitedHexIds.length}개)");
     } catch (e) {
@@ -167,14 +226,16 @@ class ScratchMapViewModel extends ChangeNotifier {
     _stopLocationTracking();
 
     // Repository를 통해 위치 스트림 구독
-    _positionStreamSubscription = _locationRepository.getPositionStream().listen(
+    _positionStreamSubscription = _locationRepository
+        .getPositionStream()
+        .listen(
           (Position position) {
-        _handleLocationUpdate(position);
-      },
-      onError: (error) {
-        print('❌ 위치 추적 오류: $error');
-      },
-    );
+            _handleLocationUpdate(position);
+          },
+          onError: (error) {
+            print('❌ 위치 추적 오류: $error');
+          },
+        );
 
     print('📍 실시간 위치 추적 시작됨');
   }
@@ -219,7 +280,10 @@ class ScratchMapViewModel extends ChangeNotifier {
       if (uid == null) return;
 
       // Repository를 통해 헥사곤 생성 및 방문 처리
-      final polygon = await _locationRepository.createHexagonAtPosition(position, uid);
+      final polygon = await _locationRepository.createHexagonAtPosition(
+        position,
+        uid,
+      );
 
       if (polygon != null) {
         final existingHexagons = Set<Polygon>.from(_state.hexagons);

@@ -16,7 +16,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 4; // 스키마 버전 증가 (파쿠르 테이블 추가)
+  int get schemaVersion => 5; // 스키마 버전 증가 (파쿠르 테이블 추가)
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
