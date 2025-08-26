@@ -9,7 +9,6 @@ import '../model/parkour_spot.dart';
 
 // Drift DB / Table
 import '../database/app_database.dart';
-import '../database/parkour_table.dart';
 
 class LocalParkourSpotRepository implements IParkourSpotRepository {
   LocalParkourSpotRepository({required AppDatabase db}) : _db = db;

@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 
 /// 파쿠르 레벨 선택 화면
-/// assets/images/beginner.png, intermediate.png, advanced.png 이미지를 준비하고
-/// pubspec.yaml assets 섹션에 등록하세요.
 class ParkourLevel extends StatefulWidget {
   final String? nickname; // 닉네임을 받는 매개변수 추가
 
