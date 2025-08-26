@@ -1,7 +1,4 @@
-// lib/screens/spot/parkour_spot_detail_bottomsheet.dart
-
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../../model/parkour_spot.dart';
 import '../../services/googlePlaces_service.dart';
 
@@ -9,11 +6,8 @@ class ParkourSpotBottomSheet extends StatefulWidget {
   final ParkourSpot spot;
   final VoidCallback? onClose;
 
-  const ParkourSpotBottomSheet({
-    Key? key,
-    required this.spot,
-    this.onClose,
-  }) : super(key: key);
+  const ParkourSpotBottomSheet({Key? key, required this.spot, this.onClose})
+    : super(key: key);
 
   @override
   State<ParkourSpotBottomSheet> createState() => _ParkourSpotBottomSheetState();
@@ -39,7 +33,7 @@ class _ParkourSpotBottomSheetState extends State<ParkourSpotBottomSheet> {
         return;
       }
 
-      // 장소 이름에서 키워드 추출 (더 나은 검색을 위해)
+      // 장소 이름에서 키워드 추출
       final keywords = _extractSearchKeywords(widget.spot.name);
 
       String? imageUrl;
@@ -49,7 +43,8 @@ class _ParkourSpotBottomSheetState extends State<ParkourSpotBottomSheet> {
         imageUrl = await GooglePlacesService.searchPlacePhoto(
           location: widget.spot.location,
           keyword: keyword,
-          radius: 200,  // 200m 반경에서 검색
+          radius: 200,
+          // 200m 반경에서 검색
           maxWidth: 800,
           maxHeight: 500,
         );
@@ -66,7 +61,6 @@ class _ParkourSpotBottomSheetState extends State<ParkourSpotBottomSheet> {
           _isLoadingImage = false;
         });
       }
-
     } catch (e) {
       print('❌ 장소 이미지 로드 실패: $e');
       if (mounted) {
@@ -118,7 +112,7 @@ class _ParkourSpotBottomSheetState extends State<ParkourSpotBottomSheet> {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withAlpha(26),
             blurRadius: 10,
             offset: Offset(0, -5),
           ),
@@ -137,14 +131,13 @@ class _ParkourSpotBottomSheetState extends State<ParkourSpotBottomSheet> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // 이미지 섹션
-                  _buildImageSection(),
-
-                  SizedBox(height: 16),
-
                   // 헤더 정보
                   _buildHeaderSection(),
 
+                  SizedBox(height: 16),
+
+                  // 이미지 섹션
+                  _buildImageSection(),
                   SizedBox(height: 16),
 
                   // 상세 정보
@@ -213,10 +206,7 @@ class _ParkourSpotBottomSheetState extends State<ParkourSpotBottomSheet> {
               SizedBox(height: 12),
               Text(
                 '장소 이미지 로딩 중...',
-                style: TextStyle(
-                  color: Colors.grey[600],
-                  fontSize: 12,
-                ),
+                style: TextStyle(color: Colors.grey[600], fontSize: 12),
               ),
             ],
           ),
@@ -235,7 +225,7 @@ class _ParkourSpotBottomSheetState extends State<ParkourSpotBottomSheet> {
             child: CircularProgressIndicator(
               value: loadingProgress.expectedTotalBytes != null
                   ? loadingProgress.cumulativeBytesLoaded /
-                  loadingProgress.expectedTotalBytes!
+                        loadingProgress.expectedTotalBytes!
                   : null,
             ),
           );
@@ -267,7 +257,7 @@ class _ParkourSpotBottomSheetState extends State<ParkourSpotBottomSheet> {
                 child: CircularProgressIndicator(
                   value: loadingProgress.expectedTotalBytes != null
                       ? loadingProgress.cumulativeBytesLoaded /
-                      loadingProgress.expectedTotalBytes!
+                            loadingProgress.expectedTotalBytes!
                       : null,
                 ),
               );
@@ -285,7 +275,7 @@ class _ParkourSpotBottomSheetState extends State<ParkourSpotBottomSheet> {
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
               decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.7),
+                color: Colors.black.withAlpha(179),
                 borderRadius: BorderRadius.circular(4),
               ),
               child: Text(
@@ -336,7 +326,9 @@ class _ParkourSpotBottomSheetState extends State<ParkourSpotBottomSheet> {
       children: [
         // 스팟 이름
         Text(
-          widget.spot.displayName.isNotEmpty ? widget.spot.displayName : widget.spot.name,
+          widget.spot.displayName.isNotEmpty
+              ? widget.spot.displayName
+              : widget.spot.name,
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
@@ -350,19 +342,12 @@ class _ParkourSpotBottomSheetState extends State<ParkourSpotBottomSheet> {
         if (widget.spot.address.isNotEmpty)
           Row(
             children: [
-              Icon(
-                Icons.location_on,
-                size: 16,
-                color: Colors.grey[600],
-              ),
+              Icon(Icons.location_on, size: 16, color: Colors.grey[600]),
               SizedBox(width: 4),
               Expanded(
                 child: Text(
                   widget.spot.address,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey[600],
-                  ),
+                  style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                 ),
               ),
             ],
@@ -425,7 +410,8 @@ class _ParkourSpotBottomSheetState extends State<ParkourSpotBottomSheet> {
         _buildDetailRow(
           icon: Icons.map,
           label: '좌표',
-          value: '${widget.spot.location.latitude.toStringAsFixed(6)}, ${widget.spot.location.longitude.toStringAsFixed(6)}',
+          value:
+              '${widget.spot.location.latitude.toStringAsFixed(6)}, ${widget.spot.location.longitude.toStringAsFixed(6)}',
         ),
 
         // 설명 (있는 경우)
@@ -462,11 +448,7 @@ class _ParkourSpotBottomSheetState extends State<ParkourSpotBottomSheet> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(
-          icon,
-          size: 18,
-          color: Colors.grey[600],
-        ),
+        Icon(icon, size: 18, color: Colors.grey[600]),
         SizedBox(width: 8),
         Text(
           '$label: ',
@@ -502,8 +484,8 @@ class _ParkourSpotBottomSheetState extends State<ParkourSpotBottomSheet> {
             icon: Icon(Icons.directions),
             label: Text('길찾기'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blue,
-              foregroundColor: Colors.white,
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              foregroundColor: Theme.of(context).colorScheme.onPrimary,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -558,43 +540,65 @@ class _ParkourSpotBottomSheetState extends State<ParkourSpotBottomSheet> {
   /// 카테고리별 아이콘
   IconData _getCategoryIcon(String category) {
     switch (category.toLowerCase()) {
-      case 'park': return Icons.park;
-      case 'school': return Icons.school;
-      case 'parkour_gym': return Icons.fitness_center;
-      case 'gym': return Icons.sports_gymnastics;
-      case 'plaza': return Icons.location_city;
-      case 'bridge': return Icons.line_weight;
-      default: return Icons.location_on;
+      case 'park':
+        return Icons.park;
+      case 'school':
+        return Icons.school;
+      case 'parkour_gym':
+        return Icons.fitness_center;
+      case 'gym':
+        return Icons.sports_gymnastics;
+      case 'plaza':
+        return Icons.location_city;
+      case 'bridge':
+        return Icons.line_weight;
+      default:
+        return Icons.location_on;
     }
   }
 
   String _getDifficultyText(String difficulty) {
     switch (difficulty.toLowerCase()) {
-      case 'beginner': return '초급';
-      case 'intermediate': return '중급';
-      case 'advanced': return '고급';
-      default: return '중급';
+      case 'beginner':
+        return '초급';
+      case 'intermediate':
+        return '중급';
+      case 'advanced':
+        return '고급';
+      default:
+        return '중급';
     }
   }
 
   Color _getDifficultyColor(String difficulty) {
     switch (difficulty.toLowerCase()) {
-      case 'beginner': return Colors.green;
-      case 'intermediate': return Colors.orange;
-      case 'advanced': return Colors.red;
-      default: return Colors.orange;
+      case 'beginner':
+        return Colors.green;
+      case 'intermediate':
+        return Colors.orange;
+      case 'advanced':
+        return Colors.red;
+      default:
+        return Colors.orange;
     }
   }
 
   String _getCategoryText(String category) {
     switch (category.toLowerCase()) {
-      case 'park': return '공원';
-      case 'school': return '학교';
-      case 'parkour_gym': return '파쿠르짐';
-      case 'gym': return '체육시설';
-      case 'plaza': return '광장';
-      case 'bridge': return '다리';
-      default: return '일반 스팟';
+      case 'park':
+        return '공원';
+      case 'school':
+        return '학교';
+      case 'parkour_gym':
+        return '파쿠르짐';
+      case 'gym':
+        return '체육시설';
+      case 'plaza':
+        return '광장';
+      case 'bridge':
+        return '다리';
+      default:
+        return '일반 스팟';
     }
   }
 
@@ -602,7 +606,9 @@ class _ParkourSpotBottomSheetState extends State<ParkourSpotBottomSheet> {
 
   void _openDirections() {
     // TODO: Google Maps 앱으로 길찾기 열기
-    print('🗺️ 길찾기: ${widget.spot.location.latitude}, ${widget.spot.location.longitude}');
+    print(
+      '🗺️ 길찾기: ${widget.spot.location.latitude}, ${widget.spot.location.longitude}',
+    );
   }
 
   void _toggleBookmark() {
@@ -619,25 +625,30 @@ class _ParkourSpotBottomSheetState extends State<ParkourSpotBottomSheet> {
 /// Bottom Sheet 표시용 헬퍼 함수
 class ParkourBottomSheetHelper {
   static Future<void> show(
-      BuildContext context,
-      ParkourSpot spot, {
-        VoidCallback? onClose,
-      }) async {
+    BuildContext context,
+    ParkourSpot spot, {
+    VoidCallback? onClose,
+  }) async {
     return showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
+      isDismissible: true,
+      enableDrag: true,
+      useSafeArea: true,
+
       builder: (context) => DraggableScrollableSheet(
         initialChildSize: 0.6,
+        snap: true,
         minChildSize: 0.3,
-        maxChildSize: 0.9,
+        maxChildSize: 0.8,
+        expand: false,
         builder: (context, scrollController) {
-          return ParkourSpotBottomSheet(
-            spot: spot,
-            onClose: onClose,
-          );
+          return ParkourSpotBottomSheet(spot: spot, onClose: onClose);
         },
       ),
-    );
+    ).then((_) {
+      onClose?.call();
+    });
   }
 }
