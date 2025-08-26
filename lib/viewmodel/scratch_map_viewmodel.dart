@@ -5,6 +5,7 @@ import 'package:geolocator/geolocator.dart';
 
 import '../interfaces/parkour_spot_interface.dart';
 import '../interfaces/scratch_map_interface.dart';
+import '../model/parkour_spot.dart';
 import '../model/scratch_map_state.dart';
 
 class ScratchMapViewModel extends ChangeNotifier {
@@ -32,19 +33,30 @@ class ScratchMapViewModel extends ChangeNotifier {
         center: center,
         radiusKm: radiusKm,
       );
+      // 🎯 스팟 정보 캐시에 저장
+      _loadedSpots.clear();
+      for (final spot in spots) {
+        _loadedSpots[spot.documentId] = spot;
+      }
 
       _parkourMarkers
         ..clear()
         ..addAll(
-          spots.map((s) {
+          spots.map((spot) {
             return Marker(
-              markerId: MarkerId('spot_${s.documentId}'),
-              position: s.location,
+              markerId: MarkerId('spot_${spot.documentId}'),
+              position: spot.location,
               infoWindow: InfoWindow(
-                title: s.displayName.isNotEmpty ? s.displayName : s.name,
-                snippet: s.description,
-
+                title: spot.displayName.isNotEmpty
+                    ? spot.displayName
+                    : spot.name,
+                snippet: spot.description,
               ),
+              icon: _getMarkerIcon(spot.category),
+              onTap: () {
+                print('🎯 마커 탭: ${spot.name} (${spot.documentId})');
+                _onMarkerTapped(spot);
+              },
             );
           }),
         );
@@ -55,6 +67,17 @@ class ScratchMapViewModel extends ChangeNotifier {
     } finally {
       _isLoadingSpots = false;
       notifyListeners();
+    }
+  }
+
+  Function(ParkourSpot)? onSpotMarkerTapped;
+
+  void _onMarkerTapped(ParkourSpot spot) {
+    print('🎯 마커 탭됨: ${spot.name}');
+
+    // 외부 콜백이 있으면 호출
+    if (onSpotMarkerTapped != null) {
+      onSpotMarkerTapped!(spot);
     }
   }
 
@@ -292,6 +315,41 @@ class ScratchMapViewModel extends ChangeNotifier {
       }
     } catch (e) {
       print('❌ 헥사곤 생성 실패: $e');
+    }
+  }
+
+  /// 스팟 ID로 상세 정보 조회
+  Future<ParkourSpot?> getSpotById(String documentId) async {
+    try {
+      return await _spotRepo.getById(documentId);
+    } catch (e) {
+      print('❌ 스팟 조회 실패: $e');
+      return null;
+    }
+  }
+
+  /// 현재 로드된 마커들의 스팟 정보 맵
+  final Map<String, ParkourSpot> _loadedSpots = {};
+
+  /// 캐시된 스팟 정보로 빠른 조회
+  ParkourSpot? getCachedSpot(String documentId) {
+    return _loadedSpots[documentId];
+  }
+
+  /// 카테고리별 마커 아이콘 (선택사항)
+  BitmapDescriptor _getMarkerIcon(String category) {
+    // 기본 마커 사용 (나중에 커스텀 아이콘으로 교체 가능)
+    switch (category.toLowerCase()) {
+      case 'park':
+        return BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen);
+      case 'school':
+        return BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue);
+      case 'parkour_gym':
+        return BitmapDescriptor.defaultMarkerWithHue(
+          BitmapDescriptor.hueOrange,
+        );
+      default:
+        return BitmapDescriptor.defaultMarker;
     }
   }
 

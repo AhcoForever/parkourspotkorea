@@ -1,8 +1,12 @@
+// lib/screens/spot/scratch_map_page.dart - 최종 수정 버전
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:parkourspotkorea/screens/spot/parkour_spot_detail_bottomsheet.dart';
 import 'package:provider/provider.dart';
 
+import '../../model/parkour_spot.dart';
 import '../../viewmodel/scratch_map_viewmodel.dart';
 
 class ScratchMapPage extends StatefulWidget {
@@ -18,8 +22,28 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
     super.initState();
     // ViewModel 초기화
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<ScratchMapViewModel>().initialize();
+      final viewModel = context.read<ScratchMapViewModel>();
+
+      // 🎯 마커 탭 콜백 설정 (이 부분이 핵심!)
+      viewModel.onSpotMarkerTapped = (ParkourSpot spot) {
+        _showSpotBottomSheet(spot);
+      };
+
+      viewModel.initialize();
     });
+  }
+
+  /// Bottom Sheet 표시
+  void _showSpotBottomSheet(ParkourSpot spot) {
+    print('🎉 Bottom Sheet 표시: ${spot.name}');
+
+    ParkourBottomSheetHelper.show(
+      context,
+      spot,
+      onClose: () {
+        print('Bottom Sheet 닫힘: ${spot.name}');
+      },
+    );
   }
 
   @override
@@ -61,21 +85,28 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
                   // 마커 로드 (카메라 중심)
                   final center =
                       viewModel.cameraPosition ??
-                      const LatLng(37.5665, 126.9780);
+                          const LatLng(37.5665, 126.9780);
                   viewModel.loadAndShowSpots(center, radiusKm: 7);
                 },
                 initialCameraPosition: CameraPosition(
                   target:
-                      viewModel.cameraPosition ??
+                  viewModel.cameraPosition ??
                       const LatLng(37.5665, 126.9780),
                   zoom: 15,
                 ),
-                //마커 바인딩
+
+                // 🎯 마커 바인딩 (각 마커에 onTap이 이미 설정됨)
                 markers: viewModel.parkourMarkers,
 
                 polygons: viewModel.allPolygons,
                 myLocationEnabled: true,
                 myLocationButtonEnabled: false,
+
+                onTap: (LatLng position) {
+                  print('지도 탭: ${position.latitude}, ${position.longitude}');
+                  // 지도 탭 시 추가 처리 가능 (선택사항)
+                },
+
                 onCameraMove: (CameraPosition position) {
                   // 카메라 이동 시 viewModel에 위치 업데이트
                 },
@@ -99,7 +130,6 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
                   alignment: Alignment.topCenter,
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-                    // 좌우/상단 여백
                     child: Container(
                       width: 358,
                       height: 60,
@@ -135,6 +165,13 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
                                 print("검색창 클릭됨");
                                 // TODO: 검색 페이지 또는 검색 기능 연결
                               },
+                              child: Text(
+                                '파쿠르 스팟 검색...',
+                                style: TextStyle(
+                                  color: Colors.grey[600],
+                                  fontSize: 16,
+                                ),
+                              ),
                             ),
                           ),
                         ],
@@ -254,6 +291,41 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
                   ),
                 ),
               ),
+
+              // 🔄 로딩 인디케이터 (스팟 로드 중)
+              if (viewModel.isLoadingSpots)
+                Positioned(
+                  top: 100,
+                  left: 20,
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withOpacity(0.7),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation(Colors.white),
+                          ),
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          '파쿠르 스팟 로딩 중...',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
             ],
           );
         },
@@ -263,7 +335,6 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
 
   @override
   void dispose() {
-    // ViewModel의 dispose는 Provider가 자동으로 처리
     super.dispose();
   }
 }
