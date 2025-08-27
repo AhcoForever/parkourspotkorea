@@ -84,7 +84,7 @@ class UserRepository {
     return await _userSvc.getVisitedRegions(uid);
   }
 
-  /// 🧭 사용자 위치 기반 초기 카메라 위치 반환
+  ///  사용자 위치 기반 초기 카메라 위치 반환
   Future<LatLng> getInitialCameraPosition() async {
     final firebaseUser = FirebaseAuth.instance.currentUser;
     if (firebaseUser == null) {
@@ -119,7 +119,7 @@ class UserRepository {
     await _userSvc.deleteUser(uid);
   }
 
-  /// 📍 현재 위치 가져오기 (유틸리티)
+  /// 📍 현재 위치 가져오기
   Future<Position?> getCurrentPosition() async {
     try {
       // 위치 권한 확인

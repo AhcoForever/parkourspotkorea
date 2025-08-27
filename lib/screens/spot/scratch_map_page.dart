@@ -23,7 +23,7 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final viewModel = context.read<ScratchMapViewModel>();
 
-      // 🎯 마커 탭 콜백 설정 (이 부분이 핵심!)
+      // 콜백
       viewModel.onSpotMarkerTapped = (ParkourSpot spot) {
         _showSpotBottomSheet(spot);
       };

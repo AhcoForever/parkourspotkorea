@@ -20,7 +20,6 @@ class _SignUpPageState extends State<SignUpPage> {
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   final _phoneController = TextEditingController();
-  final _displayNameController = TextEditingController();
   final _parkourProficiencyController = TextEditingController();
 
   late SignupViewModel _viewModel;
@@ -46,9 +45,7 @@ class _SignUpPageState extends State<SignUpPage> {
     _phoneController.addListener(
       () => _viewModel.updatePhoneNumber(_phoneController.text),
     );
-    _displayNameController.addListener(
-      () => _viewModel.updateDisplayName(_displayNameController.text),
-    );
+
     _parkourProficiencyController.addListener(
       () => _viewModel.updateParkourProficiency(
         _parkourProficiencyController.text,
@@ -79,7 +76,6 @@ class _SignUpPageState extends State<SignUpPage> {
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     _phoneController.dispose();
-    _displayNameController.dispose();
     _parkourProficiencyController.dispose();
     super.dispose();
   }
@@ -126,9 +122,6 @@ class _SignUpPageState extends State<SignUpPage> {
                         _buildPhoneField(viewModel),
                         const SizedBox(height: 20),
 
-                        _buildDisplayNameField(viewModel),
-                        const SizedBox(height: 20),
-
                         _buildTermsSection(viewModel),
                         const SizedBox(height: 30),
 
@@ -143,7 +136,7 @@ class _SignUpPageState extends State<SignUpPage> {
               // 로딩 오버레이
               if (viewModel.isLoading)
                 Container(
-                  color: Colors.black.withOpacity(0.3),
+                  color: Colors.black.withAlpha(77),
                   child: const Center(child: CircularProgressIndicator()),
                 ),
             ],
@@ -212,20 +205,6 @@ class _SignUpPageState extends State<SignUpPage> {
           hintText: '01012345678',
           keyboardType: TextInputType.phone,
           errorText: viewModel.validationErrors['phoneNumber'],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildDisplayNameField(SignupViewModel viewModel) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildLabel('닉네임', false),
-        const SizedBox(height: 8),
-        _buildTextField(
-          controller: _displayNameController,
-          hintText: '닉네임을 입력해주세요',
         ),
       ],
     );
@@ -385,7 +364,7 @@ class _SignUpPageState extends State<SignUpPage> {
           checkColor: Colors.white,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
           side: BorderSide(
-            color: Theme.of(context).colorScheme.primary.withOpacity(0.4),
+            color: Theme.of(context).colorScheme.primary.withAlpha(102),
           ),
         ),
         Expanded(
@@ -423,7 +402,7 @@ class _SignUpPageState extends State<SignUpPage> {
   // Helper methods
   Future<void> _showSignupCompleteDialog() async {
     await SignupCompleteDialog.show(context, () {
-      context.goNamed('login');
+      context.goNamed('map');
     });
   }
 

@@ -116,8 +116,19 @@ class ScratchMapViewModel extends ChangeNotifier {
     _updateState(_state.copyWithLoading(true));
 
     try {
-      // 1. 초기 카메라 위치 설정
-      final initialPosition = await _userRepository.getInitialCameraPosition();
+      // 1. 현재 위치를 초기 카메라 위치로 설정
+      final currentPosition = await _locationRepository.getCurrentPosition();
+      LatLng initialPosition;
+
+      if (currentPosition != null) {
+        initialPosition = LatLng(currentPosition.latitude, currentPosition.longitude);
+        print('현재 위치로 초기화: ${initialPosition.latitude}, ${initialPosition.longitude}');
+      } else {
+        // 현재 위치를 가져올 수 없으면 기본값 사용
+        initialPosition = await _userRepository.getInitialCameraPosition();
+        print('기본 위치로 폴백: ${initialPosition.latitude}, ${initialPosition.longitude}');
+      }
+
       _updateState(_state.copyWith(cameraPosition: initialPosition));
 
       // 2. sido 코드 계산 및 폴리곤 로드
@@ -128,10 +139,10 @@ class ScratchMapViewModel extends ChangeNotifier {
       await _loadVisitedHexagons();
 
       _updateState(_state.copyWithLoading(false));
-      print('✅ ScratchMap 초기화 완료');
+      print('ScratchMap 초기화 완료');
     } catch (e) {
       _updateState(_state.copyWithError('초기화 실패: $e'));
-      print('❌ 초기화 실패: $e');
+      print('초기화 실패: $e');
     }
   }
 

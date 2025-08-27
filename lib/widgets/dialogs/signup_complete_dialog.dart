@@ -1,12 +1,10 @@
-import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:parkourspotkorea/widgets/comfirm_button.dart';
 
-///회원가입 완료 다이얼로그
-///사용자에게 회원가입 완료를 알리고 로그인 페이지로 이동
+/// 회원가입 완료 다이얼로그
+/// 사용자에게 회원가입 완료를 알리고 로그인 페이지로 이동
 class SignupCompleteDialog extends StatelessWidget {
   final VoidCallback? onConfirm;
 
@@ -34,6 +32,7 @@ class SignupCompleteDialog extends StatelessWidget {
               '회원가입 완료',
               style: Theme.of(context).textTheme.titleLarge,
 
+
             ),
             const SizedBox(height: 8),
 
@@ -41,11 +40,11 @@ class SignupCompleteDialog extends StatelessWidget {
               '파쿠르 스팟에 오신 것을 환영합니다!',
               textAlign: TextAlign.center,
               style: Theme.of(context).dialogTheme.contentTextStyle?.copyWith(
-                height: 1.5, // 줄간격 조정
+                height: 1.5,
               ),
             ),
             const SizedBox(height: 18),
-            ComfirmButton(onPressed:()=> context.go('/login'),),
+            ComfirmButton(onPressed:()=> context.goNamed('map'),),
           ],
         ),
       ),

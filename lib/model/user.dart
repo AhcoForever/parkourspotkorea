@@ -17,8 +17,8 @@ class User {
   String? placeId;
 
   List<String> visitedRegions; //방문한 지역 ID들
-  double latitude; //위도
-  double longitude; //경도
+  //double latitude; //위도
+  //double longitude; //경도
   int totalVisitedCount;
   DateTime? lastLocationUpdate; //마지막 위치 업데이트 시간
 
@@ -35,8 +35,8 @@ class User {
     this.favoriteSpotID = const [],
     this.userImage,
     this.placeId,
-    required this.latitude,
-    required this.longitude,
+    //required this.latitude,
+    //required this.longitude,
     this.visitedRegions = const [],
     this.totalVisitedCount = 0,
     this.lastLocationUpdate,
@@ -56,8 +56,8 @@ class User {
       'favoriteSpotID': favoriteSpotID,
       'userImage': userImage,
       'placeID': placeId,
-      'latitude': latitude,
-      'longitude': longitude,
+      //'latitude': latitude,
+      //'longitude': longitude,
       'visitedRegions': visitedRegions.join(','),
       'totalVisitedCount': totalVisitedCount,
       'lastLocationUpdate': lastLocationUpdate?.millisecondsSinceEpoch,
@@ -78,8 +78,8 @@ class User {
       favoriteSpotID: List<String>.from(map['favoriteSpotID'] ?? []),
       userImage: map['userImage'] ?? '',
       placeId: map['placeId'] ?? '',
-      latitude: map['latitude'] ?? 0.0,
-      longitude: map['longitdude'] ?? 0.0,
+      //latitude: map['latitude'] ?? 0.0,
+      //longitude: map['longitdude'] ?? 0.0,
       visitedRegions: _stringToList(map['visitedRegions']),
       totalVisitedCount: map['totalVisitedCount'] ?? 0,
       lastLocationUpdate: map['lastLocationUpdate'] != null
@@ -172,8 +172,8 @@ class User {
       favoriteSpotID: favoriteSpotID ?? this.favoriteSpotID,
       userImage: userImage ?? this.userImage,
       placeId: placeId ?? this.placeId,
-      latitude: latitude ?? this.latitude,
-      longitude: longitude ?? this.longitude,
+      //latitude: latitude ?? this.latitude,
+      //longitude: longitude ?? this.longitude,
       visitedRegions: visitedRegions ?? this.visitedRegions,
       totalVisitedCount: totalVisitedCount ?? this.totalVisitedCount,
       lastLocationUpdate: lastLocationUpdate ?? this.lastLocationUpdate,

@@ -1,8 +1,10 @@
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:parkourspotkorea/interfaces/parkour_spot_interface.dart';
 import 'package:parkourspotkorea/repositories/firestore_parkour_spot_repository.dart';
+import 'package:parkourspotkorea/viewmodel/signup_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 // Core
@@ -17,6 +19,7 @@ import 'repositories/user_repository.dart';
 import 'repositories/scratch_map_repository.dart';
 import 'repositories/location_repository.dart';
 import 'repositories/user_repository_wrapper.dart';
+import 'repositories/signup_repository.dart'; // 추가
 
 // Interfaces
 import 'interfaces/scratch_map_interface.dart';
@@ -72,12 +75,19 @@ void main() async {
             userRepository: context.read<UserRepository>(),
           ),
         ),
+
         Provider<IParkourSpotRepository>(
           create: (context) => FirestoreParkourSpotRepository(
             collectionPath: 'spot',
             //LocalParkourSpotRepository(db: context.read<AppDatabase>()),
           ),
         ),
+
+        // 회원가입 Repository 추가
+        Provider<SignupRepository>(
+          create: (context) => SignupRepository(),
+        ),
+
         // === 4. Repository 인터페이스들 (ViewModel이 사용할 것들) ===
         Provider<IScratchMapRepository>(
           create: (context) => context.read<ScratchMapRepository>(),
@@ -100,6 +110,13 @@ void main() async {
             userRepository: context.read<IUserRepository>(),
             locationRepository: context.read<ILocationRepository>(),
             spotRepository: context.read<IParkourSpotRepository>(),
+          ),
+        ),
+
+        // 회원가입 ViewModel 추가
+        ChangeNotifierProvider<SignupViewModel>(
+          create: (context) => SignupViewModel(
+            repository: context.read<SignupRepository>(),
           ),
         ),
       ],
