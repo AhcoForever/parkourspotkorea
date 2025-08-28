@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 class AppTheme {
+  
   static ThemeData get light => ThemeData(
     colorScheme: ColorScheme.fromSeed(
       brightness: Brightness.light,
@@ -11,6 +12,8 @@ class AppTheme {
 
     //폰트
     fontFamily: 'Pretendard',
+    
+    scaffoldBackgroundColor: const Color(0xFFF4F7FE),
     //App bar 테마
     appBarTheme: const AppBarTheme(
       backgroundColor: Color(0xFFF4F7FE),
@@ -56,6 +59,8 @@ class AppTheme {
         fontWeight: FontWeight.w400,
         color: Color(0xFF202632),
       ),
+
+      /// 14, w400, 검정
       bodyMedium: TextStyle(
         fontSize: 14,
         fontWeight: FontWeight.w400,

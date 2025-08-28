@@ -10,7 +10,8 @@ class SignupViewModel extends ChangeNotifier {
       : _repository = repository ?? SignupRepository();
 
   // 상태 관리
-  SignupState _state = SignupState();
+  SignupState _state = const SignupState();
+
   SignupState get state => _state;
 
   // 폼 데이터

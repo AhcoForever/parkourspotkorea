@@ -84,6 +84,7 @@ class _SignUpPageState extends State<SignUpPage> {
   Widget build(BuildContext context) {
     return Consumer<SignupViewModel>(
       builder: (context, viewModel, child) {
+
         return Scaffold(
           backgroundColor: const Color(0xFFF4F7FE),
           appBar: AppBar(

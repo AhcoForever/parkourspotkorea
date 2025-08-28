@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:parkourspotkorea/screens/spot/parkourspot_BottomSheet_page.dart';
+import 'package:parkourspotkorea/screens/spot/parkourspot_bottomsheet_page.dart';
 import 'package:provider/provider.dart';
 
 import '../../model/parkour_spot.dart';

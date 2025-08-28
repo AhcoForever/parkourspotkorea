@@ -120,7 +120,7 @@ class SignupState {
   final String? errorMessage;
   final TermsAgreement termsAgreement;
 
-  SignupState({
+  const SignupState({
     this.status = SignupStatus.initial,
     this.errorMessage,
     this.termsAgreement = const TermsAgreement(),
