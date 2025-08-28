@@ -1,10 +1,9 @@
 <h1 align="center">
   <img width="284" height="223" alt="logo_LoginPage" src="https://github.com/user-attachments/assets/b1266a3e-7b65-4b2c-911b-7089e935ff6f" /><br>
 파쿠르 스팟 (Parkour Spot)
-
-
 </h1>
 
+![텍스트](https://img.shields.io/badge/any_text-you_like-blue)
 
 ## 목차
 - [프로젝트 소개](#소개)
@@ -15,3 +14,4 @@
 파쿠르 스팟(parkour spot)은 한국 전역의 파쿠르 연습 장소를 발견하고, 기록할 수 있는 지도 기반 모바일 애플리케이션이다. 더나아가 사용자가 방문한 지역을 육각형 그리드로 시각화하여, 자신만의 '스크래치 맵'을 완성해나가는 게이미피케이션(Gamification) 요소를 더했다. 
 
 ## 프로젝트 배경과 목적
+
