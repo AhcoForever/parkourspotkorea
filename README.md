@@ -1,4 +1,4 @@
-# parkourspotkorea
+# 파쿠르 스팟 (parkour spot)
 
 Parkour Spot Finder in Korea
 
