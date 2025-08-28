@@ -3,7 +3,7 @@
 파쿠르 스팟 (Parkour Spot)
 
 ![My Badge](https://img.shields.io/badge/flutter-3.35.2-blue) ![Dart](https://img.shields.io/badge/Dart-3.9.0-0175C2?logo=dart) ![Firebase](https://img.shields.io/badge/Firebase-Enabled-orange?logo=firebase) ![Firestore](https://img.shields.io/badge/Firestore-Database-ffca28?logo=firebase&logoColor=white) ![Drift](https://img.shields.io/badge/Drift-Local--DB-lightblue)
-![Provider](https://img.shields.io/badge/Provider-StateManagement-green)
+![Provider](https://img.shields.io/badge/Provider-StateManagement-lightgreen)
 ![Google Maps](https://img.shields.io/badge/Google%20Maps-Enabled-4285F4?logo=googlemaps) <br>
 ![iOS](https://img.shields.io/badge/iOS-Available-lightgrey?logo=apple) ![Android](https://img.shields.io/badge/Android-Available-green?logo=android)<br>
 [![Instagram](https://img.shields.io/badge/Instagram-parkour__spot__korea-E4405F?style=flat-square&logo=instagram&logoColor=white)](https://www.instagram.com/parkour_spot_korea/) [![Docs](https://img.shields.io/badge/Docs-ahcoforever.github.io-blue?style=flat-square&logo=google-chrome&logoColor=white)](https://ahcoforever.github.io/)
@@ -20,6 +20,7 @@
 
 ## 프로젝트 배경과 목적
 ### 왜 Flutter 인가?
+
 
 
 
