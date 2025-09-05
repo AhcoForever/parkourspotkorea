@@ -1224,18 +1224,18 @@ PODS:
   - Firebase/Storage (11.15.0):
     - Firebase/CoreOnly
     - FirebaseStorage (~> 11.15.0)
-  - firebase_auth (5.6.2):
+  - firebase_auth (5.7.0):
     - Firebase/Auth (= 11.15.0)
     - firebase_core
     - Flutter
   - firebase_core (3.15.2):
     - Firebase/CoreOnly (= 11.15.0)
     - Flutter
-  - firebase_remote_config (5.4.7):
+  - firebase_remote_config (5.5.0):
     - Firebase/RemoteConfig (= 11.15.0)
     - firebase_core
     - Flutter
-  - firebase_storage (12.4.9):
+  - firebase_storage (12.4.10):
     - Firebase/Storage (= 11.15.0)
     - firebase_core
     - Flutter
@@ -1478,25 +1478,25 @@ PODS:
   - sqflite_darwin (0.0.4):
     - Flutter
     - FlutterMacOS
-  - sqlite3 (3.50.3):
-    - sqlite3/common (= 3.50.3)
-  - sqlite3/common (3.50.3)
-  - sqlite3/dbstatvtab (3.50.3):
+  - sqlite3 (3.50.4):
+    - sqlite3/common (= 3.50.4)
+  - sqlite3/common (3.50.4)
+  - sqlite3/dbstatvtab (3.50.4):
     - sqlite3/common
-  - sqlite3/fts5 (3.50.3):
+  - sqlite3/fts5 (3.50.4):
     - sqlite3/common
-  - sqlite3/math (3.50.3):
+  - sqlite3/math (3.50.4):
     - sqlite3/common
-  - sqlite3/perf-threadsafe (3.50.3):
+  - sqlite3/perf-threadsafe (3.50.4):
     - sqlite3/common
-  - sqlite3/rtree (3.50.3):
+  - sqlite3/rtree (3.50.4):
     - sqlite3/common
-  - sqlite3/session (3.50.3):
+  - sqlite3/session (3.50.4):
     - sqlite3/common
   - sqlite3_flutter_libs (0.0.1):
     - Flutter
     - FlutterMacOS
-    - sqlite3 (~> 3.50.3)
+    - sqlite3 (~> 3.50.4)
     - sqlite3/dbstatvtab
     - sqlite3/fts5
     - sqlite3/math
@@ -1505,6 +1505,9 @@ PODS:
     - sqlite3/session
   - url_launcher_ios (0.0.1):
     - Flutter
+  - video_player_avfoundation (0.0.1):
+    - Flutter
+    - FlutterMacOS
 
 DEPENDENCIES:
   - cloud_firestore (from `.symlinks/plugins/cloud_firestore/ios`)
@@ -1528,6 +1531,7 @@ DEPENDENCIES:
   - sqflite_darwin (from `.symlinks/plugins/sqflite_darwin/darwin`)
   - sqlite3_flutter_libs (from `.symlinks/plugins/sqlite3_flutter_libs/darwin`)
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
+  - video_player_avfoundation (from `.symlinks/plugins/video_player_avfoundation/darwin`)
 
 SPEC REPOS:
   trunk:
@@ -1607,6 +1611,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/sqlite3_flutter_libs/darwin"
   url_launcher_ios:
     :path: ".symlinks/plugins/url_launcher_ios/ios"
+  video_player_avfoundation:
+    :path: ".symlinks/plugins/video_player_avfoundation/darwin"
 
 SPEC CHECKSUMS:
   abseil: a05cc83bf02079535e17169a73c5be5ba47f714b
@@ -1616,10 +1622,10 @@ SPEC CHECKSUMS:
   cloud_firestore: fdcc87898326e396d6ef6df543acf9b5c2034b95
   connectivity_plus: cb623214f4e1f6ef8fe7403d580fdad517d2f7dd
   Firebase: d99ac19b909cd2c548339c2241ecd0d1599ab02e
-  firebase_auth: dad1f2f9c317dba1b300933a3f7622fa30eb721c
+  firebase_auth: 50af8366c87bb88c80ebeae62eb60189c7246b9b
   firebase_core: 995454a784ff288be5689b796deb9e9fa3601818
-  firebase_remote_config: 88ede24650cdf0916188dc2fe4138e3a03e62712
-  firebase_storage: cda26bf5db7c2d71a7202a9e7cec99fca56418c5
+  firebase_remote_config: 4dd0f9d900105e8d81a31a26ac1ed949c6d3c74a
+  firebase_storage: 1144b3236855c52ff52741b12374862ee84d5a28
   FirebaseABTesting: 5e9d432834aebf27ab72100d37af44dfbe8d82f7
   FirebaseAppCheckInterop: 06fe5a3799278ae4667e6c432edd86b1030fa3df
   FirebaseAuth: a6575e5fbf46b046c58dc211a28a5fbdd8d4c83b
@@ -1659,10 +1665,11 @@ SPEC CHECKSUMS:
   RecaptchaInterop: 11e0b637842dfb48308d242afc3f448062325aba
   shared_preferences_foundation: 9e1978ff2562383bd5676f64ec4e9aa8fa06a6f7
   sqflite_darwin: 20b2a3a3b70e43edae938624ce550a3cbf66a3d0
-  sqlite3: 83105acd294c9137c026e2da1931c30b4588ab81
-  sqlite3_flutter_libs: 616267f2fca40e9c6af8c5d82324e05667040b6e
+  sqlite3: 73513155ec6979715d3904ef53a8d68892d4032b
+  sqlite3_flutter_libs: 83f8e9f5b6554077f1d93119fe20ebaa5f3a9ef1
   url_launcher_ios: 694010445543906933d732453a59da0a173ae33d
+  video_player_avfoundation: 2cef49524dd1f16c5300b9cd6efd9611ce03639b
 
-PODFILE CHECKSUM: 04d97c35eee2f58be76ac97bfe2f9622f66611af
+PODFILE CHECKSUM: f3ed1c61f5b69f4bdaccddf46f93258c71ac3942
 
 COCOAPODS: 1.16.2

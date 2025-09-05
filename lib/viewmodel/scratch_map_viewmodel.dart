@@ -52,7 +52,7 @@ class ScratchMapViewModel extends ChangeNotifier {
                     : spot.name,
                 snippet: spot.description,
               ),
-              icon: _getMarkerIcon(spot.category),
+              icon: _getMarkerIcon(spot.category,),
               onTap: () {
                 print('🎯 마커 탭: ${spot.name} (${spot.documentId})');
                 _onMarkerTapped(spot);
@@ -116,8 +116,18 @@ class ScratchMapViewModel extends ChangeNotifier {
     _updateState(_state.copyWithLoading(true));
 
     try {
-      // 1. 현재 위치를 초기 카메라 위치로 설정
-      final currentPosition = await _locationRepository.getCurrentPosition();
+      // 1. 현재 위치를 초기 카메라 위치로 설정 (timeout 추가)
+      Position? currentPosition;
+      try {
+        currentPosition = await _locationRepository.getCurrentPosition().timeout(
+          Duration(seconds: 5),
+          onTimeout: () => null,
+        );
+      } catch (e) {
+        print('위치 가져오기 실패: $e');
+        currentPosition = null;
+      }
+
       LatLng initialPosition;
 
       if (currentPosition != null) {
@@ -125,18 +135,39 @@ class ScratchMapViewModel extends ChangeNotifier {
         print('현재 위치로 초기화: ${initialPosition.latitude}, ${initialPosition.longitude}');
       } else {
         // 현재 위치를 가져올 수 없으면 기본값 사용
-        initialPosition = await _userRepository.getInitialCameraPosition();
-        print('기본 위치로 폴백: ${initialPosition.latitude}, ${initialPosition.longitude}');
+        try {
+          initialPosition = await _userRepository.getInitialCameraPosition().timeout(
+            Duration(seconds: 3),
+            onTimeout: () => const LatLng(37.5665, 126.9780), // 서울시청 기본값
+          );
+          print('기본 위치로 폴백: ${initialPosition.latitude}, ${initialPosition.longitude}');
+        } catch (e) {
+          print('기본 위치 가져오기 실패, 하드코딩된 기본값 사용: $e');
+          initialPosition = const LatLng(37.5665, 126.9780);
+        }
       }
 
       _updateState(_state.copyWith(cameraPosition: initialPosition));
 
-      // 2. sido 코드 계산 및 폴리곤 로드
-      final sido = await _locationRepository.resolveSidoCode(initialPosition);
-      await _loadPolygonsForSido(sido);
+      // 2. sido 코드 계산 및 폴리곤 로드 (timeout 추가)
+      try {
+        final sido = await _locationRepository.resolveSidoCode(initialPosition).timeout(
+          Duration(seconds: 5),
+          onTimeout: () => 11, // 서울 기본값
+        );
+        await _loadPolygonsForSido(sido).timeout(Duration(seconds: 5));
+      } catch (e) {
+        print('폴리곤 로드 실패, 계속 진행: $e');
+        // 폴리곤 로드 실패해도 계속 진행
+      }
 
-      // 3. 방문한 헥사곤 복원
-      await _loadVisitedHexagons();
+      // 3. 방문한 헥사곤 복원 (timeout 추가)
+      try {
+        await _loadVisitedHexagons().timeout(Duration(seconds: 3));
+      } catch (e) {
+        print('헥사곤 로드 실패, 계속 진행: $e');
+        // 헥사곤 로드 실패해도 계속 진행
+      }
 
       _updateState(_state.copyWithLoading(false));
       print('ScratchMap 초기화 완료');
@@ -360,7 +391,7 @@ class ScratchMapViewModel extends ChangeNotifier {
           BitmapDescriptor.hueOrange,
         );
       default:
-        return BitmapDescriptor.defaultMarker;
+        return BitmapDescriptor.defaultMarkerWithHue(180.0);
     }
   }
 

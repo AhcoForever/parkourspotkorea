@@ -86,19 +86,24 @@ class _SignUpPageState extends State<SignUpPage> {
       builder: (context, viewModel, child) {
 
         return Scaffold(
-          backgroundColor: const Color(0xFFF4F7FE),
+          backgroundColor: const Color(0xFF1A1A1A),
           appBar: AppBar(
+            backgroundColor: const Color(0xFF2D2D2D),
             leading: IconButton(
-              icon: Icon(
+              icon: const Icon(
                 Icons.arrow_back_ios_sharp,
                 size: 20,
-                color: Theme.of(context).colorScheme.primary,
+                color: Colors.white,
               ),
               onPressed: () => smartBack(context),
             ),
-            title: Text(
+            title: const Text(
               '회원가입',
-              style: Theme.of(context).textTheme.headlineMedium,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
           body: Stack(
@@ -264,8 +269,8 @@ class _SignUpPageState extends State<SignUpPage> {
             : null,
         style: ElevatedButton.styleFrom(
           backgroundColor: viewModel.canSignUp
-              ? Theme.of(context).colorScheme.primary
-              : Colors.grey[300],
+              ? const Color(0xFF6366F1)
+              : const Color(0xFF404040),
           foregroundColor: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
@@ -292,7 +297,14 @@ class _SignUpPageState extends State<SignUpPage> {
   Widget _buildLabel(String text, bool isRequired) {
     return Row(
       children: [
-        Text(text, style: Theme.of(context).textTheme.bodySmall),
+        Text(
+          text, 
+          style: const TextStyle(
+            fontSize: 14,
+            color: Colors.white,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
         if (isRequired)
           const Text(' *', style: TextStyle(fontSize: 14, color: Colors.red)),
       ],
@@ -310,15 +322,33 @@ class _SignUpPageState extends State<SignUpPage> {
       controller: controller,
       obscureText: obscureText,
       keyboardType: keyboardType,
+      style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
         hintText: hintText,
-        hintStyle: Theme.of(context).textTheme.bodySmall,
+        hintStyle: const TextStyle(
+          color: Colors.grey,
+          fontSize: 14,
+        ),
+        filled: true,
+        fillColor: const Color(0xFF2D2D2D),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
           vertical: 12,
         ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: const BorderSide(color: Color(0xFF404040)),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: const BorderSide(color: Color(0xFF404040)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: const BorderSide(color: Color(0xFF6366F1), width: 2),
+        ),
         errorText: errorText,
-        errorStyle: const TextStyle(fontSize: 12),
+        errorStyle: const TextStyle(fontSize: 12, color: Colors.redAccent),
       ),
     );
   }
@@ -334,7 +364,15 @@ class _SignUpPageState extends State<SignUpPage> {
         Checkbox(
           value: value,
           onChanged: onChanged,
-          activeColor: Theme.of(context).colorScheme.primary,
+          activeColor: const Color(0xFF6366F1),
+          checkColor: Colors.white,
+          fillColor: WidgetStateProperty.resolveWith<Color>((states) {
+            if (states.contains(WidgetState.selected)) {
+              return const Color(0xFF6366F1);
+            }
+            return const Color(0xFF2D2D2D);
+          }),
+          side: const BorderSide(color: Color(0xFF404040)),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
         ),
         Expanded(
@@ -343,7 +381,7 @@ class _SignUpPageState extends State<SignUpPage> {
             style: TextStyle(
               fontSize: 15,
               fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
-              color: const Color(0xFF4D4D4D),
+              color: Colors.white,
             ),
           ),
         ),
@@ -361,12 +399,16 @@ class _SignUpPageState extends State<SignUpPage> {
         Checkbox(
           value: value,
           onChanged: onChanged,
-          activeColor: Theme.of(context).colorScheme.primary,
+          activeColor: const Color(0xFF6366F1),
           checkColor: Colors.white,
+          fillColor: WidgetStateProperty.resolveWith<Color>((states) {
+            if (states.contains(WidgetState.selected)) {
+              return const Color(0xFF6366F1);
+            }
+            return const Color(0xFF2D2D2D);
+          }),
+          side: const BorderSide(color: Color(0xFF404040)),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-          side: BorderSide(
-            color: Theme.of(context).colorScheme.primary.withAlpha(102),
-          ),
         ),
         Expanded(
           child: Text(
@@ -374,7 +416,7 @@ class _SignUpPageState extends State<SignUpPage> {
             style: const TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.normal,
-              color: Color(0xFF4D4D4D),
+              color: Colors.white70,
             ),
           ),
         ),
@@ -387,11 +429,11 @@ class _SignUpPageState extends State<SignUpPage> {
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             minimumSize: const Size(40, 30),
           ),
-          child: Text(
+          child: const Text(
             '보기',
             style: TextStyle(
               fontSize: 12,
-              color: Colors.grey[600],
+              color: Colors.grey,
               decoration: TextDecoration.underline,
             ),
           ),
@@ -417,12 +459,22 @@ class _SignUpPageState extends State<SignUpPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(title),
-        content: const Text('약관 내용이 여기에 표시됩니다.'),
+        backgroundColor: const Color(0xFF2D2D2D),
+        title: Text(
+          title,
+          style: const TextStyle(color: Colors.white),
+        ),
+        content: const Text(
+          '약관 내용이 여기에 표시됩니다.',
+          style: TextStyle(color: Colors.white70),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('확인'),
+            child: const Text(
+              '확인',
+              style: TextStyle(color: Color(0xFF6366F1)),
+            ),
           ),
         ],
       ),

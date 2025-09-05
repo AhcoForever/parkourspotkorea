@@ -28,8 +28,11 @@ class FirebaseService {
       };
     }).toList();
   }
+
   /// 시군구 prefix 코드로 문서 로드 (Raw 데이터)
-  static Future<List<Map<String, dynamic>>> loadDocsBySggPrefixRaw(int sggPrefix) async {
+  static Future<List<Map<String, dynamic>>> loadDocsBySggPrefixRaw(
+    int sggPrefix,
+  ) async {
     final snapshot = await _firestore
         .collection('dong_features')
         .where('sgg', isEqualTo: sggPrefix)
@@ -47,6 +50,7 @@ class FirebaseService {
       };
     }).toList();
   }
+
   static Future<Set<Polygon>> loadKoreaBoundaryPolygons() async {
     final snapshot = await _firestore.collection('dong_features').get();
 
@@ -88,9 +92,10 @@ class FirebaseService {
       return [];
     }
   }
-  // firebase_service.dart (클래스 내부)
-  static List<LatLng> parseCoordinates(String jsonStr) => _parseCoordinates(jsonStr);
 
+  // firebase_service.dart (클래스 내부)
+  static List<LatLng> parseCoordinates(String jsonStr) =>
+      _parseCoordinates(jsonStr);
 }
 
 //Todo: static 없이 객체화로 변경

@@ -27,6 +27,7 @@ dependencies:
   path: ^1.9.1
   permission_handler: 12.0.1
   geocoding: ^4.0.0
+  video_player: ^2.10.0
 
   fluttertoast: ^8.2.12
 
@@ -91,7 +92,9 @@ flutter:
     - assets/QRcode/
     - assets/GeoJSON/
     - assets/fonts/Pretendard/
-    - assets/map_style.json
+    - assets/map_style/map_style.json
+    - assets/map_style/map_darkstyle.json
+    - assets/videos/testvideo.mp4
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

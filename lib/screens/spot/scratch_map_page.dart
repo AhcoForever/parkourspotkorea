@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:parkourspotkorea/screens/spot/parkourspot_bottomsheet_page.dart';
@@ -7,18 +8,32 @@ import 'package:provider/provider.dart';
 
 import '../../model/parkour_spot.dart';
 import '../../viewmodel/scratch_map_viewmodel.dart';
+import '../../viewmodel/parkour_search_viewmodel.dart';
+import '../../services/firebase/parkour_spot_search_service.dart';
 
 class ScratchMapPage extends StatefulWidget {
+  const ScratchMapPage({super.key});
+
   @override
   _ScratchMapPageState createState() => _ScratchMapPageState();
 }
 
 class _ScratchMapPageState extends State<ScratchMapPage> {
   GoogleMapController? mapController;
+  String? _mapStyle;
+  late ParkourSearchViewModel _searchViewModel;
+  final TextEditingController _searchController = TextEditingController();
+  bool _showSearchResults = false;
 
   @override
   void initState() {
     super.initState();
+    
+    // 검색 ViewModel 초기화 (Firebase 기반)
+    final searchService = FirebaseParkourSpotSearchService();
+    _searchViewModel = ParkourSearchViewModel(searchService);
+    _searchViewModel.addListener(_onSearchResultsChanged);
+    
     // ViewModel 초기화
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final viewModel = context.read<ScratchMapViewModel>();
@@ -28,8 +43,164 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
         _showSpotBottomSheet(spot);
       };
 
+      // 검색 초기화는 더 빠르게 처리
+      _initializeSearchAsync();
+      
       viewModel.initialize();
     });
+
+    // Load map style JSON file
+    rootBundle.loadString('assets/map_style/map_style.json').then((style) {
+      setState(() {
+        _mapStyle = style;
+      });
+    }).catchError((e) {
+      debugPrint('Map style load failed: $e');
+    });
+  }
+
+  /// 검색 결과 변경 시 콜백
+  void _onSearchResultsChanged() {
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  /// 검색 초기화 비동기 실행
+  void _initializeSearchAsync() {
+    Future.delayed(Duration.zero, () async {
+      try {
+        await _searchViewModel.initializeSearch().timeout(
+          Duration(seconds: 3),
+          onTimeout: () {
+            print('검색 초기화 타임아웃, 계속 진행');
+          },
+        );
+      } catch (e) {
+        print('검색 초기화 실패, 계속 진행: $e');
+      }
+    });
+  }
+
+  /// 검색 실행
+  void _performSearch(String query) {
+    _searchViewModel.updateSearchQuery(query);
+    _searchViewModel.searchSpots();
+    setState(() {
+      _showSearchResults = query.isNotEmpty;
+    });
+  }
+
+  /// 표시할 마커 세트 결정
+  Set<Marker> _getDisplayMarkers(ScratchMapViewModel viewModel) {
+    if (_showSearchResults && _searchViewModel.searchResults.isNotEmpty) {
+      // 검색 결과 마커 생성
+      return _searchViewModel.searchResults.map((spot) {
+        return Marker(
+          markerId: MarkerId('search_${spot.documentId}'),
+          position: spot.location,
+          infoWindow: InfoWindow(
+            title: spot.name,
+            snippet: spot.address,
+          ),
+          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+          onTap: () => _showSpotBottomSheet(spot),
+        );
+      }).toSet();
+    }
+    // 기본 마커 (기존 viewModel의 마커들)
+    return viewModel.parkourMarkers;
+  }
+
+  /// 검색 결과 아이템 빌드
+  Widget _buildSearchResultItem(ParkourSpot spot) {
+    return ListTile(
+      contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      leading: Container(
+        width: 50,
+        height: 50,
+        decoration: BoxDecoration(
+          color: Color(0xFF3A59D1).withOpacity(0.1),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Icon(
+          Icons.location_on,
+          color: Color(0xFF3A59D1),
+          size: 24,
+        ),
+      ),
+      title: Text(
+        spot.name,
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+        ),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
+      subtitle: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (spot.address.isNotEmpty) ...[
+            SizedBox(height: 4),
+            Text(
+              spot.address,
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey[600],
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+          SizedBox(height: 4),
+          Row(
+            children: [
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                decoration: BoxDecoration(
+                  color: Colors.blue[100],
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  spot.category == 'park' ? '공원' : spot.category,
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: Colors.blue[700],
+                  ),
+                ),
+              ),
+              SizedBox(width: 4),
+              if (spot.tags.isNotEmpty)
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: Colors.green[100],
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Text(
+                    spot.tags.first,
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: Colors.green[700],
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ],
+      ),
+      trailing: Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+      onTap: () {
+        // 스팟 클릭 시 바텀시트 표시
+        _showSpotBottomSheet(spot);
+        
+        // 검색 결과 리스트 숨기기 (선택사항)
+        // setState(() {
+        //   _showSearchResults = false;
+        // });
+      },
+    );
   }
 
   /// Bottom Sheet 표시
@@ -46,13 +217,23 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
   }
 
   @override
+  void dispose() {
+    _searchViewModel.removeListener(_onSearchResultsChanged);
+    _searchViewModel.dispose();
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Consumer<ScratchMapViewModel>(
         builder: (context, viewModel, child) {
           // 로딩 상태 처리
           if (viewModel.isLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator(
+              color: Colors.red,
+            ));
           }
 
           // 에러 상태 처리
@@ -78,7 +259,7 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
             children: [
               // Google Map
               GoogleMap(
-                onMapCreated: (controller) {
+                onMapCreated: (controller) async {
                   mapController = controller;
 
                   // 마커 로드 (카메라 중심)
@@ -93,9 +274,10 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
                       const LatLng(37.5665, 126.9780),
                   zoom: 15,
                 ),
+                style: _mapStyle,
 
-                // 🎯 마커 바인딩 (각 마커에 onTap이 이미 설정됨)
-                markers: viewModel.parkourMarkers,
+                // 🎯 마커 바인딩 (검색 결과가 있을 때는 검색 마커, 없을 때는 기본 마커)
+                markers: _getDisplayMarkers(viewModel),
 
                 polygons: viewModel.allPolygons,
                 myLocationEnabled: true,
@@ -155,24 +337,43 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
                         mainAxisSize: MainAxisSize.min,
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.center,
-                        spacing: 10,
                         children: [
                           const Icon(Icons.search, color: Color(0xFF3A59D1)),
+                          const SizedBox(width: 10),
                           Expanded(
-                            child: GestureDetector(
-                              onTap: () {
-                                print("검색창 클릭됨");
-                                // TODO: 검색 페이지 또는 검색 기능 연결
+                            child: TextField(
+                              controller: _searchController,
+                              onSubmitted: _performSearch,
+                              onChanged: (value) {
+                                if (value.isEmpty) {
+                                  setState(() {
+                                    _showSearchResults = false;
+                                  });
+                                  _searchViewModel.clearSearch();
+                                }
                               },
-                              child: Text(
-                                '파쿠르 스팟 검색...',
-                                style: TextStyle(
+                              decoration: InputDecoration(
+                                hintText: '파쿠르 스팟 검색...',
+                                hintStyle: TextStyle(
                                   color: Colors.grey[600],
                                   fontSize: 16,
                                 ),
+                                border: InputBorder.none,
+                                contentPadding: EdgeInsets.zero,
                               ),
                             ),
                           ),
+                          if (_searchController.text.isNotEmpty)
+                            IconButton(
+                              icon: Icon(Icons.clear, color: Colors.grey[600], size: 20),
+                              onPressed: () {
+                                _searchController.clear();
+                                setState(() {
+                                  _showSearchResults = false;
+                                });
+                                _searchViewModel.clearSearch();
+                              },
+                            ),
                         ],
                       ),
                     ),
@@ -180,116 +381,256 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
                 ),
               ),
 
-              // 2. Top-right Button (myPage and setting and star )
-              Positioned(
-                top: 150,
-                right: 29,
-                child: Column(
-                  children: [
-                    FloatingActionButton(
-                      heroTag: 'myPage_button',
-                      mini: true,
-                      onPressed: () {
-                        print('프로필 버튼 클릭');
-                      },
-                      child: SvgPicture.asset(
-                        width: 18,
-                        height: 18,
-                        'assets/icons/person.svg',
-                      ),
+              // 검색 제안 (검색어 입력 중일 때)
+              if (_searchViewModel.searchSuggestions.isNotEmpty && !_showSearchResults)
+                Positioned(
+                  top: 90,
+                  left: 16,
+                  right: 16,
+                  child: Container(
+                    constraints: BoxConstraints(maxHeight: 200),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8),
+                      boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 4)],
                     ),
-
-                    const SizedBox(height: 12),
-
-                    FloatingActionButton(
-                      heroTag: 'setting_button',
-                      mini: true,
-                      onPressed: () {
-                        print('설정 버튼 클릭');
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: _searchViewModel.searchSuggestions.length,
+                      itemBuilder: (context, index) {
+                        final suggestion = _searchViewModel.searchSuggestions[index];
+                        return ListTile(
+                          leading: Icon(Icons.search, size: 16),
+                          title: Text(suggestion),
+                          onTap: () {
+                            _searchController.text = suggestion;
+                            _searchViewModel.selectSearchSuggestion(suggestion);
+                          },
+                        );
                       },
-                      child: const Icon(
-                        size: 24,
-                        Icons.settings,
-                        color: Color(0xFF3A59D1),
-                      ),
                     ),
-
-                    const SizedBox(height: 12),
-
-                    FloatingActionButton(
-                      heroTag: 'Location Bookmark',
-                      mini: true,
-                      onPressed: () {
-                        print('즐겨찾기 버튼 클릭');
-                      },
-                      child: SvgPicture.asset(
-                        'assets/icons/star.svg',
-                        width: 24,
-                        height: 24,
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
 
-              // 3. Scratch Map Button
-              SafeArea(
-                child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: 24),
-                    child: SizedBox(
-                      width: 100,
-                      height: 100,
-                      child: FloatingActionButton(
-                        heroTag: 'globe_button',
-                        onPressed: () async {
-                          await viewModel.toggleHexagons();
-                        },
-                        backgroundColor: viewModel.isHexagonVisible
-                            ? Color(0xFF42549B)
-                            : const Color(0x99F4F7FE),
-                        child: SvgPicture.asset(
-                          'assets/icons/material-symbols_globe-asia-sharp.svg',
-                          width: 56,
-                          height: 56,
+              // 검색 결과 리스트 (검색 완료 후)
+              if (_showSearchResults && _searchViewModel.searchResults.isNotEmpty)
+                Positioned(
+                  top: 90,
+                  left: 16,
+                  right: 16,
+                  bottom: 100,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8),
+                      boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 4)],
+                    ),
+                    child: Column(
+                      children: [
+                        // 헤더
+                        Container(
+                          padding: EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            border: Border(bottom: BorderSide(color: Colors.grey[200]!)),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(Icons.location_on, color: Color(0xFF3A59D1)),
+                              SizedBox(width: 8),
+                              Text(
+                                '검색 결과 ${_searchViewModel.searchResults.length}개',
+                                style: TextStyle(
+                                  fontSize: 16, 
+                                  fontWeight: FontWeight.w600,
+                                  color: Color(0xFF3A59D1),
+                                ),
+                              ),
+                              Spacer(),
+                              IconButton(
+                                icon: Icon(Icons.close, size: 20),
+                                onPressed: () {
+                                  setState(() {
+                                    _showSearchResults = false;
+                                  });
+                                  _searchController.clear();
+                                  _searchViewModel.clearSearch();
+                                },
+                              ),
+                            ],
+                          ),
                         ),
+                        // 검색 결과 리스트
+                        Expanded(
+                          child: ListView.builder(
+                            itemCount: _searchViewModel.searchResults.length,
+                            itemBuilder: (context, index) {
+                              final spot = _searchViewModel.searchResults[index];
+                              return _buildSearchResultItem(spot);
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+              // 검색 로딩 인디케이터
+              if (_searchViewModel.isSearching)
+                Positioned(
+                  bottom: 100,
+                  left: 0,
+                  right: 0,
+                  child: Center(
+                    child: Container(
+                      padding: EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                        boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 4)],
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          CircularProgressIndicator(strokeWidth: 2),
+                          SizedBox(width: 12),
+                          Text('검색 중...'),
+                        ],
                       ),
                     ),
                   ),
                 ),
-              ),
 
-              // My Location Button
-              SafeArea(
-                child: Align(
-                  alignment: Alignment.bottomRight,
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: 45, right: 53),
-                    child: SizedBox(
-                      width: 48,
-                      height: 48,
-                      child: FloatingActionButton(
-                        heroTag: 'location_button',
-                        onPressed: () async {
-                          final newPosition = await viewModel
-                              .moveToCurrentLocation();
-                          if (newPosition != null && mapController != null) {
-                            mapController!.animateCamera(
-                              CameraUpdate.newLatLngZoom(newPosition, 16),
-                            );
-                          }
+              // 검색 결과 카운트
+              if (_showSearchResults && !_searchViewModel.isSearching && _searchViewModel.searchResults.isNotEmpty)
+                Positioned(
+                  bottom: 50,
+                  left: 16,
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: Color(0xFF3A59D1),
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 4)],
+                    ),
+                    child: Text(
+                      '검색 결과: ${_searchViewModel.searchResults.length}개',
+                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+                    ),
+                  ),
+                ),
+
+              // 2. Top-right Button (myPage and setting and star ) - 검색 결과가 없을 때만 표시
+              if (!_showSearchResults)
+                Positioned(
+                  top: 150,
+                  right: 29,
+                  child: Column(
+                    children: [
+                      FloatingActionButton(
+                        heroTag: 'myPage_button',
+                        mini: true,
+                        onPressed: () {
+                          print('프로필 버튼 클릭');
+                        },
+                        child: SvgPicture.asset(
+                          width: 18,
+                          height: 18,
+                          'assets/icons/person.svg',
+                        ),
+                      ),
+
+                      const SizedBox(height: 12),
+
+                      FloatingActionButton(
+                        heroTag: 'setting_button',
+                        mini: true,
+                        onPressed: () {
+                          print('설정 버튼 클릭');
                         },
                         child: const Icon(
                           size: 24,
-                          Icons.near_me,
+                          Icons.settings,
                           color: Color(0xFF3A59D1),
+                        ),
+                      ),
+
+                      const SizedBox(height: 12),
+
+                      FloatingActionButton(
+                        heroTag: 'Location Bookmark',
+                        mini: true,
+                        onPressed: () {
+                          print('즐겨찾기 버튼 클릭');
+                        },
+                        child: SvgPicture.asset(
+                          'assets/icons/star.svg',
+                          width: 24,
+                          height: 24,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+              // 3. Scratch Map Button - 검색 결과가 없을 때만 표시
+              if (!_showSearchResults)
+                SafeArea(
+                  child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 24),
+                      child: SizedBox(
+                        width: 100,
+                        height: 100,
+                        child: FloatingActionButton(
+                          heroTag: 'globe_button',
+                          onPressed: () async {
+                            await viewModel.toggleHexagons();
+                          },
+                          backgroundColor: viewModel.isHexagonVisible
+                              ? Color(0xFF42549B)
+                              : const Color(0x99F4F7FE),
+                          child: SvgPicture.asset(
+                            'assets/icons/material-symbols_globe-asia-sharp.svg',
+                            width: 56,
+                            height: 56,
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
-              ),
+
+              // My Location Button - 검색 결과가 없을 때만 표시
+              if (!_showSearchResults)
+                SafeArea(
+                  child: Align(
+                    alignment: Alignment.bottomRight,
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 45, right: 53),
+                      child: SizedBox(
+                        width: 48,
+                        height: 48,
+                        child: FloatingActionButton(
+                          heroTag: 'location_button',
+                          onPressed: () async {
+                            final newPosition = await viewModel
+                                .moveToCurrentLocation();
+                            // TODO: 맵 컨트롤러로 카메라 이동 구현
+                            if (newPosition != null) {
+                              print('현재 위치로 이동: ${newPosition.latitude}, ${newPosition.longitude}');
+                            }
+                          },
+                          child: const Icon(
+                            size: 24,
+                            Icons.near_me,
+                            color: Color(0xFF3A59D1),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
 
               // 🔄 로딩 인디케이터 (스팟 로드 중)
               if (viewModel.isLoadingSpots)
@@ -299,7 +640,7 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
                   child: Container(
                     padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                     decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.7),
+                      color: Colors.black.withValues(alpha: 0.7),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Row(
@@ -332,8 +673,5 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
     );
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-  }
+
 }

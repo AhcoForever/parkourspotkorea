@@ -1,0 +1,77 @@
+{
+  "variant": "dark",
+  "styles": [
+    {
+      "id": "infrastructure.building",
+      "geometry": {
+        "visible": false
+      }
+    },
+    {
+      "id": "infrastructure.businessCorridor",
+      "geometry": {
+        "visible": true
+      }
+    },
+    {
+      "id": "infrastructure.roadNetwork.road.arterial",
+      "label": {
+        "visible": false
+      }
+    },
+    {
+      "id": "infrastructure.transitStation.railStation.subwayStation",
+      "label": {
+        "visible": true
+      }
+    },
+    {
+      "id": "pointOfInterest.emergency",
+      "geometry": {
+        "visible": true
+      }
+    },
+    {
+      "id": "pointOfInterest.entertainment.cinema",
+      "label": {
+        "visible": false
+      }
+    },
+    {
+      "id": "pointOfInterest.foodAndDrink",
+      "label": {
+        "visible": false
+      }
+    },
+    {
+      "id": "pointOfInterest.foodAndDrink.cafe",
+      "label": {
+        "visible": false
+      }
+    },
+    {
+      "id": "pointOfInterest.landmark",
+      "label": {
+        "visible": true
+      }
+    },
+    {
+      "id": "pointOfInterest.lodging",
+      "label": {
+        "visible": false
+      }
+    },
+    {
+      "id": "pointOfInterest.retail",
+      "label": {
+        "visible": false
+      }
+    },
+    {
+      "id": "pointOfInterest.retail.grocery",
+      "label": {
+        "visible": false
+      }
+    }
+  ]
+}

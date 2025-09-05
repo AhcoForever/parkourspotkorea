@@ -14,8 +14,6 @@ class GeoJsonMigrator {
     required String collectionName,
   }) async {
     try {
-      print('🚀 마이그레이션 시작: $geoJsonFilePath -> $collectionName');
-
       // 1. GeoJSON 파일 읽기
       String geoJsonString = await _readGeoJsonFile(geoJsonFilePath);
 
