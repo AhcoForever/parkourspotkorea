@@ -25,8 +25,8 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) =>  //ParkourLandingPage(),
 
       //NicknamePage(),
-      LoginPage()
-    // AppInitializer(),
+      //LoginPage()
+     AppInitializer(),
     ),
 
     // 로그인 페이지

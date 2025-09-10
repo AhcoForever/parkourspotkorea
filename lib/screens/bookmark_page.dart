@@ -75,7 +75,7 @@ class Bookmark extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Image.asset(
-                      'assets/images/parkour_logo.png', // 이미지 경로
+                      'assets/images/PARKOUR_SPOT.png', // 이미지 경로
                       fit: BoxFit.contain,
                       errorBuilder: (context, error, stackTrace) {
                         // 이미지 로드 실패 시 플레이스홀더

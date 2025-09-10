@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import 'package:parkourspotkorea/repositories/user_repository.dart';
 import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -167,7 +166,6 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       body: SafeArea(
         child: SingleChildScrollView(
 
@@ -179,8 +177,8 @@ class _LoginPageState extends State<LoginPage> {
             spacing: 8,
             children: [
               // 로고 이미지
-              Image.asset('assets/logo/parkour_logo.png', height: 300),
-              //Text('이메일로 로그인', style: Theme.of(context).textTheme.labelSmall),
+              Image.asset('assets/logo/PARKOUR_SPOT.png', height: 300),
+              //Text('아이디(이메일)', style: Theme.of(context).textTheme.labelSmall),
               // 이메일 입력창
               TextField(
                 controller: _emailCtrl,
@@ -218,7 +216,6 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
 
               // 소셜 로그인 (구글)
               Row(
@@ -227,26 +224,13 @@ class _LoginPageState extends State<LoginPage> {
                   // 구글 버튼
                   InkWell(
                     onTap: () {
-                      //_isLoading ? null : googleSignIn();
-                      //googleSignin();
                       GoogleSignIn.instance.authenticate();
                     },
-                    borderRadius: BorderRadius.circular(12),
-                    child: Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(80),
-                        border: Border.all(
-                          color: const Color(0xFFE8ECF4), //  테두리 색
-                          width: 1,
-                        ),
-                      ),
-                      child: SvgPicture.asset(
-                        'assets/icons/google_ic_loginPage.svg',
-                        width: 24,
-                        height: 24,
-                      ),
+                    child: Image.asset(
+                      'assets/images/ios_dark_rd_ctn@3x.png',
+                      height: 100,
+                      width: 250,
+
                     ),
                   ),
                 ],
@@ -254,7 +238,7 @@ class _LoginPageState extends State<LoginPage> {
 
               // 하단 버튼 3개
               Padding(
-                padding: const EdgeInsets.only(top: 20.0, bottom: 10.0),
+                padding: const EdgeInsets.only( bottom: 10.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -263,7 +247,7 @@ class _LoginPageState extends State<LoginPage> {
                         context.goNamed('find');
                       },
                       child: Text(
-                        '아이디 / 비밀번호 찾기',
+                        '비밀번호 찾기',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: Color(0xFF6A707C),
                         ),

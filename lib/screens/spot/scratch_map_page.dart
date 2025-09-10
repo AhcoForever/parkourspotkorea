@@ -562,8 +562,8 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
                         onPressed: () {
                           print('즐겨찾기 버튼 클릭');
                         },
-                        child: SvgPicture.asset(
-                          'assets/icons/star.svg',
+                        child: Image.asset(
+                          'assets/image/icon-bookmark.png',
                           width: 24,
                           height: 24,
                         ),
@@ -582,18 +582,22 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
                       child: SizedBox(
                         width: 100,
                         height: 100,
-                        child: FloatingActionButton(
-                          heroTag: 'globe_button',
-                          onPressed: () async {
-                            await viewModel.toggleHexagons();
-                          },
-                          backgroundColor: viewModel.isHexagonVisible
-                              ? Color(0xFF42549B)
-                              : const Color(0x99F4F7FE),
-                          child: SvgPicture.asset(
-                            'assets/icons/material-symbols_globe-asia-sharp.svg',
-                            width: 56,
-                            height: 56,
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(12),
+                            splashColor: Colors.transparent,
+                            highlightColor: Colors.transparent,
+                            onTap: () async {
+                              await viewModel.toggleHexagons();
+                            },
+                            child: Center(
+                              child: Image.asset(
+                                'assets/images/icon-scratch.png',
+                                width: 120,
+                                height: 120,
+                              ),
+                            ),
                           ),
                         ),
                       ),
@@ -609,22 +613,30 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
                     child: Padding(
                       padding: const EdgeInsets.only(bottom: 45, right: 53),
                       child: SizedBox(
-                        width: 48,
-                        height: 48,
-                        child: FloatingActionButton(
-                          heroTag: 'location_button',
-                          onPressed: () async {
-                            final newPosition = await viewModel
-                                .moveToCurrentLocation();
-                            // TODO: 맵 컨트롤러로 카메라 이동 구현
-                            if (newPosition != null) {
-                              print('현재 위치로 이동: ${newPosition.latitude}, ${newPosition.longitude}');
-                            }
-                          },
-                          child: const Icon(
-                            size: 24,
-                            Icons.near_me,
-                            color: Color(0xFF3A59D1),
+                        width: 40,
+                        height: 40,
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(8),
+                            splashColor: Colors.transparent,
+                            highlightColor: Colors.transparent,
+                            onTap: () async {
+                              final newPosition = await viewModel.moveToCurrentLocation();
+                              if (newPosition != null && mapController != null) {
+                                await mapController!.animateCamera(
+                                  CameraUpdate.newLatLng(newPosition),
+                                );
+                                print('현재 위치로 이동: \\${newPosition.latitude}, \\${newPosition.longitude}');
+                              }
+                            },
+                            child: Center(
+                              child: Image.asset(
+                                'assets/images/icon-compass.png',
+                                width: 50,
+                                height: 50,
+                              ),
+                            ),
                           ),
                         ),
                       ),

@@ -6,7 +6,7 @@
 
 한국의 파쿠르 스팟을 찾고 공유하는 Flutter 앱입니다.
 
-![Parkour Logo](assets/logo/parkour_logo.png)
+![Parkour Logo](assets/logo/PARKOUR_SPOT.png)
 
 ## 📱 주요 기능
 

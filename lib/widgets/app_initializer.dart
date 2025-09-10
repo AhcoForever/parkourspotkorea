@@ -78,7 +78,7 @@ class _AppInitializerState extends State<AppInitializer> {
           children: [
             // 앱 로고
             Image.asset(
-              'assets/logo/parkour_logo.png',
+              'assets/logo/PARKOUR_SPOT.png',
               height: 120,
               errorBuilder: (context, error, stackTrace) {
                 return Container(

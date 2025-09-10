@@ -134,7 +134,7 @@ class MyApp extends StatelessWidget {
       routerConfig: appRouter,
       debugShowCheckedModeBanner: false,
       title: 'Parkour Spot in Korea',
-      theme: AppTheme.light,
+      theme: AppTheme.darkTheme,
     );
   }
 }
