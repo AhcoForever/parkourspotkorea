@@ -1,9 +1,6 @@
-<<<<<<< HEAD
-# 🏃‍♂️ Parkour Spot Korea
-=======
-# 파쿠르 스팟 (parkour spot)
->>>>>>> c6d81ac92eab9ae99cc2fdf16711d89dadb9c791
 
+# 🏃‍♂️ Parkour Spot Korea
+# 파쿠르 스팟 (parkour spot)
 한국의 파쿠르 스팟을 찾고 공유하는 Flutter 앱입니다.
 
 ![Parkour Logo](assets/logo/PARKOUR_SPOT.png)
