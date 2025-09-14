@@ -40,7 +40,7 @@ class ScratchMapViewModel extends ChangeNotifier {
       }
 
       _parkourMarkers
-        ..clear()
+        ..clear() // 기존 마커 완전 제거
         ..addAll(
           spots.map((spot) {
             return Marker(
@@ -60,7 +60,11 @@ class ScratchMapViewModel extends ChangeNotifier {
             );
           }),
         );
-
+      // 스팟 정보 캐시 추가
+      _loadedSpots.clear();
+      for(final spot in spots){
+        _loadedSpots[spot.documentId] = spot;
+      }
       print('✅ 주변 스팟 ${spots.length}개 로드/표시 완료');
     } catch (e) {
       print('❌ loadAndShowSpots 실패: $e');

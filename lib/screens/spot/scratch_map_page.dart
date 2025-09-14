@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
@@ -28,12 +27,12 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
   @override
   void initState() {
     super.initState();
-    
+
     // 검색 ViewModel 초기화 (Firebase 기반)
     final searchService = FirebaseParkourSpotSearchService();
     _searchViewModel = ParkourSearchViewModel(searchService);
     _searchViewModel.addListener(_onSearchResultsChanged);
-    
+
     // ViewModel 초기화
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final viewModel = context.read<ScratchMapViewModel>();
@@ -45,18 +44,21 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
 
       // 검색 초기화는 더 빠르게 처리
       _initializeSearchAsync();
-      
+
       viewModel.initialize();
     });
 
     // Load map style JSON file
-    rootBundle.loadString('assets/map_style/map_style.json').then((style) {
-      setState(() {
-        _mapStyle = style;
-      });
-    }).catchError((e) {
-      debugPrint('Map style load failed: $e');
-    });
+    rootBundle
+        .loadString('assets/map_style/map_style.json')
+        .then((style) {
+          setState(() {
+            _mapStyle = style;
+          });
+        })
+        .catchError((e) {
+          debugPrint('Map style load failed: $e');
+        });
   }
 
   /// 검색 결과 변경 시 콜백
@@ -99,10 +101,7 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
         return Marker(
           markerId: MarkerId('search_${spot.documentId}'),
           position: spot.location,
-          infoWindow: InfoWindow(
-            title: spot.name,
-            snippet: spot.address,
-          ),
+          infoWindow: InfoWindow(title: spot.name, snippet: spot.address),
           icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
           onTap: () => _showSpotBottomSheet(spot),
         );
@@ -123,18 +122,11 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
           color: Color(0xFF3A59D1).withOpacity(0.1),
           borderRadius: BorderRadius.circular(8),
         ),
-        child: Icon(
-          Icons.location_on,
-          color: Color(0xFF3A59D1),
-          size: 24,
-        ),
+        child: Icon(Icons.location_on, color: Color(0xFF3A59D1), size: 24),
       ),
       title: Text(
         spot.name,
-        style: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w600,
-        ),
+        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),
@@ -145,10 +137,7 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
             SizedBox(height: 4),
             Text(
               spot.address,
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey[600],
-              ),
+              style: TextStyle(fontSize: 14, color: Colors.grey[600]),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
@@ -164,10 +153,7 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
                 ),
                 child: Text(
                   spot.category == 'park' ? '공원' : spot.category,
-                  style: TextStyle(
-                    fontSize: 10,
-                    color: Colors.blue[700],
-                  ),
+                  style: TextStyle(fontSize: 10, color: Colors.blue[700]),
                 ),
               ),
               SizedBox(width: 4),
@@ -180,10 +166,7 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
                   ),
                   child: Text(
                     spot.tags.first,
-                    style: TextStyle(
-                      fontSize: 10,
-                      color: Colors.green[700],
-                    ),
+                    style: TextStyle(fontSize: 10, color: Colors.green[700]),
                   ),
                 ),
             ],
@@ -194,7 +177,7 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
       onTap: () {
         // 스팟 클릭 시 바텀시트 표시
         _showSpotBottomSheet(spot);
-        
+
         // 검색 결과 리스트 숨기기 (선택사항)
         // setState(() {
         //   _showSearchResults = false;
@@ -231,9 +214,9 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
         builder: (context, viewModel, child) {
           // 로딩 상태 처리
           if (viewModel.isLoading) {
-            return const Center(child: CircularProgressIndicator(
-              color: Colors.red,
-            ));
+            return const Center(
+              child: CircularProgressIndicator(color: Colors.red),
+            );
           }
 
           // 에러 상태 처리
@@ -265,12 +248,12 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
                   // 마커 로드 (카메라 중심)
                   final center =
                       viewModel.cameraPosition ??
-                          const LatLng(37.5665, 126.9780);
+                      const LatLng(37.5665, 126.9780);
                   viewModel.loadAndShowSpots(center, radiusKm: 7);
                 },
                 initialCameraPosition: CameraPosition(
                   target:
-                  viewModel.cameraPosition ??
+                      viewModel.cameraPosition ??
                       const LatLng(37.5665, 126.9780),
                   zoom: 15,
                 ),
@@ -310,28 +293,22 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
                 child: Align(
                   alignment: Alignment.topCenter,
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 14,
+                    ),
                     child: Container(
                       width: 358,
                       height: 60,
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
                       decoration: ShapeDecoration(
-                        color: const Color(0x99F4F7FE),
+                        color: const Color(0xFF0A1526),
                         shape: RoundedRectangleBorder(
                           side: BorderSide(
-                            width: 0.50,
-                            color: const Color(0xFFCAD2F3),
+                            width: 2,
+                            color: const Color(0xFF445064),
                           ),
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(4),
                         ),
-                        shadows: [
-                          BoxShadow(
-                            color: Color(0x197F93E1),
-                            blurRadius: 10,
-                            offset: Offset(0, 0),
-                            spreadRadius: 5,
-                          ),
-                        ],
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
@@ -339,7 +316,7 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           const Icon(Icons.search, color: Color(0xFF3A59D1)),
-                          const SizedBox(width: 10),
+
                           Expanded(
                             child: TextField(
                               controller: _searchController,
@@ -365,7 +342,11 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
                           ),
                           if (_searchController.text.isNotEmpty)
                             IconButton(
-                              icon: Icon(Icons.clear, color: Colors.grey[600], size: 20),
+                              icon: Icon(
+                                Icons.clear,
+                                color: Colors.grey[600],
+                                size: 20,
+                              ),
                               onPressed: () {
                                 _searchController.clear();
                                 setState(() {
@@ -382,7 +363,8 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
               ),
 
               // 검색 제안 (검색어 입력 중일 때)
-              if (_searchViewModel.searchSuggestions.isNotEmpty && !_showSearchResults)
+              if (_searchViewModel.searchSuggestions.isNotEmpty &&
+                  !_showSearchResults)
                 Positioned(
                   top: 90,
                   left: 16,
@@ -392,13 +374,16 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(8),
-                      boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 4)],
+                      boxShadow: [
+                        BoxShadow(color: Colors.black26, blurRadius: 4),
+                      ],
                     ),
                     child: ListView.builder(
                       shrinkWrap: true,
                       itemCount: _searchViewModel.searchSuggestions.length,
                       itemBuilder: (context, index) {
-                        final suggestion = _searchViewModel.searchSuggestions[index];
+                        final suggestion =
+                            _searchViewModel.searchSuggestions[index];
                         return ListTile(
                           leading: Icon(Icons.search, size: 16),
                           title: Text(suggestion),
@@ -413,7 +398,8 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
                 ),
 
               // 검색 결과 리스트 (검색 완료 후)
-              if (_showSearchResults && _searchViewModel.searchResults.isNotEmpty)
+              if (_showSearchResults &&
+                  _searchViewModel.searchResults.isNotEmpty)
                 Positioned(
                   top: 90,
                   left: 16,
@@ -423,7 +409,9 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(8),
-                      boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 4)],
+                      boxShadow: [
+                        BoxShadow(color: Colors.black26, blurRadius: 4),
+                      ],
                     ),
                     child: Column(
                       children: [
@@ -431,7 +419,9 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
                         Container(
                           padding: EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            border: Border(bottom: BorderSide(color: Colors.grey[200]!)),
+                            border: Border(
+                              bottom: BorderSide(color: Colors.grey[200]!),
+                            ),
                           ),
                           child: Row(
                             children: [
@@ -440,7 +430,7 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
                               Text(
                                 '검색 결과 ${_searchViewModel.searchResults.length}개',
                                 style: TextStyle(
-                                  fontSize: 16, 
+                                  fontSize: 16,
                                   fontWeight: FontWeight.w600,
                                   color: Color(0xFF3A59D1),
                                 ),
@@ -464,7 +454,8 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
                           child: ListView.builder(
                             itemCount: _searchViewModel.searchResults.length,
                             itemBuilder: (context, index) {
-                              final spot = _searchViewModel.searchResults[index];
+                              final spot =
+                                  _searchViewModel.searchResults[index];
                               return _buildSearchResultItem(spot);
                             },
                           ),
@@ -486,7 +477,9 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(8),
-                        boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 4)],
+                        boxShadow: [
+                          BoxShadow(color: Colors.black26, blurRadius: 4),
+                        ],
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
@@ -501,7 +494,9 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
                 ),
 
               // 검색 결과 카운트
-              if (_showSearchResults && !_searchViewModel.isSearching && _searchViewModel.searchResults.isNotEmpty)
+              if (_showSearchResults &&
+                  !_searchViewModel.isSearching &&
+                  _searchViewModel.searchResults.isNotEmpty)
                 Positioned(
                   bottom: 50,
                   left: 16,
@@ -510,111 +505,30 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
                     decoration: BoxDecoration(
                       color: Color(0xFF3A59D1),
                       borderRadius: BorderRadius.circular(16),
-                      boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 4)],
+                      boxShadow: [
+                        BoxShadow(color: Colors.black26, blurRadius: 4),
+                      ],
                     ),
                     child: Text(
                       '검색 결과: ${_searchViewModel.searchResults.length}개',
-                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
-                    ),
-                  ),
-                ),
-
-              // 2. Top-right Button (myPage and setting and star ) - 검색 결과가 없을 때만 표시
-              if (!_showSearchResults)
-                Positioned(
-                  top: 150,
-                  right: 29,
-                  child: Column(
-                    children: [
-                      FloatingActionButton(
-                        heroTag: 'myPage_button',
-                        mini: true,
-                        onPressed: () {
-                          print('프로필 버튼 클릭');
-                        },
-                        child: SvgPicture.asset(
-                          width: 18,
-                          height: 18,
-                          'assets/icons/person.svg',
-                        ),
-                      ),
-
-                      const SizedBox(height: 12),
-
-                      FloatingActionButton(
-                        heroTag: 'setting_button',
-                        mini: true,
-                        onPressed: () {
-                          print('설정 버튼 클릭');
-                        },
-                        child: const Icon(
-                          size: 24,
-                          Icons.settings,
-                          color: Color(0xFF3A59D1),
-                        ),
-                      ),
-
-                      const SizedBox(height: 12),
-
-                      FloatingActionButton(
-                        heroTag: 'Location Bookmark',
-                        mini: true,
-                        onPressed: () {
-                          print('즐겨찾기 버튼 클릭');
-                        },
-                        child: Image.asset(
-                          'assets/image/icon-bookmark.png',
-                          width: 24,
-                          height: 24,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-              // 3. Scratch Map Button - 검색 결과가 없을 때만 표시
-              if (!_showSearchResults)
-                SafeArea(
-                  child: Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Padding(
-                      padding: const EdgeInsets.only(bottom: 24),
-                      child: SizedBox(
-                        width: 100,
-                        height: 100,
-                        child: Material(
-                          color: Colors.transparent,
-                          child: InkWell(
-                            borderRadius: BorderRadius.circular(12),
-                            splashColor: Colors.transparent,
-                            highlightColor: Colors.transparent,
-                            onTap: () async {
-                              await viewModel.toggleHexagons();
-                            },
-                            child: Center(
-                              child: Image.asset(
-                                'assets/images/icon-scratch.png',
-                                width: 120,
-                                height: 120,
-                              ),
-                            ),
-                          ),
-                        ),
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   ),
                 ),
 
-              // My Location Button - 검색 결과가 없을 때만 표시
+              // 2. Top-right: My Location Button - 검색 결과가 없을 때만 표시
               if (!_showSearchResults)
                 SafeArea(
                   child: Align(
-                    alignment: Alignment.bottomRight,
+                    alignment: Alignment.topRight,
                     child: Padding(
-                      padding: const EdgeInsets.only(bottom: 45, right: 53),
+                      padding: const EdgeInsets.only(top: 120, right: 16),
                       child: SizedBox(
-                        width: 40,
-                        height: 40,
+                        width: 44,
+                        height: 44,
                         child: Material(
                           color: Colors.transparent,
                           child: InkWell(
@@ -633,8 +547,8 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
                             child: Center(
                               child: Image.asset(
                                 'assets/images/icon-compass.png',
-                                width: 50,
-                                height: 50,
+                                width: 44,
+                                height: 44,
                               ),
                             ),
                           ),
@@ -643,6 +557,99 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
                     ),
                   ),
                 ),
+
+              // 3. Bottom Center: Bookmark (left) - Main Scratch (center) - Person (right)
+              if (!_showSearchResults)
+                SafeArea(
+                  child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 24),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          // LEFT: Bookmark
+                          SizedBox(
+                            width: 64,
+                            height: 64,
+                            child: Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(12),
+                                splashColor: Colors.transparent,
+                                highlightColor: Colors.transparent,
+                                onTap: () {
+                                  print('즐겨찾기 버튼 클릭');
+                                },
+                                child: Center(
+                                  child: Image.asset(
+                                    'assets/images/icon-bookmark.png',
+                                    width: 36,
+                                    height: 36,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(width: 20),
+
+                          // CENTER: Main Scratch button
+                          SizedBox(
+                            width: 100,
+                            height: 100,
+                            child: Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(12),
+                                splashColor: Colors.transparent,
+                                highlightColor: Colors.transparent,
+                                onTap: () async {
+                                  await viewModel.toggleHexagons();
+                                },
+                                child: Center(
+                                  child: Image.asset(
+                                    'assets/images/icon-scratch.png',
+                                    width: 120,
+                                    height: 120,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(width: 20),
+
+                          // RIGHT: Person (my page)
+                          SizedBox(
+                            width: 64,
+                            height: 64,
+                            child: Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(12),
+                                splashColor: Colors.transparent,
+                                highlightColor: Colors.transparent,
+                                onTap: () {
+                                  print('프로필 버튼 클릭');
+                                },
+                                child: Center(
+                                  child: Image.asset(
+                                    'assets/images/person.png',
+                                    width: 36,
+                                    height: 36,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+
 
               // 🔄 로딩 인디케이터 (스팟 로드 중)
               if (viewModel.isLoadingSpots)
@@ -669,10 +676,7 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
                         SizedBox(width: 8),
                         Text(
                           '파쿠르 스팟 로딩 중...',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                          ),
+                          style: TextStyle(color: Colors.white, fontSize: 12),
                         ),
                       ],
                     ),
@@ -684,6 +688,4 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
       ),
     );
   }
-
-
 }
