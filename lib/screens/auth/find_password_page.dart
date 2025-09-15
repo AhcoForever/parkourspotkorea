@@ -12,6 +12,8 @@ class FindIDPW extends StatefulWidget {
 
 class _FindIDPWState extends State<FindIDPW> {
   final TextEditingController _emailController = TextEditingController();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -91,14 +93,14 @@ class _FindIDPWState extends State<FindIDPW> {
 
               // Confirm button
               ComfirmButton(
-                text: '비밀번호 재설정',
-                onPressed: () {
+                text: _isLoading ? '전송 중...' : '비밀번호 재설정',
+                onPressed: _isLoading ? null : () {
                   // 이메일 입력 검증 추가
                   if (_emailController.text.trim().isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text('이메일 주소를 입력해 주세요.'),
-                        backgroundColor: Colors.red,
+                        backgroundColor: StrokeColors.error,
                       ),
                     );
                     return;
@@ -108,7 +110,7 @@ class _FindIDPWState extends State<FindIDPW> {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text('올바른 이메일 형식을 입력해 주세요.'),
-                        backgroundColor: Colors.red,
+                        backgroundColor: StrokeColors.error,
                       ),
                     );
                     return;
@@ -184,21 +186,110 @@ class _FindIDPWState extends State<FindIDPW> {
   }
 
   // 비밀번호 재설정 이메일 전송 함수
-  void _sendPasswordResetEmail() {
-    // TODO: 실제 이메일 전송 API 호출 구현
-    print('비밀번호 재설정 이메일 전송: ${_emailController.text}');
+  Future<void> _sendPasswordResetEmail() async {
+    setState(() {
+      _isLoading = true;
+    });
 
-    // 성공 메시지 표시
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('비밀번호 재설정 이메일을 보내드렸습니다.\n이메일을 확인해 주세요.'),
-        backgroundColor: Colors.green,
-        duration: Duration(seconds: 3),
-      ),
-    );
+    try {
+      // Firebase Auth를 통한 비밀번호 재설정 이메일 전송
+      await _auth.sendPasswordResetEmail(
+        email: _emailController.text.trim(),
+      );
 
-    // 이메일 입력 필드 초기화 (선택사항)
-    _emailController.clear();
+      // 성공 메시지 표시
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              '비밀번호 재설정 이메일을 보내드렸습니다.\n이메일을 확인해 주세요.',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 14,
+              ),
+            ),
+            backgroundColor: SecondaryColors.c500Default,
+            duration: Duration(seconds: 4),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+        );
+
+        // 이메일 입력 필드 초기화
+        _emailController.clear();
+
+        // 3초 후 로그인 페이지로 이동
+        Future.delayed(Duration(seconds: 3), () {
+          if (mounted) {
+            context.goNamed('login');
+          }
+        });
+      }
+    } on FirebaseAuthException catch (e) {
+      String errorMessage = '';
+
+      switch (e.code) {
+        case 'user-not-found':
+          errorMessage = '해당 이메일로 가입된 계정이 없습니다.';
+          break;
+        case 'invalid-email':
+          errorMessage = '올바른 이메일 형식을 입력해 주세요.';
+          break;
+        case 'too-many-requests':
+          errorMessage = '요청이 너무 많습니다. 잠시 후 다시 시도해 주세요.';
+          break;
+        default:
+          errorMessage = '이메일 전송에 실패했습니다. 다시 시도해 주세요.';
+      }
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              errorMessage,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 14,
+              ),
+            ),
+            backgroundColor: StrokeColors.error,
+            duration: Duration(seconds: 3),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              '알 수 없는 오류가 발생했습니다. 다시 시도해 주세요.',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 14,
+              ),
+            ),
+            backgroundColor: StrokeColors.error,
+            duration: Duration(seconds: 3),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
   }
 
   @override
