@@ -19,6 +19,12 @@ class BrandColors {
 
   // 기본 텍스트
   static const Color normal = Color(0xFF455164);
+
+  // 텍스트 색상
+  static const Color txt30 = Color(0xFFFCFCFC);
+  static const Color txt300 = Color(0xFFB2B2B2);
+  static const Color txt500 = Color(0xFF7F7F7F);
+
 }
 
 class SecondaryColors {

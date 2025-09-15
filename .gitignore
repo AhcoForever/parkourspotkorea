@@ -57,3 +57,4 @@ app.*.map.json
 /android/release.keystore
 /assets/spot/
 pubspec.yaml
+/android/key.properties

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:parkourspotkorea/theme/app_colors.dart';
 import 'package:provider/provider.dart';
 import 'package:parkourspotkorea/repositories/user_repository.dart';
 import 'dart:io' show Platform;
@@ -54,15 +55,12 @@ class _LoginPageState extends State<LoginPage> {
     final GoogleSignIn signIn = GoogleSignIn.instance;
     unawaited(
       signIn
-          .initialize(
-        clientId: _getClientId,
-        serverClientId: _serverClientId,
-      )
+          .initialize(clientId: _getClientId, serverClientId: _serverClientId)
           .then((_) {
-        signIn.authenticationEvents
-            .listen(_handleAuthenticationEvent)
-            .onError(_handleAuthenticationError);
-      }),
+            signIn.authenticationEvents
+                .listen(_handleAuthenticationEvent)
+                .onError(_handleAuthenticationError);
+          }),
     );
   }
 
@@ -78,15 +76,15 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _handleAuthenticationEvent(
-      GoogleSignInAuthenticationEvent event,
-      ) async {
+    GoogleSignInAuthenticationEvent event,
+  ) async {
     // #docregion CheckAuthorization
     final GoogleSignInAccount? user = // ...
-    // #enddocregion CheckAuthorization
-    switch (event) {
-      GoogleSignInAuthenticationEventSignIn() => event.user,
-      GoogleSignInAuthenticationEventSignOut() => null,
-    };
+        // #enddocregion CheckAuthorization
+        switch (event) {
+          GoogleSignInAuthenticationEventSignIn() => event.user,
+          GoogleSignInAuthenticationEventSignOut() => null,
+        };
 
     // Check for existing authorization.
     // #docregion CheckAuthorization
@@ -143,7 +141,10 @@ class _LoginPageState extends State<LoginPage> {
       if (user != null) {
         // 로그인 성공 시 로컬 사용자 생성/동기화
         final userRepo = context.read<UserRepository>();
-        await userRepo.ensureUserExists(uid: user.uid, email: user.email ?? 'no-email@unknown');
+        await userRepo.ensureUserExists(
+          uid: user.uid,
+          email: user.email ?? 'no-email@unknown',
+        );
         // 로그인 성공 시 지도 페이지로 이동
         context.goNamed('map');
       }
@@ -161,23 +162,19 @@ class _LoginPageState extends State<LoginPage> {
     setState(() => _isLoading = false);
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
-
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
-            spacing: 8,
             children: [
               // 로고 이미지
-              Image.asset('assets/logo/PARKOUR_SPOT.png', height: 300),
+              Image.asset('assets/logo/PARKOUR_SPOT.png', height: 280),
               //Text('아이디(이메일)', style: Theme.of(context).textTheme.labelSmall),
               // 이메일 입력창
               TextField(
@@ -185,25 +182,24 @@ class _LoginPageState extends State<LoginPage> {
                 decoration: InputDecoration(
                   label: Text('아이디(이메일)을 입력해주세요.'),
                   hintText: 'parkourspot@gmail.com',
-
                 ),
-
               ),
+
+              SizedBox(height: 16),
 
               // 비밀번호 입력창
               TextField(
-
                 controller: _pwCtrl,
                 obscureText: true,
                 decoration: InputDecoration(
                   label: Text('비밀번호를 입력해주세요.'),
-                  hintText: '비밀번호를 입력해주세요.',
+                  hintText: '영문+숫자+특수문자 조합 8~16자리',
                 ),
               ),
 
               // 로그인 버튼
               Padding(
-                padding: const EdgeInsets.only(top: 10.0),
+                padding: const EdgeInsets.only(top: 30.0),
                 child: SizedBox(
                   width: double.infinity,
                   height: 60,
@@ -216,7 +212,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
               ),
-
+              SizedBox(height: 50),
               // 소셜 로그인 (구글)
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -228,17 +224,16 @@ class _LoginPageState extends State<LoginPage> {
                     },
                     child: Image.asset(
                       'assets/images/ios_dark_rd_ctn@3x.png',
-                      height: 100,
-                      width: 250,
-
+                      height: 49,
+                      width: 221,
                     ),
                   ),
                 ],
               ),
-
+              SizedBox(height: 50),
               // 하단 버튼 3개
               Padding(
-                padding: const EdgeInsets.only( bottom: 10.0),
+                padding: const EdgeInsets.only(bottom: 10.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -247,17 +242,22 @@ class _LoginPageState extends State<LoginPage> {
                         context.goNamed('find');
                       },
                       child: Text(
-                        '비밀번호 찾기',
+                        '비밀번호 재설정',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Color(0xFF6A707C),
+                          color: BrandColors.txt30,
+                          fontWeight: FontWeight.w600,
+
+                          fontSize: 12,
                         ),
                       ),
                     ),
 
                     Text(
-                      ' | ',
+                      '  |  ',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Color(0xFF6A707C),
+                        color: BrandColors.txt30,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                     TextButton(
@@ -267,7 +267,9 @@ class _LoginPageState extends State<LoginPage> {
                       child: Text(
                         '회원 가입',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Color(0xFF6A707C),
+                          color: BrandColors.txt30,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),
@@ -276,14 +278,24 @@ class _LoginPageState extends State<LoginPage> {
               ),
 
               Padding(
-                padding: const EdgeInsets.only(top: 20.0),
+                padding: const EdgeInsets.only(top: 24.0),
                 child: TextButton(
                   onPressed: () {
                     context.goNamed('customerService');
                   },
-                  child: Text(
-                    '로그인에 어려움이 있나요?',
-                    style: TextStyle(decoration: TextDecoration.underline),
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(
+                          color: BrandColors.txt30,
+
+                        ),
+                      ),
+                    ),
+                    child: Text(
+                      '로그인에 어려움이 있나요?',
+                      style: TextStyle(color: BrandColors.txt30, fontSize: 12, fontFamily: 'Pretendard'),
+                    ),
                   ),
                 ),
               ),

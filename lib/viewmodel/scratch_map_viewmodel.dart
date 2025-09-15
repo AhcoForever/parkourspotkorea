@@ -209,6 +209,7 @@ class ScratchMapViewModel extends ChangeNotifier {
   Future<LatLng?> moveToCurrentLocation() async {
     try {
       final position = await _locationRepository.getCurrentPosition();
+
       if (position != null) {
         final latLng = LatLng(position.latitude, position.longitude);
         _updateState(_state.copyWith(cameraPosition: latLng));

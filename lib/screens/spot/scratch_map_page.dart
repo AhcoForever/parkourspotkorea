@@ -52,13 +52,13 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
     rootBundle
         .loadString('assets/map_style/map_style.json')
         .then((style) {
-          setState(() {
-            _mapStyle = style;
-          });
-        })
+      setState(() {
+        _mapStyle = style;
+      });
+    })
         .catchError((e) {
-          debugPrint('Map style load failed: $e');
-        });
+      debugPrint('Map style load failed: $e');
+    });
   }
 
   /// 검색 결과 변경 시 콜백
@@ -248,12 +248,12 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
                   // 마커 로드 (카메라 중심)
                   final center =
                       viewModel.cameraPosition ??
-                      const LatLng(37.5665, 126.9780);
+                          const LatLng(37.5665, 126.9780);
                   viewModel.loadAndShowSpots(center, radiusKm: 7);
                 },
                 initialCameraPosition: CameraPosition(
                   target:
-                      viewModel.cameraPosition ??
+                  viewModel.cameraPosition ??
                       const LatLng(37.5665, 126.9780),
                   zoom: 15,
                 ),
@@ -383,7 +383,7 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
                       itemCount: _searchViewModel.searchSuggestions.length,
                       itemBuilder: (context, index) {
                         final suggestion =
-                            _searchViewModel.searchSuggestions[index];
+                        _searchViewModel.searchSuggestions[index];
                         return ListTile(
                           leading: Icon(Icons.search, size: 16),
                           title: Text(suggestion),
@@ -455,7 +455,7 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
                             itemCount: _searchViewModel.searchResults.length,
                             itemBuilder: (context, index) {
                               final spot =
-                                  _searchViewModel.searchResults[index];
+                              _searchViewModel.searchResults[index];
                               return _buildSearchResultItem(spot);
                             },
                           ),

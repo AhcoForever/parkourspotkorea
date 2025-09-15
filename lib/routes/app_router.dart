@@ -1,4 +1,3 @@
-// lib/routes/app_router.dart (간소화된 버전)
 
 import 'package:go_router/go_router.dart';
 
@@ -25,8 +24,8 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) =>  //ParkourLandingPage(),
 
       //NicknamePage(),
-      //LoginPage()
-     AppInitializer(),
+      LoginPage()
+      //AppInitializer(),
     ),
 
     // 로그인 페이지
