@@ -19,12 +19,12 @@ class AppTheme {
 
       // App bar 테마
       appBarTheme: AppBarTheme(
-        backgroundColor: BrandColors.c800, // 스캐폴드보다 약간 밝게
+        backgroundColor: BrandColors.c800,
         centerTitle: true,
         titleTextStyle: TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.normal,
-          color: BrandColors.c50, // 밝은 텍스트
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          color: BrandColors.txtWhite,
         ),
       ),
 
