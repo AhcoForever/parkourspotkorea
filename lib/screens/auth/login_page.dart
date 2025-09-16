@@ -104,8 +104,14 @@ class _LoginPageState extends State<LoginPage> {
     if (user != null && authorization != null) {
       // 구글 로그인 성공 시 로컬 사용자 생성/동기화
       final userRepo = context.read<UserRepository>();
-      await userRepo.ensureUserExists(uid: user.id, email: user.email);
-      context.goNamed('map');
+      final isFirstTime = await userRepo.ensureUserExists(uid: user.id, email: user.email);
+
+      // 최초 로그인 사용자는 닉네임 페이지로, 기존 사용자는 지도 페이지로 이동
+      if (isFirstTime) {
+        context.goNamed('nickname');
+      } else {
+        context.goNamed('map');
+      }
     }
   }
 
@@ -141,12 +147,17 @@ class _LoginPageState extends State<LoginPage> {
       if (user != null) {
         // 로그인 성공 시 로컬 사용자 생성/동기화
         final userRepo = context.read<UserRepository>();
-        await userRepo.ensureUserExists(
+        final isFirstTime = await userRepo.ensureUserExists(
           uid: user.uid,
           email: user.email ?? 'no-email@unknown',
         );
-        // 로그인 성공 시 지도 페이지로 이동
-        context.goNamed('map');
+
+        // 최초 로그인 사용자는 닉네임 페이지로, 기존 사용자는 지도 페이지로 이동
+        if (isFirstTime) {
+          context.goNamed('nickname');
+        } else {
+          context.goNamed('map');
+        }
       }
     } catch (e) {
       Fluttertoast.showToast(

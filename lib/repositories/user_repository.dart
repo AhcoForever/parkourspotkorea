@@ -45,7 +45,8 @@ class UserRepository {
   }
 
   /// 🔄 사용자 존재 여부 확인 및 생성
-  Future<void> ensureUserExists({
+  /// @return 최초 생성된 사용자인지 여부 (true: 신규, false: 기존)
+  Future<bool> ensureUserExists({
     required String uid,
     required String email,
   }) async {
@@ -54,9 +55,11 @@ class UserRepository {
     if (existingUser == null) {
       // 사용자가 없으면 생성
       await createUser(uid: uid, email: email);
+      return true; // 최초 생성
     } else {
       // 있으면 동기화 시간만 업데이트
       await updateSyncTime(uid);
+      return false; // 기존 사용자
     }
   }
 

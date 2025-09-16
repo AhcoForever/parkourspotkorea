@@ -44,7 +44,7 @@ class SignupCompleteDialog extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 18),
-            ComfirmButton(onPressed:()=> context.goNamed('map'),),
+            ComfirmButton(onPressed: onConfirm),
           ],
         ),
       ),

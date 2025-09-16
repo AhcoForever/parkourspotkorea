@@ -168,6 +168,7 @@ class _SignUpPageState extends State<SignUpPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        SizedBox(height: 40,),
         _buildLabel('이메일 아이디', true),
         const SizedBox(height: 8),
         _buildTextField(
@@ -482,7 +483,7 @@ SizedBox(height: 15),
   // Helper methods
   Future<void> _showSignupCompleteDialog() async {
     await SignupCompleteDialog.show(context, () {
-      context.goNamed('map');
+      context.goNamed('nickname');
     });
   }
 

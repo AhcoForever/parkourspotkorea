@@ -34,17 +34,12 @@ class _FindIDPWState extends State<FindIDPW> {
         centerTitle: true,
       ),
       body: BackgroundWrapper(
-        // 배경 설정 옵션들
-        showBackground: true,
-        svgWidth: 300,
-        svgHeight: 300,
-        alignment: Alignment.center,
-        backgroundColor: BrandColors.c900,
         child: SingleChildScrollView(
           padding: EdgeInsets.all(20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+             SizedBox(height: 40,),
               // Email input section
               RichText(
                 text: TextSpan(
