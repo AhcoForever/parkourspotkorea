@@ -30,13 +30,14 @@ class _FindIDPWState extends State<FindIDPW> {
         ),
         title: Text('비밀번호 재설정'),
         backgroundColor: BrandColors.c900,
+
         centerTitle: true,
       ),
       body: BackgroundWrapper(
         // 배경 설정 옵션들
         showBackground: true,
-        svgWidth: 200,
-        svgHeight: 200,
+        svgWidth: 300,
+        svgHeight: 300,
         alignment: Alignment.center,
         backgroundColor: BrandColors.c900,
         child: SingleChildScrollView(
@@ -76,13 +77,14 @@ class _FindIDPWState extends State<FindIDPW> {
                 ),
                 child: TextField(
                   controller: _emailController,
+                  style: TextStyle(color: BrandColors.txt30),
                   decoration: InputDecoration(
                     hintText: '@ 까지 정확하게 입력해 주세요.',
-                    hintStyle: TextStyle(color: Colors.grey[500], fontSize: 14),
+                    hintStyle: TextStyle(color: BrandColors.txt500, fontSize: 13),
                     border: InputBorder.none,
                     contentPadding: EdgeInsets.symmetric(
-                      horizontal: 15,
-                      vertical: 15,
+                      horizontal: 16,
+                      vertical: 17,
                     ),
                   ),
                   keyboardType: TextInputType.emailAddress,

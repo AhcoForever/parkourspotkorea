@@ -174,11 +174,13 @@ class _LoginPageState extends State<LoginPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               // 로고 이미지
-              Image.asset('assets/logo/PARKOUR_SPOT.png', height: 280),
-              //Text('아이디(이메일)', style: Theme.of(context).textTheme.labelSmall),
+              Image.asset('assets/logo/PARKOUR_SPOT.png', height: 300,),
+
+
               // 이메일 입력창
               TextField(
                 controller: _emailCtrl,
+                style: TextStyle(color: BrandColors.txt30),
                 decoration: InputDecoration(
                   label: Text('아이디(이메일)을 입력해주세요.'),
                   hintText: 'parkourspot@gmail.com',
@@ -190,6 +192,7 @@ class _LoginPageState extends State<LoginPage> {
               // 비밀번호 입력창
               TextField(
                 controller: _pwCtrl,
+                style: TextStyle(color: BrandColors.txt30),
                 obscureText: true,
                 decoration: InputDecoration(
                   label: Text('비밀번호를 입력해주세요.'),

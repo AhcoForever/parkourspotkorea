@@ -31,20 +31,14 @@ class BackgroundWrapper extends StatelessWidget {
       ),
       child: Stack(
         children: [
-          // 배경 SVG
+          // 배경 SVG - 화면 전체 기준으로 센터링
           if (showBackground)
-            Positioned(
-              left: 0,
-              right: 0,
-              top: 0,
-              bottom: 0,
-              child: Align(
-                alignment: alignment,
-                child: SvgPicture.asset(
-                  customSvgPath ?? 'assets/logo/background-logo.svg',
-                  width: svgWidth,
-                  height: svgHeight,
-                ),
+            Center(
+              child: SvgPicture.asset(
+                customSvgPath ?? 'assets/logo/background-logo.svg',
+                width: svgWidth,
+                height: svgHeight,
+                fit: BoxFit.contain,
               ),
             ),
 

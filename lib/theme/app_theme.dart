@@ -139,6 +139,7 @@ class AppTheme {
         // 어두운 입력 필드 배경
         labelStyle: TextStyle(color: BrandColors.txt500),
         // 밝은 라벨
+        hintStyle: TextStyle(color: BrandColors.txt30),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
           vertical: 17,
@@ -166,6 +167,13 @@ class AppTheme {
           borderRadius: BorderRadius.circular(4),
           borderSide: BorderSide(color: StrokeColors.error, width: 2),
         ),
+      ),
+
+      // 텍스트 필드 입력 텍스트 색상
+      textSelectionTheme: TextSelectionThemeData(
+        cursorColor: BrandColors.c500,
+        selectionColor: BrandColors.c500.withOpacity(0.3),
+        selectionHandleColor: BrandColors.c500,
       ),
 
       // FloatingActionButton 테마

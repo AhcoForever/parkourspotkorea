@@ -78,18 +78,17 @@ flutter_launcher_icons:
     remove_alpha_ios: true
     image_path_ios: "assets/icons/parkourSpot-iOS.png"
     image_path_android: "assets/icons/parkourSpot-android.png"
-    adaptive_icon_background: "#00000000"
-    adaptive_icon_foreground: "assets/icons/parkourSpot-android.png"
 
 
 flutter_native_splash:
-  color: "#000000"
-  image: "assets/icons/parkourSpot-iOS.png"
+  color: "#07071A"
+  image: "assets/icons/parkourSpot-android2.png"
   android_gravity: center
   ios_content_mode: center
   fullscreen: true
-
-
+  android_12:
+    color: "#07071A"
+    image: "assets/icons/parkourSpot-android2.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -164,5 +163,4 @@ flutter:
   #       - asset: fonts/TrajanPro_Bold.ttf
   #         weight: 700
   #
-  # For details regarding fonts from package dependencies,
-  # see https://flutter.dev/to/font-from-package
+

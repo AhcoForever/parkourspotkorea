@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class ComfirmButton extends StatelessWidget {
   final String text;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
   final double width;
   final double height;
   final Color color;
@@ -25,7 +25,10 @@ class ComfirmButton extends StatelessWidget {
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(foregroundColor: color),
           onPressed: onPressed,
-          child: Text(text),
+          child: Text(
+            text,
+            style: const TextStyle(fontFamily: 'Pretendard', fontSize: 18),
+          ),
         ),
       ),
     );
