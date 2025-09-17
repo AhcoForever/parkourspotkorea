@@ -1,5 +1,7 @@
 
 import 'package:go_router/go_router.dart';
+import 'package:parkourspotkorea/screens/locationPermission_white_page.dart';
+import 'package:parkourspotkorea/screens/location_permission_dark_page.dart';
 
 import '../screens/auth/signup_page.dart';
 import '../screens/customer_service_page.dart';
@@ -22,9 +24,9 @@ final GoRouter appRouter = GoRouter(
       path: '/',
       name: 'initializer',
       builder: (context, state) =>  //ParkourLandingPage(),
-
+LocationPermissionDarkPage()
      // NicknamePage(),
-      LoginPage()
+      //LoginPage()
       //AppInitializer(),
     ),
 

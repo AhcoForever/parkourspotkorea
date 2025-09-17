@@ -152,6 +152,15 @@ flutter:
         - asset: assets/fonts/Pretendard/Pretendard-Bold.ttf
           weight: 700
 
+    - family: Giants
+      fonts:
+        - asset: assets/fonts/Giants/Giants-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Giants/Giants-Inline.ttf
+          weight: 400
+        - asset: assets/fonts/Giants/Giants-Regular.ttf
+          weight: 100
+
 
   #     fonts:
   #       - asset: fonts/Schyler-Regular.ttf

@@ -22,6 +22,7 @@ class BrandColors {
 
   // 텍스트 색상
   static const Color txt30 = Color(0xFFFCFCFC);
+  static const Color txt100 = Color(0xFFD9D9D9);
   static const Color txt300 = Color(0xFFB2B2B2);
   static const Color txt500 = Color(0xFF7F7F7F);
   static const Color txt700 = Color(0xFF4D4D4D);
