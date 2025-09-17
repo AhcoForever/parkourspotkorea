@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../screens/auth/signup_page.dart';
 import '../screens/customer_service_page.dart';
 import '../screens/errorscreen.dart';
-import '../screens/auth/find_password_page.dart';
+import '../screens/auth/reset_password_page.dart';
 import '../screens/auth/login_page.dart';
 import '../screens/landing_page.dart';
 import '../screens/nickname_page.dart';
@@ -23,8 +23,8 @@ final GoRouter appRouter = GoRouter(
       name: 'initializer',
       builder: (context, state) =>  //ParkourLandingPage(),
 
-      NicknamePage(),
-      //LoginPage()
+     // NicknamePage(),
+      LoginPage()
       //AppInitializer(),
     ),
 
@@ -53,7 +53,7 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/find',
       name: 'find',
-      builder: (context, state) => FindIDPW(),
+      builder: (context, state) => ResetPasswordPage(),
     ),
 
     // 고객서비스

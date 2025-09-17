@@ -5,12 +5,12 @@ import 'package:parkourspotkorea/widgets/comfirm_button.dart';
 import 'package:parkourspotkorea/widgets/background_wrapper.dart'; // BackgroundWrapper import 추가
 import 'package:firebase_auth/firebase_auth.dart';
 
-class FindIDPW extends StatefulWidget {
+class ResetPasswordPage extends StatefulWidget {
   @override
-  _FindIDPWState createState() => _FindIDPWState();
+  _ResetPasswordPageState createState() => _ResetPasswordPageState();
 }
 
-class _FindIDPWState extends State<FindIDPW> {
+class _ResetPasswordPageState extends State<ResetPasswordPage> {
   final TextEditingController _emailController = TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   bool _isLoading = false;
@@ -39,7 +39,7 @@ class _FindIDPWState extends State<FindIDPW> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-             SizedBox(height: 40,),
+              SizedBox(height: 40),
               // Email input section
               RichText(
                 text: TextSpan(
@@ -75,7 +75,10 @@ class _FindIDPWState extends State<FindIDPW> {
                   style: TextStyle(color: BrandColors.txt30),
                   decoration: InputDecoration(
                     hintText: '@ 까지 정확하게 입력해 주세요.',
-                    hintStyle: TextStyle(color: BrandColors.txt500, fontSize: 13),
+                    hintStyle: TextStyle(
+                      color: BrandColors.txt500,
+                      fontSize: 13,
+                    ),
                     border: InputBorder.none,
                     contentPadding: EdgeInsets.symmetric(
                       horizontal: 16,
@@ -86,36 +89,42 @@ class _FindIDPWState extends State<FindIDPW> {
                 ),
               ),
 
-              SizedBox(height: 30),
-
+              SizedBox(height: 20),
+              Text(
+                '* 비밀번호 재설정 이메일이 스팸함으로 분류될 수 있습니다. \n   메일함을 확인해 주세요.',
+                style: TextStyle(color: BrandColors.txt500, fontSize: 12),
+              ),
+              SizedBox(height: 20,),
               // Confirm button
               ComfirmButton(
                 text: _isLoading ? '전송 중...' : '비밀번호 재설정',
-                onPressed: _isLoading ? null : () {
-                  // 이메일 입력 검증 추가
-                  if (_emailController.text.trim().isEmpty) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('이메일 주소를 입력해 주세요.'),
-                        backgroundColor: StrokeColors.error,
-                      ),
-                    );
-                    return;
-                  }
+                onPressed: _isLoading
+                    ? null
+                    : () {
+                        // 이메일 입력 검증 추가
+                        if (_emailController.text.trim().isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('이메일 주소를 입력해 주세요.'),
+                              backgroundColor: StrokeColors.error,
+                            ),
+                          );
+                          return;
+                        }
 
-                  if (!_isValidEmail(_emailController.text.trim())) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('올바른 이메일 형식을 입력해 주세요.'),
-                        backgroundColor: StrokeColors.error,
-                      ),
-                    );
-                    return;
-                  }
+                        if (!_isValidEmail(_emailController.text.trim())) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('올바른 이메일 형식을 입력해 주세요.'),
+                              backgroundColor: StrokeColors.error,
+                            ),
+                          );
+                          return;
+                        }
 
-                  // 비밀번호 재설정 이메일 전송 로직 구현
-                  _sendPasswordResetEmail();
-                },
+                        // 비밀번호 재설정 이메일 전송 로직 구현
+                        _sendPasswordResetEmail();
+                      },
               ),
 
               SizedBox(height: 20),
@@ -190,9 +199,9 @@ class _FindIDPWState extends State<FindIDPW> {
 
     try {
       // Firebase Auth를 통한 비밀번호 재설정 이메일 전송
-      await _auth.sendPasswordResetEmail(
-        email: _emailController.text.trim(),
-      );
+      print('비밀번호 재설정 이메일 전송 시도: ${_emailController.text.trim()}'); // 디버그 로그 추가
+      await _auth.sendPasswordResetEmail(email: _emailController.text.trim());
+      print('비밀번호 재설정 이메일 전송 성공'); // 디버그 로그 추가
 
       // 성공 메시지 표시
       if (mounted) {
@@ -200,10 +209,7 @@ class _FindIDPWState extends State<FindIDPW> {
           SnackBar(
             content: Text(
               '비밀번호 재설정 이메일을 보내드렸습니다.\n이메일을 확인해 주세요.',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 14,
-              ),
+              style: TextStyle(color: Colors.white, fontSize: 14),
             ),
             backgroundColor: SecondaryColors.c500Default,
             duration: Duration(seconds: 4),
@@ -225,6 +231,7 @@ class _FindIDPWState extends State<FindIDPW> {
         });
       }
     } on FirebaseAuthException catch (e) {
+      print('Firebase Auth 에러: ${e.code} - ${e.message}'); // 디버그 로그 추가
       String errorMessage = '';
 
       switch (e.code) {
@@ -246,10 +253,7 @@ class _FindIDPWState extends State<FindIDPW> {
           SnackBar(
             content: Text(
               errorMessage,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 14,
-              ),
+              style: TextStyle(color: Colors.white, fontSize: 14),
             ),
             backgroundColor: StrokeColors.error,
             duration: Duration(seconds: 3),
@@ -261,15 +265,13 @@ class _FindIDPWState extends State<FindIDPW> {
         );
       }
     } catch (e) {
+      print('일반 에러: $e'); // 디버그 로그 추가
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
               '알 수 없는 오류가 발생했습니다. 다시 시도해 주세요.',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 14,
-              ),
+              style: TextStyle(color: Colors.white, fontSize: 14),
             ),
             backgroundColor: StrokeColors.error,
             duration: Duration(seconds: 3),
