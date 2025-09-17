@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:parkourspotkorea/theme/app_colors.dart';
 
 class CustomerServicePage extends StatelessWidget {
   const CustomerServicePage({Key? key}) : super(key: key);
@@ -44,38 +45,38 @@ class CustomerServicePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF4F7FE),
       appBar: AppBar(
-        title:  Text('고객센터',style: textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold)),
+        title: Text(
+          '고객센터',
+          style: textTheme.headlineMedium?.copyWith(
+            fontWeight: FontWeight.w700,
+            color: BrandColors.txtWhite,
+          ),
+        ),
         leading: IconButton(
           padding: const EdgeInsets.only(left: 20),
-          icon: const Icon(Icons.arrow_back_ios, color: Color(0xFF3A59D1)),
+          icon: const Icon(Icons.arrow_back_ios),
           onPressed: () {
             context.goNamed('login');
           },
         ),
+        backgroundColor: BrandColors.c900,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.symmetric(horizontal: 40),
         child: Column(
           children: [
+            SizedBox(height: 77),
+
             // 이메일 문의 섹션
             Container(
               width: double.infinity,
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(17),
-                border: Border.all(color: const Color(0xFF7F93E1), width: 1),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.05),
-                    blurRadius: 10,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
+                color: BrandColors.c800,
+                borderRadius: BorderRadius.circular(4),
               ),
               child: Column(
                 children: [
@@ -83,20 +84,19 @@ class CustomerServicePage extends StatelessWidget {
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    decoration: const BoxDecoration(
-                      color: Color(0xFFCAD2F3),
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(16),
-                        topRight: Radius.circular(16),
+                    decoration: BoxDecoration(
+                      color: SecondaryColors.c500Default,
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(4),
+                        topRight: Radius.circular(4),
                       ),
                     ),
                     child: Text(
                       '이메일 문의',
-                      style: textTheme.headlineMedium
-                          ?.copyWith(
-                            color: const Color(0xFF173299),
-                            fontWeight: FontWeight.bold,
-                          ),
+                      style: TextStyle(
+                        color: BrandColors.c900,
+                        fontWeight: FontWeight.w600,
+                      )?.copyWith(fontSize: 18),
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -107,9 +107,9 @@ class CustomerServicePage extends StatelessWidget {
                       onTap: _sendEmail,
                       child: Text(
                         'ahco8766@gmail.com',
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: const Color(0xFF202632),
-                          decoration: TextDecoration.underline,
+                        style: textTheme.bodyLarge?.copyWith(
+                          color: BrandColors.txtWhite,
+                          fontWeight: FontWeight.w600,
                         ),
                         textAlign: TextAlign.center,
                       ),
@@ -123,42 +123,31 @@ class CustomerServicePage extends StatelessWidget {
 
             // 카카오톡 문의 섹션
             Container(
-
               width: double.infinity,
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(17),
-                border: Border.all(color: const Color(0xFF7F93E1), width: 1),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.05),
-                    blurRadius: 10,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
+                color: BrandColors.c800,
+                borderRadius: BorderRadius.circular(4),
               ),
               child: Column(
                 children: [
                   // 헤더
                   Container(
-
                     width: double.infinity,
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    decoration: const BoxDecoration(
-                      color: Color(0xFFCAD2F3),
+                    decoration: BoxDecoration(
                       borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(16),
-                        topRight: Radius.circular(16),
+                        topRight: Radius.circular(4),
+                        topLeft: Radius.circular(4),
                       ),
-
+                      color: SecondaryColors.c500Default,
                     ),
                     child: Text(
                       '카카오톡 문의',
-                      style: Theme.of(context).textTheme.headlineMedium
-                          ?.copyWith(
-                            color: const Color(0xFF173299),
-                            fontWeight: FontWeight.bold,
-                          ),
+                      style: TextStyle(
+                        color: BrandColors.c900,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 18,
+                      ),
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -168,8 +157,12 @@ class CustomerServicePage extends StatelessWidget {
                     child: Column(
                       children: [
                         Text(
-                          'QR 코드를 탭하거나 스캔하면 \n카카오 채널로 이동합니다.',
-                          style: Theme.of(context).textTheme.bodyMedium,
+                          'QR 코드를 탭하거나 스캔하면 \n카카오 문의 채널로 이동합니다.',
+                          style: TextStyle(
+                            color: BrandColors.txt30,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 20),
@@ -180,13 +173,6 @@ class CustomerServicePage extends StatelessWidget {
                           child: Container(
                             width: 150,
                             height: 150,
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: const Color(0xFFCAD2F3),
-                                width: 1,
-                              ),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(8),
                               child: Image.asset(
@@ -195,12 +181,7 @@ class CustomerServicePage extends StatelessWidget {
                                 fit: BoxFit.cover,
                                 errorBuilder: (context, error, stackTrace) {
                                   return Container(
-                                    color: const Color(0xFFF9F9F9),
-                                    child: const Icon(
-                                      Icons.qr_code,
-                                      size: 60,
-                                      color: Color(0xFF9E9E9E),
-                                    ),
+                                    child: Icon(Icons.qr_code, size: 60),
                                   );
                                 },
                               ),
