@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../services/firebase/auth_service.dart';
 
@@ -185,9 +186,12 @@ class _LoginPageState extends State<LoginPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               // 로고 이미지
-              Image.asset('assets/logo/PARKOUR_SPOT.png', height: 300,),
-
-
+              SvgPicture.asset(
+                'assets/logo/login-parkourspot.svg',
+                height: 260,
+                width: double.infinity,
+                fit: BoxFit.contain,
+              ),
               // 이메일 입력창
               TextField(
                 controller: _emailCtrl,
@@ -292,7 +296,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
 
               Padding(
-                padding: const EdgeInsets.only(top: 24.0),
+                padding: const EdgeInsets.only(top: 16.0),
                 child: TextButton(
                   onPressed: () {
                     context.goNamed('customerService');
@@ -301,14 +305,14 @@ class _LoginPageState extends State<LoginPage> {
                     decoration: const BoxDecoration(
                       border: Border(
                         bottom: BorderSide(
-                          color: BrandColors.txt30,
+                          color: BrandColors.txt300,
 
                         ),
                       ),
                     ),
                     child: Text(
                       '로그인에 어려움이 있나요?',
-                      style: TextStyle(color: BrandColors.txt30, fontSize: 12, fontFamily: 'Pretendard'),
+                      style: TextStyle(color: BrandColors.txt300, fontSize: 12, fontFamily: 'Pretendard'),
                     ),
                   ),
                 ),
