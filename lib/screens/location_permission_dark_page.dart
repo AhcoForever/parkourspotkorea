@@ -96,7 +96,9 @@ class LocationPermissionDarkPage extends StatelessWidget {
 
 
                     // 개인정보 보호 안내
-                    Container(
+                    Transform.translate(
+                      offset: Offset(0, -5),
+                      child: Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
                         color: BrandColors.c700,
@@ -120,6 +122,7 @@ class LocationPermissionDarkPage extends StatelessWidget {
                             ),
                           ),
                         ],
+                      ),
                       ),
                     ),
                   ],
@@ -153,7 +156,7 @@ class LocationPermissionDarkPage extends StatelessWidget {
                       },
                       style: TextButton.styleFrom(
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(8),
                           side: BorderSide(color: BrandColors.c600Dark),
                         ),
                       ),

@@ -396,7 +396,8 @@ class ScratchMapViewModel extends ChangeNotifier {
           BitmapDescriptor.hueOrange,
         );
       default:
-        return BitmapDescriptor.defaultMarkerWithHue(180.0);
+
+        return BitmapDescriptor.defaultMarkerWithHue(270.0);
     }
   }
 

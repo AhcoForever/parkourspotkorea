@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:parkourspotkorea/screens/spot/parkourspot_bottomsheet_page.dart';
 import 'package:provider/provider.dart';
@@ -633,6 +634,7 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
                                 highlightColor: Colors.transparent,
                                 onTap: () {
                                   print('프로필 버튼 클릭');
+                                  context.goNamed('profile');
                                 },
                                 child: Center(
                                   child: Image.asset(

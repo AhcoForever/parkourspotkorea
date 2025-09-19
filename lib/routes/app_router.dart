@@ -9,6 +9,7 @@ import '../screens/errorscreen.dart';
 import '../screens/auth/reset_password_page.dart';
 import '../screens/auth/login_page.dart';
 import '../screens/landing_page.dart';
+import '../screens/my_page.dart';
 import '../screens/nickname_page.dart';
 import '../screens/spot/scratch_map_page.dart';
 import '../widgets/app_initializer.dart';
@@ -24,10 +25,11 @@ final GoRouter appRouter = GoRouter(
       path: '/',
       name: 'initializer',
       builder: (context, state) =>  //ParkourLandingPage(),
-//LocationPermissionDarkPage()
+LocationPermissionDarkPage()
+      //MyPage()
      // NicknamePage(),
       //LoginPage()
-      AppInitializer(),
+      //AppInitializer(),
     ),
 
     // 로그인 페이지
@@ -70,6 +72,13 @@ final GoRouter appRouter = GoRouter(
       path: '/map',
       name: 'map',
       builder: (context, state) => ScratchMapPage(),
+    ),
+
+    // 마이페이지
+    GoRoute(
+      path: '/profile',
+      name: 'profile',
+      builder: (context, state) => MyPage(),
     ),
   ],
 );
