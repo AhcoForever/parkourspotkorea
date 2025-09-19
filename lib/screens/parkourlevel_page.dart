@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:parkourspotkorea/theme/app_colors.dart';
 
 /// 파쿠르 레벨 선택 화면
 class ParkourLevel extends StatefulWidget {
@@ -16,17 +17,17 @@ class _ParkourLevelState extends State<ParkourLevel> {
     _LevelInfo(
       title: '초급',
       imagePath: 'assets/images/beginner.png',
-      backgroundColor: Color(0xFFFFF5E0),
+      backgroundColor: BrandColors.c700,
     ),
     _LevelInfo(
       title: '중급',
       imagePath: 'assets/images/intermediate.png',
-      backgroundColor: Color(0xFFFFE0B2),
+      backgroundColor: BrandColors.c600Dark,
     ),
     _LevelInfo(
       title: '고급',
       imagePath: 'assets/images/advanced.png',
-      backgroundColor: Color(0xFFFFB74D),
+      backgroundColor: BrandColors.c500,
     ),
   ];
 
@@ -42,7 +43,7 @@ class _ParkourLevelState extends State<ParkourLevel> {
           child: Container(
             padding: EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: BrandColors.c800,
               borderRadius: BorderRadius.circular(16),
             ),
             child: Column(
@@ -59,7 +60,7 @@ class _ParkourLevelState extends State<ParkourLevel> {
                         style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
-                          color: Colors.blue,
+                          color: BrandColors.c500,
                         ),
                       ),
                       TextSpan(
@@ -67,7 +68,7 @@ class _ParkourLevelState extends State<ParkourLevel> {
                         style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black,
+                          color: BrandColors.txt30,
                         ),
                       ),
                     ],
@@ -84,7 +85,7 @@ class _ParkourLevelState extends State<ParkourLevel> {
                       // TODO: 다음 페이지로 이동하는 로직 구현
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.orange,
+                      backgroundColor: BrandColors.c500,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -94,7 +95,7 @@ class _ParkourLevelState extends State<ParkourLevel> {
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
-                        color: Colors.white,
+                        color: BrandColors.txtWhite,
                       ),
                     ),
                   ),
@@ -109,20 +110,39 @@ class _ParkourLevelState extends State<ParkourLevel> {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: BrandColors.c800,
       appBar: AppBar(
         title: Text(
-          '나의 파쿠르 실력은?',
-          style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold),
+          '파쿠르 레벨 선택',
+          style: Theme.of(
+            context,
+          ).appBarTheme.titleTextStyle?.copyWith(fontWeight: FontWeight.w600),
         ),
-        backgroundColor: Colors.white,
-        elevation: 0,
+        backgroundColor: BrandColors.c800,
         centerTitle: true,
-        foregroundColor: Colors.black,
+        foregroundColor: BrandColors.c50,
       ),
+
       body: Column(
         children: [
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+              child: Text(
+                '카드를 넘겨, 당신의 \n파쿠르 숙련도를 선택해주세요!',
+                style: TextStyle(
+                  color: BrandColors.txt30,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                ),
+                textAlign: TextAlign.left,
+              ),
+            ),
+          ),
           Expanded(
             child: PageView.builder(
               controller: _pageController,
@@ -145,14 +165,16 @@ class _ParkourLevelState extends State<ParkourLevel> {
                         color: level.backgroundColor,
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
-                          color: isSelected ? Colors.orange : Colors.transparent,
-                          width: 3,
+                          color: isSelected
+                              ? BrandColors.c500
+                              : BrandColors.c600Dark,
+                          width: isSelected ? 3 : 1,
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black12,
-                            blurRadius: 4,
-                            offset: Offset(0, 2),
+                            color: Colors.black26,
+                            blurRadius: 8,
+                            offset: Offset(0, 4),
                           ),
                         ],
                       ),
@@ -169,13 +191,13 @@ class _ParkourLevelState extends State<ParkourLevel> {
                                   // 이미지 로드 실패 시 플레이스홀더
                                   return Container(
                                     decoration: BoxDecoration(
-                                      color: Colors.grey[200],
+                                      color: BrandColors.c700,
                                       borderRadius: BorderRadius.circular(8),
                                     ),
                                     child: Icon(
                                       Icons.image,
                                       size: 48,
-                                      color: Colors.grey,
+                                      color: BrandColors.txt300,
                                     ),
                                   );
                                 },
@@ -185,10 +207,10 @@ class _ParkourLevelState extends State<ParkourLevel> {
                           SizedBox(height: 8),
                           Text(
                             level.title,
-                            style: TextStyle(
+                            style: textTheme.headlineMedium?.copyWith(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
-                              color: Colors.black87,
+                              color: BrandColors.txtWhite,
                             ),
                           ),
                           SizedBox(height: 16),
@@ -206,25 +228,23 @@ class _ParkourLevelState extends State<ParkourLevel> {
             child: ElevatedButton(
               onPressed: _selectedIndex != null
                   ? () {
-                final selected = _levels[_selectedIndex!].title;
-                // 환영 다이얼로그 표시
-                _showWelcomeDialog();
-              }
+                      final selected = _levels[_selectedIndex!].title;
+                      // 환영 다이얼로그 표시
+                      _showWelcomeDialog();
+                    }
                   : null,
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.orange,
-                disabledForegroundColor: Colors.orange.shade200.withOpacity(0.38),
-                disabledBackgroundColor: Colors.orange.shade200.withOpacity(0.12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.zero,
-                ),
+                backgroundColor: BrandColors.c500,
+                disabledForegroundColor: BrandColors.c600Dark.withOpacity(0.38),
+                disabledBackgroundColor: BrandColors.c600Dark.withOpacity(0.12),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
               ),
               child: Text(
                 '선택 완료',
-                style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white
+                style: textTheme.bodyLarge?.copyWith(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: BrandColors.txtWhite,
                 ),
               ),
             ),

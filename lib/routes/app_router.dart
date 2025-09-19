@@ -11,6 +11,7 @@ import '../screens/auth/login_page.dart';
 import '../screens/landing_page.dart';
 import '../screens/my_page.dart';
 import '../screens/nickname_page.dart';
+import '../screens/parkourlevel_page.dart';
 import '../screens/spot/scratch_map_page.dart';
 import '../widgets/app_initializer.dart';
 
@@ -25,9 +26,10 @@ final GoRouter appRouter = GoRouter(
       path: '/',
       name: 'initializer',
       builder: (context, state) =>  //ParkourLandingPage(),
+      ParkourLevel()
       //MyPage()
      // NicknamePage(),
-      LoginPage()
+      //LoginPage()
       //AppInitializer(),
     ),
 
@@ -74,10 +76,17 @@ final GoRouter appRouter = GoRouter(
     ),
 
     // 마이페이지
-    GoRoute(
+    GoRoute( //ParkourLevel
       path: '/profile',
       name: 'profile',
       builder: (context, state) => MyPage(),
+    ),
+
+    // 파쿠르 레벨 페이지
+    GoRoute(
+      path: '/parkourLevel',
+      name: 'parkourLevel',
+      builder: (context, state) => ParkourLevel(),
     ),
   ],
 );
