@@ -24,10 +24,10 @@ final GoRouter appRouter = GoRouter(
       path: '/',
       name: 'initializer',
       builder: (context, state) =>  //ParkourLandingPage(),
-LocationPermissionDarkPage()
+//LocationPermissionDarkPage()
      // NicknamePage(),
       //LoginPage()
-      //AppInitializer(),
+      AppInitializer(),
     ),
 
     // 로그인 페이지

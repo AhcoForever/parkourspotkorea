@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:parkourspotkorea/theme/app_colors.dart';
+import 'package:parkourspotkorea/widgets/comfirm_button.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:geolocator/geolocator.dart';
 
 class LocationPermissionDarkPage extends StatelessWidget {
   const LocationPermissionDarkPage({Key? key}) : super(key: key);
@@ -23,12 +27,12 @@ class LocationPermissionDarkPage extends StatelessWidget {
                     Stack(
                       alignment: Alignment.center,
                       children: [
-                        Image.asset('assets/images/locationPermission-image.png', width: 280, height: 280,
+                        Image.asset('assets/images/locationPermission-image.png', width: 400, height: 280,
                         alignment: Alignment.center),
 
                         // 메인 제목을 이미지 위에 겹치기
                         Positioned(
-                          bottom: 40, // 이미지 하단에서 20px 위
+                          bottom: 60, // 이미지 하단에서 20px 위
                           child: Text(
                             '위치 정보 사용 허용',
                             style: TextStyle(
@@ -42,7 +46,9 @@ class LocationPermissionDarkPage extends StatelessWidget {
                       ],
                     ),
                     // 설명 텍스트
-                    Text(
+                    Transform.translate(
+                      offset: Offset(0, -40), // 위로 40px 이동
+                      child: Text(
                       '회원님 주변의 파쿠르 장소를 찾아드리기 위해\n위치 정보 사용 권한이 필요해요.',
                       style: TextStyle(
                         color: BrandColors.txt100,
@@ -50,12 +56,14 @@ class LocationPermissionDarkPage extends StatelessWidget {
                         height: 1.5,
                       ),
                       textAlign: TextAlign.center,
+                      ),
                     ),
 
-                    const SizedBox(height: 16),
 
                     // 기능 목록
-                    Container(
+                    Transform.translate(
+                      offset: Offset(0, -20), // 위로 20px 이동
+                      child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 16),
                       decoration: BoxDecoration(
                         color: BrandColors.c800,
@@ -69,13 +77,13 @@ class LocationPermissionDarkPage extends StatelessWidget {
                             text: '내 주변 파쿠르 스팟 추천',
                             color: Color(0xFF142033),
                           ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: 24),
                           _buildFeatureItem(
                             icon: Icons.compass_calibration,
                             text: '거리 기반 장소 정보 제공',
                             color: Color(0xFF142033),
                           ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: 24),
                           _buildFeatureItem(
                             icon: Icons.hexagon,
                             text: '나만의 파쿠르 맵 생성',
@@ -83,16 +91,16 @@ class LocationPermissionDarkPage extends StatelessWidget {
                           ),
                         ],
                       ),
+                      ),
                     ),
 
-                    const SizedBox(height: 16), // 24에서 16으로 줄임
 
                     // 개인정보 보호 안내
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
                         color: BrandColors.c700,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(8),
                       ),
                       child: Row(
                         children: [
@@ -122,29 +130,14 @@ class LocationPermissionDarkPage extends StatelessWidget {
               Column(
                 children: [
                   // 허용 버튼
-                  Container(
-                    width: double.infinity,
+                  ComfirmButton(
+                    text: '위치 정보 허용',
+                    onPressed: () {
+                      // 위치 정보 허용 로직
+                      _handleLocationPermission(context, true);
+                    },
+                    width: MediaQuery.of(context).size.width - 32,
                     height: 52,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        // 위치 정보 허용 로직
-                        _handleLocationPermission(context, true);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: BrandColors.c500,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        elevation: 0,
-                      ),
-                      child: Text(
-                        '위치 정보 허용',
-                        style: textTheme.bodyLarge?.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: BrandColors.txtWhite,
-                        ),
-                      ),
-                    ),
                   ),
 
                   const SizedBox(height: 12),
@@ -214,23 +207,139 @@ class LocationPermissionDarkPage extends StatelessWidget {
     );
   }
 
-  void _handleLocationPermission(BuildContext context, bool isAllowed) {
+  Future<void> _handleLocationPermission(BuildContext context, bool isAllowed) async {
     if (isAllowed) {
-      // 위치 정보 허용 처리
-      print('위치 정보 허용됨');
-      // TODO: 실제 위치 권한 요청 및 다음 페이지로 이동
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('위치 정보가 허용되었습니다.'),
-          backgroundColor: SecondaryColors.c500Default,
-        ),
-      );
+      try {
+        // 위치 서비스 활성화 여부 확인
+        bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+        if (!serviceEnabled) {
+          _showLocationServiceDialog(context);
+          return;
+        }
+
+        // 위치 권한 요청
+        LocationPermission permission = await Geolocator.checkPermission();
+        if (permission == LocationPermission.denied) {
+          permission = await Geolocator.requestPermission();
+        }
+
+        if (permission == LocationPermission.denied) {
+          _showPermissionDeniedSnackBar(context);
+          return;
+        }
+
+        if (permission == LocationPermission.deniedForever) {
+          _showPermissionDeniedForeverDialog(context);
+          return;
+        }
+
+        // 권한 허용됨 - 위치 정보 테스트
+        Position position = await Geolocator.getCurrentPosition();
+        print('현재 위치: ${position.latitude}, ${position.longitude}');
+
+        // 성공 메시지 표시
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('위치 정보가 허용되었습니다.'),
+            backgroundColor: SecondaryColors.c500Default,
+          ),
+        );
+
+        // 지도 페이지로 이동
+        await Future.delayed(Duration(seconds: 1));
+        if (context.mounted) {
+          context.goNamed('map');
+        }
+
+      } catch (e) {
+        print('위치 권한 요청 오류: $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('위치 권한 요청 중 오류가 발생했습니다.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     } else {
       // 나중에 하기 처리
       print('위치 정보 나중에 하기');
-      // TODO: 메인 페이지로 이동하거나 다른 처리
-      Navigator.of(context).pop();
+      context.goNamed('map');
     }
+  }
+
+  void _showLocationServiceDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: BrandColors.c800,
+          title: Text(
+            '위치 서비스 비활성화',
+            style: TextStyle(color: BrandColors.txt30),
+          ),
+          content: Text(
+            '위치 서비스가 비활성화되어 있습니다. 설정에서 위치 서비스를 활성화해주세요.',
+            style: TextStyle(color: BrandColors.txt100),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(
+                '확인',
+                style: TextStyle(color: BrandColors.c500),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showPermissionDeniedSnackBar(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('위치 권한이 거부되었습니다.'),
+        backgroundColor: Colors.orange,
+      ),
+    );
+  }
+
+  void _showPermissionDeniedForeverDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: BrandColors.c800,
+          title: Text(
+            '위치 권한 필요',
+            style: TextStyle(color: BrandColors.txt30),
+          ),
+          content: Text(
+            '위치 권한이 거부되어 있습니다. 설정에서 직접 권한을 허용해주세요.',
+            style: TextStyle(color: BrandColors.txt100),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(
+                '취소',
+                style: TextStyle(color: BrandColors.txt300),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                openAppSettings();
+              },
+              child: Text(
+                '설정으로 이동',
+                style: TextStyle(color: BrandColors.c500),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 }
 
