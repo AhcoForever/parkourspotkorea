@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:parkourspotkorea/theme/app_colors.dart';
+import 'package:parkourspotkorea/widgets/comfirm_button.dart';
+import 'package:parkourspotkorea/widgets/dialogs/signup_complete_dialog.dart';
+import 'package:go_router/go_router.dart';
 
 /// 파쿠르 레벨 선택 화면
 class ParkourLevel extends StatefulWidget {
@@ -11,106 +14,67 @@ class ParkourLevel extends StatefulWidget {
   _ParkourLevelState createState() => _ParkourLevelState();
 }
 
-class _ParkourLevelState extends State<ParkourLevel> {
-  final PageController _pageController = PageController(viewportFraction: 0.8);
+class _ParkourLevelState extends State<ParkourLevel>
+    with TickerProviderStateMixin {
+  late PageController _pageController;
+  late AnimationController _scaleController;
+  late Animation<double> _scaleAnimation;
+
   final List<_LevelInfo> _levels = [
     _LevelInfo(
-      title: '초급',
-      imagePath: 'assets/images/beginner.png',
-      backgroundColor: BrandColors.c700,
+      imagePath: 'assets/images/cardTraceur.png',
+      levelType: '초급',
     ),
     _LevelInfo(
-      title: '중급',
-      imagePath: 'assets/images/intermediate.png',
-      backgroundColor: BrandColors.c600Dark,
+      imagePath: 'assets/images/cardFreerunner.png',
+      levelType: '중급',
     ),
     _LevelInfo(
-      title: '고급',
-      imagePath: 'assets/images/advanced.png',
-      backgroundColor: BrandColors.c500,
+      imagePath: 'assets/images/cardYamak.png',
+      levelType: '고급',
     ),
   ];
 
-  int? _selectedIndex;
+  int _currentIndex = 0;
 
-  void _showWelcomeDialog() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return Dialog(
-          backgroundColor: Colors.transparent,
-          child: Container(
-            padding: EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: BrandColors.c800,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                SizedBox(height: 16),
-                // 환영 메시지
-                RichText(
-                  textAlign: TextAlign.center,
-                  text: TextSpan(
-                    children: [
-                      TextSpan(
-                        text: '${widget.nickname ?? "사용자"}',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: BrandColors.c500,
-                        ),
-                      ),
-                      TextSpan(
-                        text: '님,\n환영합니다!',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: BrandColors.txt30,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 24),
-                // 확인 버튼
-                Container(
-                  width: double.infinity,
-                  height: 48,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                      // TODO: 다음 페이지로 이동하는 로직 구현
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: BrandColors.c500,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: Text(
-                      '확인',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: BrandColors.txtWhite,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(
+      viewportFraction: 0.85,
+      initialPage: 0,
     );
+
+    _scaleController = AnimationController(
+      duration: Duration(milliseconds: 300),
+      vsync: this,
+    );
+
+    _scaleAnimation = Tween<double>(
+      begin: 1.0,
+      end: 1.05,
+    ).animate(CurvedAnimation(parent: _scaleController, curve: Curves.easeOut));
   }
 
   @override
+  void dispose() {
+    _pageController.dispose();
+    _scaleController.dispose();
+    super.dispose();
+  }
+
+  void _onPageChanged(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+
+    _scaleController.reset();
+    _scaleController.forward();
+  }
+
+
+  @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
       backgroundColor: BrandColors.c800,
@@ -121,148 +85,172 @@ class _ParkourLevelState extends State<ParkourLevel> {
             context,
           ).appBarTheme.titleTextStyle?.copyWith(fontWeight: FontWeight.w600),
         ),
+        leading: IconButton(
+          padding: const EdgeInsets.only(left: 20),
+          icon: const Icon(Icons.arrow_back_ios),
+          onPressed: () {
+            context.goNamed('nickname');
+          },
+        ),
         backgroundColor: BrandColors.c800,
         centerTitle: true,
         foregroundColor: BrandColors.c50,
       ),
-
-      body: Column(
-        children: [
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-              child: Text(
-                '카드를 넘겨, 당신의 \n파쿠르 숙련도를 선택해주세요!',
-                style: TextStyle(
-                  color: BrandColors.txt30,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
+      body: SafeArea(
+        child: Column(
+          children: [
+            // 제목 텍스트
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 14),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  '카드를 넘겨, 당신의\n파쿠르 숙련도를 선택해주세요!',
+                  style: TextStyle(
+                    color: BrandColors.txt30,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                    height: 1.3,
+                  ),
+                  textAlign: TextAlign.left,
                 ),
-                textAlign: TextAlign.left,
               ),
             ),
-          ),
-          Expanded(
-            child: PageView.builder(
+
+            // 카드 뷰
+            Expanded(
+              flex: 1,
+              child: PageView.builder(
               controller: _pageController,
               itemCount: _levels.length,
+              onPageChanged: _onPageChanged,
               physics: BouncingScrollPhysics(),
               itemBuilder: (context, index) {
                 final level = _levels[index];
-                final isSelected = _selectedIndex == index;
-                return Padding(
-                  padding: EdgeInsets.symmetric(vertical: 40, horizontal: 8),
-                  child: GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _selectedIndex = index;
-                      });
-                    },
-                    child: AnimatedContainer(
-                      duration: Duration(milliseconds: 300),
-                      decoration: BoxDecoration(
-                        color: level.backgroundColor,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: isSelected
+                final isActive = _currentIndex == index;
+
+                return AnimatedBuilder(
+                  animation: _pageController.position.isScrollingNotifier,
+                  builder: (context, child) {
+                    double value = 1.0;
+                    if (_pageController.position.hasContentDimensions) {
+                      value = (_pageController.page ?? 0) - index;
+                      value = (1 - (value.abs() * 0.1)).clamp(0.8, 1.0);
+                    }
+
+                    return Transform.scale(
+                      scale: isActive ? 1.0 : value,
+                      child: Container(
+                        margin: EdgeInsets.symmetric(horizontal: 8),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: isActive
+                                ? SecondaryColors.c500Default
+                                : Colors.transparent,
+                            width: 3,
+                          ),
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(5),
+                          child: Image.asset(
+                            level.imagePath,
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                            height: double.infinity,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                color: BrandColors.c700,
+                                child: Icon(
+                                  Icons.sports_gymnastics,
+                                  size: 80,
+                                  color: BrandColors.txt300,
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
+              ),
+            ),
+
+            // 하단 고정 영역
+            Column(
+              children: [
+                // 페이지 인디케이터
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 12),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(
+                      _levels.length,
+                      (index) => AnimatedContainer(
+                        duration: Duration(milliseconds: 300),
+                        margin: EdgeInsets.symmetric(horizontal: 5),
+                        width: _currentIndex == index ? 24 : 8,
+                        height: 8,
+                        decoration: BoxDecoration(
+                          color: _currentIndex == index
                               ? BrandColors.c500
                               : BrandColors.c600Dark,
-                          width: isSelected ? 3 : 1,
+                          borderRadius: BorderRadius.circular(8),
                         ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black26,
-                            blurRadius: 8,
-                            offset: Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Expanded(
-                            child: Padding(
-                              padding: EdgeInsets.all(16),
-                              child: Image.asset(
-                                level.imagePath,
-                                fit: BoxFit.contain,
-                                errorBuilder: (context, error, stackTrace) {
-                                  // 이미지 로드 실패 시 플레이스홀더
-                                  return Container(
-                                    decoration: BoxDecoration(
-                                      color: BrandColors.c700,
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Icon(
-                                      Icons.image,
-                                      size: 48,
-                                      color: BrandColors.txt300,
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 8),
-                          Text(
-                            level.title,
-                            style: textTheme.headlineMedium?.copyWith(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              color: BrandColors.txtWhite,
-                            ),
-                          ),
-                          SizedBox(height: 16),
-                        ],
                       ),
                     ),
                   ),
-                );
-              },
-            ),
-          ),
-          Container(
-            width: double.infinity,
-            height: 48,
-            child: ElevatedButton(
-              onPressed: _selectedIndex != null
-                  ? () {
-                      final selected = _levels[_selectedIndex!].title;
-                      // 환영 다이얼로그 표시
-                      _showWelcomeDialog();
-                    }
-                  : null,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: BrandColors.c500,
-                disabledForegroundColor: BrandColors.c600Dark.withOpacity(0.38),
-                disabledBackgroundColor: BrandColors.c600Dark.withOpacity(0.12),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-              ),
-              child: Text(
-                '선택 완료',
-                style: textTheme.bodyLarge?.copyWith(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: BrandColors.txtWhite,
                 ),
-              ),
+
+                // 안내 텍스트
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  child: Text(
+                    '* 현재 고른 레벨은 추후 변경이 가능합니다. 마이페이지-파쿠르 숙련도 변경',
+                    style: TextStyle(
+                      color: BrandColors.txt500,
+                      fontSize: 11,
+                      height: 1.27,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                SizedBox(height: 12),
+
+                // 시작하기 버튼
+                ComfirmButton(
+                  text: '시작하기',
+                  onPressed: () {
+                    final selected = _levels[_currentIndex].levelType;
+                    print('선택된 레벨: $selected');
+                    SignupCompleteDialog.show(
+                      context,
+                      () {
+                        context.goNamed('map');
+                      },
+                      title: '설정 완료!',
+                      message: '이제 주변의 파쿠르 스팟을\n찾으러 떠나볼까요?',
+                    );
+                  },
+                ),
+                SizedBox(height: 24),
+              ],
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 }
 
 class _LevelInfo {
-  final String title;
   final String imagePath;
-  final Color backgroundColor;
+  final String levelType;
 
   _LevelInfo({
-    required this.title,
     required this.imagePath,
-    required this.backgroundColor,
+    required this.levelType,
   });
 }

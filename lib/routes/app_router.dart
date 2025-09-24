@@ -14,6 +14,7 @@ import '../screens/nickname_page.dart';
 import '../screens/parkourlevel_page.dart';
 import '../screens/spot/scratch_map_page.dart';
 import '../widgets/app_initializer.dart';
+import '../widgets/dialogs/signup_complete_dialog.dart';
 
 final GoRouter appRouter = GoRouter(
   initialLocation: '/',
@@ -26,6 +27,7 @@ final GoRouter appRouter = GoRouter(
       path: '/',
       name: 'initializer',
       builder: (context, state) =>  //ParkourLandingPage(),
+      //SignupCompleteDialog()
       ParkourLevel()
       //MyPage()
      // NicknamePage(),
