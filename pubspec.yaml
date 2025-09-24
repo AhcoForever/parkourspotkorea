@@ -28,6 +28,7 @@ dependencies:
   permission_handler: 12.0.1
   geocoding: ^4.0.0
   video_player: ^2.10.0
+  lottie: ^3.3.2
 
   fluttertoast: ^8.2.12
 
@@ -111,9 +112,8 @@ flutter:
     - assets/logo/
     - assets/logo/background-logo.svg
     - assets/images/
-    - assets/images/icon-bookmark.png
-    - assets/images/icon-scratch.png
     - assets/spot/
+    - assets/jsons/
     - assets/QRcode/
     - assets/GeoJSON/
     - assets/fonts/Pretendard/

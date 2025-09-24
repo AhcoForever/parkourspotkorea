@@ -24,6 +24,7 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
   late ParkourSearchViewModel _searchViewModel;
   final TextEditingController _searchController = TextEditingController();
   bool _showSearchResults = false;
+  bool _isScratched = false;
 
   @override
   void initState() {
@@ -547,7 +548,7 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
                             },
                             child: Center(
                               child: Image.asset(
-                                'assets/images/icon-compass.png',
+                                'assets/images/button-compass.png',
                                 width: 44,
                                 height: 44,
                               ),
@@ -607,11 +608,16 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
                                 splashColor: Colors.transparent,
                                 highlightColor: Colors.transparent,
                                 onTap: () async {
+                                  setState(() {
+                                    _isScratched = !_isScratched;
+                                  });
                                   await viewModel.toggleHexagons();
                                 },
                                 child: Center(
                                   child: Image.asset(
-                                    'assets/images/icon-scratch.png',
+                                    _isScratched
+                                        ? 'assets/images/button-scratch-hover.png'
+                                        : 'assets/images/button-scratch.png',
                                     width: 120,
                                     height: 120,
                                   ),
@@ -638,7 +644,7 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
                                 },
                                 child: Center(
                                   child: Image.asset(
-                                    'assets/images/person.png',
+                                    'assets/images/button-person.png',
                                     width: 36,
                                     height: 36,
                                   ),
