@@ -4,6 +4,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:parkourspotkorea/screens/spot/parkourspot_bottomsheet_page.dart';
+import 'package:parkourspotkorea/theme/app_colors.dart';
 import 'package:provider/provider.dart';
 
 import '../../model/parkour_spot.dart';
@@ -104,7 +105,7 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
           markerId: MarkerId('search_${spot.documentId}'),
           position: spot.location,
           infoWindow: InfoWindow(title: spot.name, snippet: spot.address),
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+          icon: viewModel.customSpotMarker ?? BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
           onTap: () => _showSpotBottomSheet(spot),
         );
       }).toSet();
@@ -290,6 +291,28 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
                 },
               ),
 
+              // Top gradation
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                child: Image.asset(
+                  'assets/images/map-gradation-top.png',
+                  fit: BoxFit.fitWidth,
+                ),
+              ),
+
+              // Bottom gradation
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: Image.asset(
+                  'assets/images/map-gradation-bottom.png',
+                  fit: BoxFit.fitWidth,
+                ),
+              ),
+
               // 1) Search bar (SafeArea + Align + Padding)
               SafeArea(
                 child: Align(
@@ -299,65 +322,72 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
                       horizontal: 16,
                       vertical: 14,
                     ),
-                    child: Container(
-                      width: 358,
-                      height: 60,
-                      decoration: ShapeDecoration(
-                        color: const Color(0xFF0A1526),
-                        shape: RoundedRectangleBorder(
-                          side: BorderSide(
-                            width: 2,
-                            color: const Color(0xFF445064),
-                          ),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          const Icon(Icons.search, color: Color(0xFF3A59D1)),
-
-                          Expanded(
-                            child: TextField(
-                              controller: _searchController,
-                              onSubmitted: _performSearch,
-                              onChanged: (value) {
-                                if (value.isEmpty) {
-                                  setState(() {
-                                    _showSearchResults = false;
-                                  });
-                                  _searchViewModel.clearSearch();
-                                }
-                              },
-                              decoration: InputDecoration(
-                                hintText: '파쿠르 스팟 검색...',
-                                hintStyle: TextStyle(
-                                  color: Colors.grey[600],
-                                  fontSize: 16,
+                    child: Focus(
+                      onFocusChange: (hasFocus) {
+                        setState(() {});
+                      },
+                      child: Builder(
+                        builder: (context) {
+                          final hasFocus = Focus.of(context).hasFocus;
+                          return Container(
+                            width: 358,
+                            height: 60,
+                            decoration: ShapeDecoration(
+                              color: BrandColors.c800,
+                              shape: RoundedRectangleBorder(
+                                side: BorderSide(
+                                  width: 2,
+                                  color: hasFocus ? SecondaryColors.c500Default : BrandColors.normal,
                                 ),
-                                border: InputBorder.none,
-                                contentPadding: EdgeInsets.zero,
+                                borderRadius: BorderRadius.circular(4),
                               ),
                             ),
-                          ),
-                          if (_searchController.text.isNotEmpty)
-                            IconButton(
-                              icon: Icon(
-                                Icons.clear,
-                                color: Colors.grey[600],
-                                size: 20,
-                              ),
-                              onPressed: () {
-                                _searchController.clear();
-                                setState(() {
-                                  _showSearchResults = false;
-                                });
-                                _searchViewModel.clearSearch();
-                              },
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                const SizedBox(width: 16),
+                                const Icon(Icons.search, color: SecondaryColors.c500Default, size: 32),
+
+                                Expanded(
+                                  child: TextField(
+                                    controller: _searchController,
+                                    onSubmitted: _performSearch,
+                                    onChanged: (value) {
+                                      if (value.isEmpty) {
+                                        setState(() {
+                                          _showSearchResults = false;
+                                        });
+                                        _searchViewModel.clearSearch();
+                                      }
+                                    },
+                                    decoration: InputDecoration(
+                                      border: InputBorder.none,
+                                      enabledBorder: InputBorder.none,
+                                      focusedBorder: InputBorder.none,
+                                    ),
+                                  ),
+                                ),
+                                if (_searchController.text.isNotEmpty)
+                                  IconButton(
+                                    icon: Icon(
+                                      Icons.clear,
+                                      color: Colors.grey[600],
+                                      size: 24,
+                                    ),
+                                    onPressed: () {
+                                      _searchController.clear();
+                                      setState(() {
+                                        _showSearchResults = false;
+                                      });
+                                      _searchViewModel.clearSearch();
+                                    },
+                                  ),
+                              ],
                             ),
-                        ],
+                          );
+                        },
                       ),
                     ),
                   ),
@@ -586,7 +616,7 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
                                 },
                                 child: Center(
                                   child: Image.asset(
-                                    'assets/images/icon-bookmark.png',
+                                    'assets/images/button-bookmark.png',
                                     width: 36,
                                     height: 36,
                                   ),
@@ -604,7 +634,7 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
                             child: Material(
                               color: Colors.transparent,
                               child: InkWell(
-                                borderRadius: BorderRadius.circular(12),
+                                borderRadius: BorderRadius.circular(8),
                                 splashColor: Colors.transparent,
                                 highlightColor: Colors.transparent,
                                 onTap: () async {

@@ -2,7 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:lottie/lottie.dart';
 import '../repositories/user_repository.dart';
 import '../theme/app_colors.dart';
 
@@ -79,29 +78,6 @@ class _AppInitializerState extends State<AppInitializer> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Lottie 애니메이션
-              Lottie.asset(
-                'assets/jsons/Location jumping.json',
-                width: 200,
-                height: 200,
-                fit: BoxFit.contain,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    width: 200,
-                    height: 200,
-                    decoration: BoxDecoration(
-                      color: BrandColors.c700,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Icon(
-                      Icons.sports_gymnastics,
-                      size: 48,
-                      color: BrandColors.txt300,
-                    ),
-                  );
-                },
-              ),
-              const SizedBox(height: 16),
 
               // 로딩 인디케이터
               CircularProgressIndicator(
@@ -115,7 +91,7 @@ class _AppInitializerState extends State<AppInitializer> {
                 '앱을 시작하는 중...',
                 style: TextStyle(
                   fontSize: 16,
-                  color: BrandColors.txt100,
+                  color: BrandColors.txtWhite,
                   fontWeight: FontWeight.w500,
                 ),
               ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'dart:async';
 import 'package:geolocator/geolocator.dart';
@@ -16,11 +17,13 @@ class ScratchMapViewModel extends ChangeNotifier {
 
   // 파쿠르 스팟 마커 상태
   final Set<Marker> _parkourMarkers = {};
+  BitmapDescriptor? _customSpotMarker;
 
   Set<Marker> get parkourMarkers => _parkourMarkers;
   bool _isLoadingSpots = false;
 
   bool get isLoadingSpots => _isLoadingSpots;
+  BitmapDescriptor? get customSpotMarker => _customSpotMarker;
 
   /// 중심 좌표 기준 주변 스팟을 가져와 마커로 표시
   Future<void> loadAndShowSpots(LatLng center, {double radiusKm = 5.0}) async {
@@ -52,7 +55,7 @@ class ScratchMapViewModel extends ChangeNotifier {
                     : spot.name,
                 snippet: spot.description,
               ),
-              icon: _getMarkerIcon(spot.category,),
+              icon: _customSpotMarker ?? _getMarkerIcon(spot.category),
               onTap: () {
                 print('🎯 마커 탭: ${spot.name} (${spot.documentId})');
                 _onMarkerTapped(spot);
@@ -120,6 +123,10 @@ class ScratchMapViewModel extends ChangeNotifier {
     _updateState(_state.copyWithLoading(true));
 
     try {
+      // 커스텀 마커 아이콘 로드
+      await _loadCustomMarkerIcon();
+
+
       // 1. 현재 위치를 초기 카메라 위치로 설정 (timeout 추가)
       Position? currentPosition;
       try {
@@ -398,6 +405,21 @@ class ScratchMapViewModel extends ChangeNotifier {
       default:
 
         return BitmapDescriptor.defaultMarkerWithHue(270.0);
+    }
+  }
+
+  Future<void> _loadCustomMarkerIcon() async {
+    try {
+      _customSpotMarker = await BitmapDescriptor.asset(
+        const ImageConfiguration(size: Size(24, 28)),
+        'assets/images/spot-marker.png',
+      );
+      print('✅ 커스텀 스팟 마커 로드 완료');
+    } catch (e) {
+      print('❌ 커스텀 마커 로드 실패 (PNG): $e');
+
+      // PNG가 없다면 기본 마커 사용
+      _customSpotMarker = null;
     }
   }
 

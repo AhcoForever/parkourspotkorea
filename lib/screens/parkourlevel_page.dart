@@ -6,6 +6,17 @@ import 'package:go_router/go_router.dart';
 
 /// 파쿠르 레벨 선택 화면
 class ParkourLevel extends StatefulWidget {
+  // 상수 정의
+  static const double _viewportFraction = 0.85;
+  static const double _cardBorderRadius = 5.0;
+  static const double _activeBorderWidth = 3.0;
+  static const double _activeScale = 1.0;
+  static const double _inactiveScale = 0.9;
+  static const int _scaleAnimationDuration = 200;
+  static const int _indicatorAnimationDuration = 300;
+  static const double _indicatorActiveWidth = 24.0;
+  static const double _indicatorInactiveWidth = 8.0;
+  static const double _indicatorHeight = 8.0;
   final String? nickname;
 
   const ParkourLevel({Key? key, this.nickname}) : super(key: key);
@@ -14,13 +25,11 @@ class ParkourLevel extends StatefulWidget {
   _ParkourLevelState createState() => _ParkourLevelState();
 }
 
-class _ParkourLevelState extends State<ParkourLevel>
-    with TickerProviderStateMixin {
+class _ParkourLevelState extends State<ParkourLevel> {
   late PageController _pageController;
-  late AnimationController _scaleController;
 
   final List<_LevelInfo> _levels = [
-    _LevelInfo(imagePath: 'assets/images/cardTraceur.png', levelType: '초급'),
+    _LevelInfo(imagePath: 'assets/images/cardTraceur-2.png', levelType: '초급'),
     _LevelInfo(imagePath: 'assets/images/cardFreerunner.png', levelType: '중급'),
     _LevelInfo(imagePath: 'assets/images/cardYamak.png', levelType: '고급'),
   ];
@@ -30,19 +39,12 @@ class _ParkourLevelState extends State<ParkourLevel>
   @override
   void initState() {
     super.initState();
-    _pageController = PageController(viewportFraction: 0.85, initialPage: 0);
-
-    _scaleController = AnimationController(
-      duration: Duration(milliseconds: 300),
-      vsync: this,
-    );
-
+    _pageController = PageController(viewportFraction: ParkourLevel._viewportFraction, initialPage: 0);
   }
 
   @override
   void dispose() {
     _pageController.dispose();
-    _scaleController.dispose();
     super.dispose();
   }
 
@@ -50,9 +52,6 @@ class _ParkourLevelState extends State<ParkourLevel>
     setState(() {
       _currentIndex = index;
     });
-
-    _scaleController.reset();
-    _scaleController.forward();
   }
 
   @override
@@ -113,50 +112,41 @@ class _ParkourLevelState extends State<ParkourLevel>
                   final level = _levels[index];
                   final isActive = _currentIndex == index;
 
-                  return AnimatedBuilder(
-                    animation: _pageController.position.isScrollingNotifier,
-                    builder: (context, child) {
-                      double value = 1.0;
-                      if (_pageController.position.hasContentDimensions) {
-                        value = (_pageController.page ?? 0) - index;
-                        value = (1 - (value.abs() * 0.1)).clamp(0.8, 1.0);
-                      }
+                  // 간단한 스케일 계산
+                  final scale = isActive ? ParkourLevel._activeScale : ParkourLevel._inactiveScale;
 
-                      return Transform.scale(
-                        scale: isActive ? 1.0 : value,
-                        child: Container(
-                          margin: EdgeInsets.symmetric(horizontal: 8),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(
-                              color: isActive
-                                  ? SecondaryColors.c500Default
-                                  : Colors.transparent,
-                              width: 3,
-                            ),
-                          ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(5),
-                            child: Image.asset(
-                              level.imagePath,
-                              fit: BoxFit.cover,
-                              width: double.infinity,
-                              height: double.infinity,
-                              errorBuilder: (context, error, stackTrace) {
-                                return Container(
-                                  color: BrandColors.c700,
-                                  child: Icon(
-                                    Icons.sports_gymnastics,
-                                    size: 80,
-                                    color: BrandColors.txt300,
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
+                  return AnimatedScale(
+                    scale: scale,
+                    duration: Duration(milliseconds: ParkourLevel._scaleAnimationDuration),
+                    child: Container(
+                      margin: EdgeInsets.zero,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(ParkourLevel._cardBorderRadius),
+                        border: Border.all(
+                          color: isActive
+                              ? SecondaryColors.c500Default
+                              : Colors.transparent,
+                          width: ParkourLevel._activeBorderWidth,
                         ),
-                      );
-                    },
+                        image: level.imagePath.isNotEmpty
+                            ? DecorationImage(
+                                image: AssetImage(level.imagePath),
+                                fit: BoxFit.fitWidth,
+                                onError: (exception, stackTrace) {
+                                  print('Image load error: $exception');
+                                },
+                              )
+                            : null,
+                        color: level.imagePath.isEmpty ? BrandColors.c700 : null,
+                      ),
+                      child: level.imagePath.isEmpty
+                          ? Icon(
+                              Icons.sports_gymnastics,
+                              size: 80,
+                              color: BrandColors.txt300,
+                            )
+                          : null,
+                    ),
                   );
                 },
               ),
@@ -173,10 +163,10 @@ class _ParkourLevelState extends State<ParkourLevel>
                     children: List.generate(
                       _levels.length,
                       (index) => AnimatedContainer(
-                        duration: Duration(milliseconds: 300),
+                        duration: Duration(milliseconds: ParkourLevel._indicatorAnimationDuration),
                         margin: EdgeInsets.symmetric(horizontal: 5),
-                        width: _currentIndex == index ? 24 : 8,
-                        height: 8,
+                        width: _currentIndex == index ? ParkourLevel._indicatorActiveWidth : ParkourLevel._indicatorInactiveWidth,
+                        height: ParkourLevel._indicatorHeight,
                         decoration: BoxDecoration(
                           color: _currentIndex == index
                               ? BrandColors.c500
