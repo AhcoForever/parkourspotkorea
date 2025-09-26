@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:custom_info_window/custom_info_window.dart';
 import 'package:parkourspotkorea/screens/spot/parkourspot_bottomsheet_page.dart';
 import 'package:parkourspotkorea/theme/app_colors.dart';
 import 'package:provider/provider.dart';
@@ -27,6 +28,9 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
   bool _showSearchResults = false;
   bool _isScratched = false;
 
+  // CustomInfoWindow 컨트롤러
+  final CustomInfoWindowController _customInfoWindowController = CustomInfoWindowController();
+
   @override
   void initState() {
     super.initState();
@@ -42,6 +46,7 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
 
       // 콜백
       viewModel.onSpotMarkerTapped = (ParkourSpot spot) {
+        _showCustomInfoWindow(spot);
         _showSpotBottomSheet(spot);
       };
 
@@ -106,7 +111,10 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
           position: spot.location,
           infoWindow: InfoWindow(title: spot.name, snippet: spot.address),
           icon: viewModel.customSpotMarker ?? BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
-          onTap: () => _showSpotBottomSheet(spot),
+          onTap: () {
+            _showCustomInfoWindow(spot);
+            _showSpotBottomSheet(spot);
+          },
         );
       }).toSet();
     }
@@ -189,6 +197,65 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
     );
   }
 
+  /// CustomInfoWindow 표시
+  void _showCustomInfoWindow(ParkourSpot spot) {
+    _customInfoWindowController.addInfoWindow!(
+      _buildInfoWindowWidget(spot),
+      spot.location,
+    );
+  }
+
+  /// InfoWindow 위젯 생성
+  Widget _buildInfoWindowWidget(ParkourSpot spot) {
+    return Container(
+      decoration: BoxDecoration(
+        color: BrandColors.c800,
+        borderRadius: BorderRadius.circular(4),
+        border: Border.all(color: SecondaryColors.c500Default, width: 2),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.3),
+            blurRadius: 8,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              spot.displayName.isNotEmpty ? spot.displayName : spot.name,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: BrandColors.txtWhite,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
+            ),
+            if (spot.description.isNotEmpty) ...[
+              SizedBox(height: 4),
+              Text(
+                spot.description,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.white.withValues(alpha: 0.9),
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
   /// Bottom Sheet 표시
   void _showSpotBottomSheet(ParkourSpot spot) {
     print('🎉 Bottom Sheet 표시: ${spot.name}');
@@ -202,11 +269,13 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
     );
   }
 
+
   @override
   void dispose() {
     _searchViewModel.removeListener(_onSearchResultsChanged);
     _searchViewModel.dispose();
     _searchController.dispose();
+    _customInfoWindowController.dispose();
     super.dispose();
   }
 
@@ -247,6 +316,7 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
               GoogleMap(
                 onMapCreated: (controller) async {
                   mapController = controller;
+                  _customInfoWindowController.googleMapController = controller;
 
                   // 마커 로드 (카메라 중심)
                   final center =
@@ -271,11 +341,13 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
 
                 onTap: (LatLng position) {
                   print('지도 탭: ${position.latitude}, ${position.longitude}');
-                  // 지도 탭 시 추가 처리 가능 (선택사항)
+                  // 지도 탭 시 InfoWindow 숨기기
+                  _customInfoWindowController.hideInfoWindow!();
                 },
 
                 onCameraMove: (CameraPosition position) {
-                  // 카메라 이동 시 viewModel에 위치 업데이트
+                  // 카메라 이동 시 InfoWindow 업데이트
+                  _customInfoWindowController.onCameraMove!();
                 },
                 onCameraIdle: () async {
                   // 카메라 멈출 때마다 갱신
@@ -720,6 +792,14 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
                     ),
                   ),
                 ),
+
+              // CustomInfoWindow
+              CustomInfoWindow(
+                controller: _customInfoWindowController,
+                height: 55,
+                width: 200,
+                offset: 80,
+              ),
             ],
           );
         },

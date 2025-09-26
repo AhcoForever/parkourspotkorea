@@ -3,6 +3,7 @@ import 'package:parkourspotkorea/screens/spot/widget_parkourspot_bottomsheet/act
 import 'package:parkourspotkorea/screens/spot/widget_parkourspot_bottomsheet/detail_section.dart';
 import 'package:parkourspotkorea/screens/spot/widget_parkourspot_bottomsheet/error_message.dart';
 import 'package:parkourspotkorea/screens/spot/widget_parkourspot_bottomsheet/parkourspot_bottomsheet.dart';
+import 'package:parkourspotkorea/theme/app_colors.dart';
 import 'package:provider/provider.dart';
 
 import '../../model/parkour_spot.dart';
@@ -47,14 +48,14 @@ class _ParkourSpotBottomSheetState extends State<ParkourSpotBottomSheet> {
         builder: (context, viewModel, child) {
           return Container(
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: BrandColors.c800,
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(20),
                 topRight: Radius.circular(20),
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withAlpha(26),
+                  color: Colors.black.withValues(alpha: 0.4),
                   blurRadius: 10,
                   offset: Offset(0, -5),
                 ),

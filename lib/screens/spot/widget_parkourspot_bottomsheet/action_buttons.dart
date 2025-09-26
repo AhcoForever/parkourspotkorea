@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../../../theme/app_colors.dart';
 import '../../../viewmodel/spot_bottom_sheet_viewmodel.dart';
 
 class ActionButtons extends StatelessWidget {
@@ -10,7 +11,6 @@ class ActionButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
     return Column(
       children: [
         SizedBox(
@@ -27,8 +27,8 @@ class ActionButtons extends StatelessWidget {
                 : Icon(Icons.directions),
             label: Text('길찾기'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: colorScheme.primary,
-              foregroundColor: colorScheme.onPrimary,
+              backgroundColor: BrandColors.c500,
+              foregroundColor: BrandColors.txtWhite,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -44,6 +44,8 @@ class ActionButtons extends StatelessWidget {
                 icon: Icon(Icons.favorite_border),
                 label: Text('즐겨찾기'),
                 style: OutlinedButton.styleFrom(
+                  foregroundColor: BrandColors.txtWhite,
+                  side: BorderSide(color: BrandColors.c500),
                   padding: EdgeInsets.symmetric(vertical: 12),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -58,6 +60,8 @@ class ActionButtons extends StatelessWidget {
                 icon: Icon(Icons.share),
                 label: Text('공유'),
                 style: OutlinedButton.styleFrom(
+                  foregroundColor: BrandColors.txtWhite,
+                  side: BorderSide(color: BrandColors.c500),
                   padding: EdgeInsets.symmetric(vertical: 12),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),

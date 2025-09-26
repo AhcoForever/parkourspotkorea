@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../../../theme/app_colors.dart';
+
 class ErrorMessage extends StatelessWidget {
   final String message;
 
@@ -11,19 +13,19 @@ class ErrorMessage extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.red[50],
+        color: StatusColors.error.withOpacity(0.1),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.red[200]!),
+        border: Border.all(color: StatusColors.error),
       ),
       child: Row(
         children: [
-          Icon(Icons.error_outline, color: Colors.red[600], size: 20),
+          Icon(Icons.error_outline, color: StatusColors.error, size: 20),
           SizedBox(width: 8),
           Expanded(
             child: Text(
               message,
               style: TextStyle(
-                color: Colors.red[800],
+                color: StatusColors.error,
                 fontSize: 14,
               ),
             ),

@@ -49,12 +49,7 @@ class ScratchMapViewModel extends ChangeNotifier {
             return Marker(
               markerId: MarkerId('spot_${spot.documentId}'),
               position: spot.location,
-              infoWindow: InfoWindow(
-                title: spot.displayName.isNotEmpty
-                    ? spot.displayName
-                    : spot.name,
-                snippet: spot.description,
-              ),
+              infoWindow: InfoWindow.noText, // CustomInfoWindow 사용
               icon: _customSpotMarker ?? _getMarkerIcon(spot.category),
               onTap: () {
                 print('🎯 마커 탭: ${spot.name} (${spot.documentId})');

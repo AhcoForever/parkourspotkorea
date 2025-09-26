@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../../model/spot_ui.dart';
+import '../../../theme/app_colors.dart';
 import '../../../utils/spot_info_helper.dart';
 
 class DetailSection extends StatelessWidget {
@@ -40,7 +41,7 @@ class DetailSection extends StatelessWidget {
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
-              color: Colors.black87,
+              color: BrandColors.txtWhite,
             ),
           ),
           SizedBox(height: 8),
@@ -48,7 +49,7 @@ class DetailSection extends StatelessWidget {
             spot.description,
             style: TextStyle(
               fontSize: 14,
-              color: Colors.grey[700],
+              color: BrandColors.txt100,
               height: 1.4,
             ),
           ),
@@ -75,13 +76,13 @@ class _DetailRow extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, size: 18, color: Colors.grey[600]),
+        Icon(icon, size: 18, color: BrandColors.txt300),
         SizedBox(width: 8),
         Text(
           '$label: ',
           style: TextStyle(
             fontSize: 14,
-            color: Colors.grey[600],
+            color: BrandColors.txt300,
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -90,7 +91,7 @@ class _DetailRow extends StatelessWidget {
             value,
             style: TextStyle(
               fontSize: 14,
-              color: valueColor ?? Colors.black87,
+              color: valueColor ?? BrandColors.txtWhite,
               fontWeight: FontWeight.w500,
             ),
           ),
