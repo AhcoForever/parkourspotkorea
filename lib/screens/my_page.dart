@@ -1,7 +1,10 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:parkourspotkorea/theme/app_colors.dart';
+import 'package:parkourspotkorea/widgets/background_wrapper.dart';
+import 'package:parkourspotkorea/services/firebase/user_profile_service.dart';
 
 class MyPage extends StatefulWidget {
   @override
@@ -14,12 +17,16 @@ class _MyPageState extends State<MyPage> {
   late TextEditingController introController;
   File? _profileImage;
   final ImagePicker _picker = ImagePicker();
+  final UserProfileService _userProfileService = UserProfileService();
+  Map<String, dynamic>? _userProfile;
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    nicknameController = TextEditingController(text: '보라돌이');
-    introController = TextEditingController(text: 'hello everyone!');
+    nicknameController = TextEditingController();
+    introController = TextEditingController();
+    _loadUserProfile();
   }
 
   @override
@@ -38,10 +45,53 @@ class _MyPageState extends State<MyPage> {
     }
   }
 
-  void _toggleEdit() {
-    setState(() {
-      isEditing = !isEditing;
-    });
+  Future<void> _loadUserProfile() async {
+    try {
+      final profile = await _userProfileService.getCurrentUserProfile();
+      if (profile != null) {
+        setState(() {
+          _userProfile = profile;
+          nicknameController.text = profile['displayName'] ?? '';
+          introController.text = profile['introduction'] ?? 'hello everyone!';
+          _isLoading = false;
+        });
+      } else {
+        setState(() {
+          nicknameController.text = '';
+          introController.text = 'hello everyone!';
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      print('프로필 로드 오류: $e');
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _toggleEdit() async {
+    if (isEditing) {
+      // 편집 완료 - 저장
+      final nicknameSuccess = await _userProfileService.updateDisplayName(
+        nicknameController.text,
+      );
+      final introSuccess = await _userProfileService.updateUserIntroduction(
+        introController.text,
+      );
+
+      if (nicknameSuccess && introSuccess) {
+        setState(() {
+          isEditing = false;
+        });
+        await _loadUserProfile(); // 저장 후 새로고침
+      }
+    } else {
+      // 편집 시작
+      setState(() {
+        isEditing = true;
+      });
+    }
   }
 
   void _showSettingsBottomSheet() {
@@ -143,159 +193,210 @@ class _MyPageState extends State<MyPage> {
         foregroundColor: BrandColors.txt30,
         actions: [
           IconButton(
-            icon: Icon(
-              Icons.settings,
-              color: BrandColors.txt30,
-            ),
+            icon: Icon(Icons.settings, color: BrandColors.txt30),
             onPressed: _showSettingsBottomSheet,
           ),
         ],
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Expanded(
-                    child: isEditing
-                        ? TextField(
-                            controller: nicknameController,
-                            style: textTheme.bodyLarge?.copyWith(
-                              color: BrandColors.txt30,
-                            ),
-                            decoration: InputDecoration(
-                              hintText: '닉네임 입력',
-                              hintStyle: TextStyle(color: BrandColors.txt300),
-                              border: UnderlineInputBorder(
-                                borderSide: BorderSide(color: StrokeColors.defaultStroke),
-                              ),
-                              enabledBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(color: StrokeColors.defaultStroke),
-                              ),
-                              focusedBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(color: BrandColors.c500, width: 2),
-                              ),
-                            ),
-                          )
-                        : Text(
-                            nicknameController.text,
-                            style: textTheme.displaySmall?.copyWith(
-                              color: BrandColors.txt30,
-                              fontSize: 24,
+        child: _isLoading
+            ? Center(
+                child: CircularProgressIndicator(
+                  color: SecondaryColors.c500Default,
+                ),
+              )
+            : SingleChildScrollView(
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+                child: Center(
+                  child: BackgroundWrapper(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        // 프로필 사진 (맨 위)
+                        Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: SecondaryColors.c500Default,
+                              width: 4,
                             ),
                           ),
-                  ),
-                  IconButton(
-                    icon: Icon(
-                      isEditing ? Icons.check : Icons.edit,
-                      color: BrandColors.c500,
+                          child: GestureDetector(
+                            onTap: isEditing ? _pickImage : null,
+                            child: CircleAvatar(
+                              radius: 75,
+
+                              backgroundColor: BrandColors.c700,
+
+                              backgroundImage: _profileImage != null
+                                  ? FileImage(_profileImage!)
+                                  : null,
+                              child: _profileImage == null
+                                  ? Icon(
+                                      Icons.person,
+                                      size: 60,
+                                      color: BrandColors.txt300,
+                                    )
+                                  : null,
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 16),
+
+                        // 닉네임과 편집 아이콘
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Flexible(
+                              child: isEditing
+                                  ? TextField(
+                                      controller: nicknameController,
+                                      textAlign: TextAlign.center,
+                                      style: textTheme.bodyLarge?.copyWith(
+                                        color: BrandColors.txtWhite,
+                                        fontSize: 24,
+                                      ),
+                                      decoration: InputDecoration(
+                                        hintText: '닉네임 입력',
+                                        hintStyle: TextStyle(
+                                          fontSize: 24,
+                                          color: BrandColors.txt300,
+                                        ),
+                                        border: UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                            color: StrokeColors.defaultStroke,
+                                          ),
+                                        ),
+                                        enabledBorder: UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                            color: StrokeColors.defaultStroke,
+                                          ),
+                                        ),
+                                        focusedBorder: UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                            color: SecondaryColors.c500Default,
+                                            width: 2,
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                  : Text(
+                                      nicknameController.text.isEmpty
+                                          ? '닉네임을 설정해주세요'
+                                          : nicknameController.text,
+                                      style: TextStyle(
+                                        color: nicknameController.text.isEmpty
+                                            ? BrandColors.txt300
+                                            : BrandColors.txtWhite,
+                                        fontSize: 32,
+                                        fontWeight: FontWeight.w700,
+                                        height: 1.50,
+                                      ),
+                                    ),
+                            ),
+                            IconButton(
+                              icon: isEditing
+                                  ? Icon(Icons.check, color: BrandColors.c500)
+                                  : SvgPicture.asset(
+                                      'assets/icons/iconamoon_edit-light.svg',
+                                      width: 24,
+                                      height: 24,
+                                    ),
+                              onPressed: _toggleEdit,
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 30),
+                        isEditing
+                            ? TextField(
+                                controller: introController,
+                                maxLines: 4,
+                                style: TextStyle(
+                                  color: BrandColors.txtWhite,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                                decoration: InputDecoration(
+                                  filled: true,
+                                  fillColor: BrandColors.c800,
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(4),
+                                    borderSide: BorderSide(
+                                      color: StatusColors.notification,
+                                    ),
+                                  ),
+
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(4),
+                                    borderSide: BorderSide(
+                                      color: SecondaryColors.c500Default,
+                                      width: 2,
+                                    ),
+                                  ),
+                                  hintText: '소개를 입력하세요',
+                                  hintStyle: TextStyle(
+                                    color: BrandColors.txtWhite,
+                                  ),
+                                ),
+                              )
+                            : Container(
+                                width: double.infinity,
+                                padding: EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: BrandColors.c800,
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Text(
+                                  introController.text,
+                                  style: textTheme.bodyLarge?.copyWith(
+                                    color: BrandColors.txtWhite,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ),
+                        SizedBox(height: 12),
+                        Row(
+                          children: [
+                            Text(
+                              '파쿠르 숙련도 변경',
+                              style: TextStyle(
+                                color: BrandColors.txtWhite,
+                                fontSize: 14,
+                              ),
+                            ),
+                            SizedBox(width: 8),
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: SecondaryColors.c500Default,
+                                  width: 2,
+                                ),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                '초급',
+                                style: TextStyle(
+                                  color: SecondaryColors.c500Default,
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                            Spacer(),
+                            Icon(Icons.info_outline, color: BrandColors.txt300),
+                          ],
+                        ),
+                        SizedBox(height: 16),
+                      ],
                     ),
-                    onPressed: _toggleEdit,
                   ),
-                  GestureDetector(
-                    onTap: isEditing ? _pickImage : null,
-                    child: CircleAvatar(
-                      radius: 30,
-                      backgroundColor: BrandColors.c700,
-                      backgroundImage: _profileImage != null
-                          ? FileImage(_profileImage!)
-                          : null,
-                      child: _profileImage == null
-                          ? Icon(Icons.person, size: 40, color: BrandColors.txt300)
-                          : null,
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 30),
-              Text(
-                '내 소개',
-                style: textTheme.bodyLarge?.copyWith(
-                  color: BrandColors.txt30,
-                  fontWeight: FontWeight.w500,
                 ),
               ),
-              SizedBox(height: 8),
-              isEditing
-                  ? TextField(
-                      controller: introController,
-                      maxLines: 4,
-                      style: textTheme.bodyLarge?.copyWith(
-                        color: BrandColors.txt30,
-                      ),
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: BrandColors.c800,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide(color: StrokeColors.defaultStroke),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide(color: StrokeColors.defaultStroke),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide(color: BrandColors.c500, width: 2),
-                        ),
-                        hintText: '소개를 입력하세요',
-                        hintStyle: TextStyle(color: BrandColors.txt300),
-                      ),
-                    )
-                  : Container(
-                      width: double.infinity,
-                      padding: EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: BrandColors.c800,
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: StrokeColors.defaultStroke),
-                      ),
-                      child: Text(
-                        introController.text,
-                        style: textTheme.bodyLarge?.copyWith(
-                          color: BrandColors.txt100,
-                        ),
-                      ),
-                    ),
-              SizedBox(height: 35),
-              Row(
-                children: [
-                  Text(
-                    '파쿠르 숙련도 변경',
-                    style: textTheme.bodyLarge?.copyWith(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                      color: BrandColors.c500,
-                    ),
-                  ),
-                  SizedBox(width: 8),
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: SecondaryColors.c500Default, width: 2),
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                    child: Text(
-                      '초급',
-                      style: TextStyle(
-                        color: SecondaryColors.c500Default,
-                        fontWeight: FontWeight.w700,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ),
-                  Spacer(),
-                  Icon(Icons.info_outline, color: BrandColors.txt300),
-                ],
-              ),
-              SizedBox(height: 16),
-            ],
-          ),
-        ),
       ),
     );
   }
@@ -309,13 +410,13 @@ class _MyPageState extends State<MyPage> {
 
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(4),
       child: Container(
         margin: EdgeInsets.symmetric(vertical: 8),
         padding: EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: BrandColors.c800,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(4),
           border: Border.all(color: StrokeColors.defaultStroke, width: 0.5),
         ),
         child: Row(
@@ -332,11 +433,7 @@ class _MyPageState extends State<MyPage> {
                 ),
               ),
             ),
-            Icon(
-              Icons.arrow_forward_ios,
-              size: 16,
-              color: BrandColors.txt300,
-            ),
+            Icon(Icons.arrow_forward_ios, size: 16, color: BrandColors.txt300),
           ],
         ),
       ),

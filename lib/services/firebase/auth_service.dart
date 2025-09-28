@@ -170,6 +170,7 @@ class AuthService {
         'uid': firebaseUser.uid,
         'email': firebaseUser.email,
         'displayName': displayName,
+        'introduction': 'hello everyone!',
         'parkourProficiency': parkourProficiency,
         'phoneNum': phoneNum,
         'signupDate': FieldValue.serverTimestamp(),

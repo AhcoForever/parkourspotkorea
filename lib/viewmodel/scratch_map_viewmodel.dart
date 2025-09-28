@@ -406,7 +406,7 @@ class ScratchMapViewModel extends ChangeNotifier {
   Future<void> _loadCustomMarkerIcon() async {
     try {
       _customSpotMarker = await BitmapDescriptor.asset(
-        const ImageConfiguration(size: Size(24, 28)),
+        const ImageConfiguration(size: Size(24, 32)),
         'assets/images/spot-marker.png',
       );
       print('✅ 커스텀 스팟 마커 로드 완료');
