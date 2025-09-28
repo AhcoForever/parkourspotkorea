@@ -425,6 +425,7 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
                                 Expanded(
                                   child: TextField(
                                     controller: _searchController,
+                                    cursorColor: SecondaryColors.c500Default,
                                     onSubmitted: _performSearch,
                                     onChanged: (value) {
                                       if (value.isEmpty) {
@@ -783,7 +784,7 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
                             valueColor: AlwaysStoppedAnimation(Colors.white),
                           ),
                         ),
-                        SizedBox(width: 8),
+                        SizedBox(width: 16),
                         Text(
                           '파쿠르 스팟 로딩 중...',
                           style: TextStyle(color: Colors.white, fontSize: 12),
