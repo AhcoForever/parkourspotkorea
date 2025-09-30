@@ -150,34 +150,41 @@ class _MyPageView extends StatelessWidget {
                 padding: EdgeInsets.symmetric(horizontal: 16),
                 child: Column(
                   children: [
-                    _buildMenuItem(context, '계정 설정', () {
+                    _buildMenuItem(context, '비밀번호 변경', Icons.lock_outline, () {
                       Navigator.pop(context);
-                      // 계정 설정 로직
+                      // 비밀번호 변경 로직
                     }),
-                    _buildMenuItem(context, '공지사항', () {
+                    _buildMenuItem(context, '공지사항', Icons.notifications_outlined, () {
                       Navigator.pop(context);
                       // 공지사항 로직
                     }),
-                    _buildMenuItem(context, '친구 초대', () {
-                      Navigator.pop(context);
-                      // 친구 초대 로직
-                    }),
-                    _buildMenuItem(context, '고객 지원', () {
+                    _buildMenuItem(context, '고객 지원', Icons.help_outline, () {
                       Navigator.pop(context);
                       // 고객 지원 로직
                     }),
-                    _buildMenuItem(context, '언어 설정', () {
+                    _buildMenuItem(context, '언어 설정', Icons.language_outlined, () {
                       Navigator.pop(context);
                       // 언어 설정 로직
                     }),
-                    _buildMenuItem(context, '버전 1.0.0.', () {
+                    _buildMenuItem(context, '만든이 정보', Icons.info_outline, () {
                       Navigator.pop(context);
-                      // 버전 정보 로직
+                      // 만든이 정보 로직
                     }),
-                    _buildMenuItem(context, '로그아웃', () {
+                    _buildMenuItem(context, '회원 탈퇴', Icons.person_remove_outlined, () {
                       Navigator.pop(context);
-                      // 로그아웃 로직
-                    }, underline: true),
+                      // 회원 탈퇴 로직
+                    }),
+                    SizedBox(height: 16),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        '버전 1.1.0',
+                        style: TextStyle(
+                          color: BrandColors.txtWhite,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -440,6 +447,7 @@ class _MyPageView extends StatelessWidget {
   Widget _buildMenuItem(
     BuildContext context,
     String title,
+    IconData icon,
     VoidCallback onTap, {
     bool underline = false,
   }) {
@@ -447,30 +455,39 @@ class _MyPageView extends StatelessWidget {
 
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(4),
+      borderRadius: BorderRadius.circular(8),
       child: Container(
-        margin: EdgeInsets.symmetric(vertical: 8),
+        margin: EdgeInsets.symmetric(vertical: 4),
         padding: EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: BrandColors.c800,
-          borderRadius: BorderRadius.circular(4),
-          border: Border.all(color: StrokeColors.defaultStroke, width: 0.5),
+          borderRadius: BorderRadius.circular(8),
         ),
         child: Row(
           children: [
+            Icon(
+              icon,
+              color: BrandColors.txt300,
+              size: 20,
+            ),
+            SizedBox(width: 12),
             Expanded(
               child: Text(
                 title,
                 style: textTheme.bodyLarge?.copyWith(
-                  color: BrandColors.txt30,
+                  color: BrandColors.txtWhite,
                   decoration: underline
                       ? TextDecoration.underline
                       : TextDecoration.none,
-                  decorationColor: BrandColors.txt300,
+                  decorationColor: BrandColors.txtWhite,
                 ),
               ),
             ),
-            Icon(Icons.arrow_forward_ios, size: 16, color: BrandColors.txt300),
+            Icon(
+              Icons.arrow_forward_ios,
+              color: BrandColors.txt300,
+              size: 16,
+            ),
           ],
         ),
       ),

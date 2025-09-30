@@ -31,8 +31,8 @@ final GoRouter appRouter = GoRouter(
      // ParkourLevel()
      //MyPage()
      // NicknamePage(),
-      LoginPage()
-      //AppInitializer(),
+      //LoginPage()
+      AppInitializer(),
 
     ),
 
