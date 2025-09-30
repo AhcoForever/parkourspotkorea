@@ -49,16 +49,14 @@ class SettingsBottomSheet extends StatelessWidget {
                   title: '비밀번호 변경',
                   icon: Icons.key_outlined,
                   onTap: () {
-                    Navigator.pop(context);
-                    // 비밀번호 변경 로직
+                    context.goNamed('find');
                   },
                 ),
                 _SettingsMenuItem(
                   title: '공지사항',
                   icon: Icons.notifications_rounded,
                   onTap: () {
-                    Navigator.pop(context);
-                    // 공지사항 로직
+                    context.goNamed('notice');
                   },
                 ),
                 _SettingsMenuItem(
@@ -81,16 +79,14 @@ class SettingsBottomSheet extends StatelessWidget {
                   title: '만든이 정보',
                   icon: Icons.list_rounded,
                   onTap: () {
-                    Navigator.pop(context);
-                    // 만든이 정보 로직
+                    context.goNamed('aboutCreator');
                   },
                 ),
                 _SettingsMenuItem(
                   title: '회원 탈퇴',
                   icon: Icons.person_off_outlined,
                   onTap: () {
-                    Navigator.pop(context);
-                    // 회원 탈퇴 로직
+                    context.goNamed('deleteAccount');
                   },
                 ),
                 SizedBox(height: 16),
@@ -98,10 +94,7 @@ class SettingsBottomSheet extends StatelessWidget {
                   alignment: Alignment.centerLeft,
                   child: Text(
                     '버전 ${AppConstants.appVersion}',
-                    style: TextStyle(
-                      color: BrandColors.txtWhite,
-                      fontSize: 14,
-                    ),
+                    style: TextStyle(color: BrandColors.txtWhite, fontSize: 14),
                   ),
                 ),
               ],
@@ -154,11 +147,7 @@ class _SettingsMenuItem extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Icon(
-              icon,
-              color: SecondaryColors.c500Default,
-              size: 24,
-            ),
+            Icon(icon, color: SecondaryColors.c500Default, size: 24),
             SizedBox(width: 12),
             Expanded(
               child: Text(
@@ -172,11 +161,7 @@ class _SettingsMenuItem extends StatelessWidget {
                 ),
               ),
             ),
-            Icon(
-              Icons.arrow_forward_ios,
-              color: BrandColors.txt300,
-              size: 16,
-            ),
+            Icon(Icons.arrow_forward_ios, color: BrandColors.txt300, size: 16),
           ],
         ),
       ),

@@ -1,4 +1,3 @@
-
 import 'package:go_router/go_router.dart';
 import 'package:parkourspotkorea/screens/bookmark_page.dart';
 import 'package:parkourspotkorea/screens/locationPermission_white_page.dart';
@@ -11,7 +10,7 @@ import '../screens/errorscreen.dart';
 import '../screens/auth/reset_password_page.dart';
 import '../screens/auth/login_page.dart';
 import '../screens/landing_page.dart';
-import '../screens/my_page.dart';
+import '../screens/profile/my_page.dart';
 import '../screens/nickname_page.dart';
 import '../screens/parkourlevel_page.dart';
 import '../screens/spot/scratch_map_page.dart';
@@ -28,17 +27,16 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/',
       name: 'initializer',
-      builder: (context, state) =>  //ParkourLandingPage(),
-      //SignupCompleteDialog()
-     // ParkourLevel()
-     //MyPage()
-     // NicknamePage(),
-      //LoginPage()
-     //AppInitializer(),
-
-      //Bookmark(),
-      AboutCreatorPage(),
-
+      builder:
+          (context, state) => //ParkourLandingPage(),
+              //SignupCompleteDialog()
+              // ParkourLevel()
+              //MyPage()
+              // NicknamePage(),
+              //LoginPage()
+              AppInitializer(),
+              //Bookmark(),
+             // AboutCreatorPage(),
     ),
 
     // 로그인 페이지
@@ -59,7 +57,7 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/nickname',
       name: 'nickname',
-      builder: (context, state) =>  NicknamePage(),
+      builder: (context, state) => NicknamePage(),
     ),
 
     // 아이디/비밀번호 찾기
@@ -73,9 +71,8 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/customer-service',
       name: 'customerService',
-      builder: (context, state) => CustomerServicePage(
-        from: state.extra as String?,
-      ),
+      builder: (context, state) =>
+          CustomerServicePage(from: state.extra as String?),
     ),
 
     // 지도 페이지
@@ -112,5 +109,28 @@ final GoRouter appRouter = GoRouter(
       name: 'aboutCreator',
       builder: (context, state) => AboutCreatorPage(),
     ),
+
+    // 공지사항 페이지
+    GoRoute(
+      path: '/notice',
+      name: 'notice',
+      builder: (context, state) => AboutCreatorPage(),
+    ),
+
+    // 회원 탈퇴 페이지
+    GoRoute(
+      path: '/deleteAccount',
+      name: 'deleteAccount',
+      builder: (context, state) => AboutCreatorPage(),
+    ),
+
+    // 로그아웃 페이지
+    GoRoute(
+      path: '/logout',
+      name: 'logout',
+      builder: (context, state) => AboutCreatorPage(),
+    ),
+
+
   ],
 );
