@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:parkourspotkorea/theme/app_colors.dart';
 import 'package:parkourspotkorea/widgets/background_wrapper.dart';
+import 'package:parkourspotkorea/widgets/settings_bottom_sheet.dart';
 import 'package:parkourspotkorea/viewmodels/my_page_viewmodel.dart';
 
 class MyPage extends StatelessWidget {
@@ -107,94 +108,6 @@ class _MyPageView extends StatelessWidget {
     );
   }
 
-  void _showSettingsBottomSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      builder: (BuildContext context) {
-        return Container(
-          decoration: BoxDecoration(
-            color: BrandColors.c800,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(20),
-              topRight: Radius.circular(20),
-            ),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // 드래그 핸들
-              Container(
-                margin: EdgeInsets.only(top: 12, bottom: 8),
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: BrandColors.txt300,
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-              // 제목
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 16),
-                child: Text(
-                  '설정',
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    color: BrandColors.txt30,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-              // 메뉴 아이템들
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                child: Column(
-                  children: [
-                    _buildMenuItem(context, '비밀번호 변경', Icons.lock_outline, () {
-                      Navigator.pop(context);
-                      // 비밀번호 변경 로직
-                    }),
-                    _buildMenuItem(context, '공지사항', Icons.notifications_outlined, () {
-                      Navigator.pop(context);
-                      // 공지사항 로직
-                    }),
-                    _buildMenuItem(context, '고객 지원', Icons.help_outline, () {
-                      Navigator.pop(context);
-                      // 고객 지원 로직
-                    }),
-                    _buildMenuItem(context, '언어 설정', Icons.language_outlined, () {
-                      Navigator.pop(context);
-                      // 언어 설정 로직
-                    }),
-                    _buildMenuItem(context, '만든이 정보', Icons.info_outline, () {
-                      Navigator.pop(context);
-                      // 만든이 정보 로직
-                    }),
-                    _buildMenuItem(context, '회원 탈퇴', Icons.person_remove_outlined, () {
-                      Navigator.pop(context);
-                      // 회원 탈퇴 로직
-                    }),
-                    SizedBox(height: 16),
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        '버전 1.1.0',
-                        style: TextStyle(
-                          color: BrandColors.txtWhite,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: MediaQuery.of(context).padding.bottom + 16),
-            ],
-          ),
-        );
-      },
-    );
-  }
 
   Widget _buildScaffold(BuildContext context, MyPageViewModel viewModel) {
     final textTheme = Theme.of(context).textTheme;
@@ -213,7 +126,7 @@ class _MyPageView extends StatelessWidget {
         actions: [
           IconButton(
             icon: Icon(Icons.settings, color: BrandColors.txt30),
-            onPressed: () => _showSettingsBottomSheet(context),
+            onPressed: () => SettingsBottomSheet.show(context),
           ),
         ],
       ),
@@ -444,53 +357,4 @@ class _MyPageView extends StatelessWidget {
     );
   }
 
-  Widget _buildMenuItem(
-    BuildContext context,
-    String title,
-    IconData icon,
-    VoidCallback onTap, {
-    bool underline = false,
-  }) {
-    final textTheme = Theme.of(context).textTheme;
-
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(8),
-      child: Container(
-        margin: EdgeInsets.symmetric(vertical: 4),
-        padding: EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: BrandColors.c800,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Row(
-          children: [
-            Icon(
-              icon,
-              color: BrandColors.txt300,
-              size: 20,
-            ),
-            SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                title,
-                style: textTheme.bodyLarge?.copyWith(
-                  color: BrandColors.txtWhite,
-                  decoration: underline
-                      ? TextDecoration.underline
-                      : TextDecoration.none,
-                  decorationColor: BrandColors.txtWhite,
-                ),
-              ),
-            ),
-            Icon(
-              Icons.arrow_forward_ios,
-              color: BrandColors.txt300,
-              size: 16,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }

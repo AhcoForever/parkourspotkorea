@@ -3,6 +3,7 @@ import 'package:parkourspotkorea/theme/app_colors.dart';
 import 'package:go_router/go_router.dart';
 import 'package:parkourspotkorea/widgets/background_wrapper.dart';
 import 'package:parkourspotkorea/widgets/comfirm_button.dart';
+import 'package:parkourspotkorea/repositories/my_page_repository.dart';
 import 'dart:convert';
 
 class NicknamePage extends StatefulWidget {
@@ -12,7 +13,9 @@ class NicknamePage extends StatefulWidget {
 
 class _NicknamePageState extends State<NicknamePage> {
   final TextEditingController _controller = TextEditingController();
+  final MyPageRepository _repository = MyPageRepository();
   bool _isValid = false;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -23,23 +26,80 @@ class _NicknamePageState extends State<NicknamePage> {
   void _validate() {
     final text = _controller.text.trim();
     final byteLength = utf8.encode(text).length;
+
+    // Repository의 검증 로직과 일치시키기
+    final validationErrors = _repository.validateProfileData(displayName: text);
+
     setState(() {
-      _isValid = text.isNotEmpty && byteLength <= 24; // 한글 8글자 (24바이트) 또는 영어 24글자
+      _isValid = text.isNotEmpty &&
+                 byteLength <= 24 &&
+                 !validationErrors.containsKey('displayName');
     });
   }
 
-  void _onConfirm() {
-    if (_isValid) {
-      final nickname = _controller.text.trim();
-      // TODO: 닉네임 저장 로직 구현
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('닉네임 "$nickname" 으로 설정되었습니다.')));
+  Future<void> _onConfirm() async {
+    if (!_isValid || _isLoading) return;
 
-      // 닉네임 설정 완료 후 지도 페이지로 이동
-      Future.delayed(Duration(seconds: 1), () {
-        context.goNamed('map');
-      });
+    final nickname = _controller.text.trim();
+
+    // 추가 검증
+    final validationErrors = _repository.validateProfileData(displayName: nickname);
+    if (validationErrors.containsKey('displayName')) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(validationErrors['displayName']!),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      // Firebase에 닉네임 저장
+      final success = await _repository.updateDisplayName(nickname);
+
+      if (success) {
+        // 성공 메시지 표시
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('닉네임 "$nickname" 으로 설정되었습니다.'),
+            backgroundColor: Colors.green,
+          ),
+        );
+
+        // 닉네임 설정 완료 후 지도 페이지로 이동
+        Future.delayed(Duration(seconds: 1), () {
+          if (mounted) {
+            context.goNamed('map');
+          }
+        });
+      } else {
+        // 실패 메시지 표시
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('닉네임 설정에 실패했습니다. 다시 시도해주세요.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      // 에러 메시지 표시
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('오류가 발생했습니다: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -114,8 +174,9 @@ class _NicknamePageState extends State<NicknamePage> {
                 const SizedBox(height: 36),
                 TextField(
                   controller: _controller,
+                  enabled: !_isLoading,
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: BrandColors.txt30,
+                    color: _isLoading ? BrandColors.txt300 : BrandColors.txt30,
                   ),
                   onChanged: (text) {
                     // 바이트 길이 제한
@@ -151,8 +212,29 @@ class _NicknamePageState extends State<NicknamePage> {
 
                 const SizedBox(height: 24),
 
-         // Todo: 닉네임 설정 버튼 기능 구성하기
-         ComfirmButton(onPressed: _onConfirm)
+                // 닉네임 설정 버튼
+                _isLoading
+                    ? Container(
+                        width: double.infinity,
+                        height: 48,
+                        decoration: BoxDecoration(
+                          color: BrandColors.txt300,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Center(
+                          child: SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(BrandColors.txtWhite),
+                            ),
+                          ),
+                        ),
+                      )
+                    : ComfirmButton(
+                        onPressed: _isValid ? _onConfirm : null,
+                      ),
               ],
             ),
           ),
