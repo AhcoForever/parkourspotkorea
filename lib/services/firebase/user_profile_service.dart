@@ -1,11 +1,14 @@
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/material.dart';
 
 class UserProfileService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final firebase_auth.FirebaseAuth _auth = firebase_auth.FirebaseAuth.instance;
+  final FirebaseStorage _storage = FirebaseStorage.instance;
 
   /// 현재 사용자의 프로필 정보 가져오기
   Future<Map<String, dynamic>?> getCurrentUserProfile() async {
@@ -159,6 +162,100 @@ class UserProfileService {
     } catch (e) {
       print('❌ 소개글 업데이트 오류: $e');
       _showErrorToast('소개글 변경에 실패했습니다.');
+      return false;
+    }
+  }
+
+  /// 프로필 이미지 업로드
+  Future<String?> uploadProfileImage(File imageFile) async {
+    try {
+      final currentUser = _auth.currentUser;
+      if (currentUser == null) {
+        print('❌ 사용자가 로그인되어 있지 않음');
+        _showErrorToast('로그인이 필요합니다.');
+        return null;
+      }
+
+      print('🔄 프로필 이미지 업로드 시작...');
+
+      // 파일 확장자 확인
+      final fileName = 'profile_${currentUser.uid}_${DateTime.now().millisecondsSinceEpoch}';
+      final fileExtension = imageFile.path.split('.').last.toLowerCase();
+
+      if (!['jpg', 'jpeg', 'png', 'webp'].contains(fileExtension)) {
+        _showErrorToast('지원하지 않는 이미지 형식입니다.');
+        return null;
+      }
+
+      // Firebase Storage에 업로드
+      final storageRef = _storage
+          .ref()
+          .child('profile_images')
+          .child('$fileName.$fileExtension');
+
+      final uploadTask = storageRef.putFile(imageFile);
+      final snapshot = await uploadTask;
+
+      if (snapshot.state == TaskState.success) {
+        final downloadUrl = await snapshot.ref.getDownloadURL();
+        print('✅ 이미지 업로드 성공: $downloadUrl');
+        return downloadUrl;
+      } else {
+        print('❌ 이미지 업로드 실패');
+        _showErrorToast('이미지 업로드에 실패했습니다.');
+        return null;
+      }
+    } catch (e) {
+      print('❌ 프로필 이미지 업로드 오류: $e');
+      _showErrorToast('이미지 업로드에 실패했습니다: ${e.toString()}');
+      return null;
+    }
+  }
+
+  /// 프로필 이미지 URL 업데이트
+  Future<bool> updateProfileImageUrl(String imageUrl) async {
+    try {
+      final currentUser = _auth.currentUser;
+      if (currentUser == null) {
+        _showErrorToast('로그인이 필요합니다.');
+        return false;
+      }
+
+      print('🔄 프로필 이미지 URL 업데이트 중...');
+
+      // Firestore의 사용자 문서 업데이트
+      await _firestore
+          .collection('users')
+          .doc(currentUser.uid)
+          .update({
+        'profileImageUrl': imageUrl,
+        'lastUpdated': FieldValue.serverTimestamp(),
+      });
+
+      print('✅ 프로필 이미지 URL 업데이트 완료');
+      _showSuccessToast('프로필 이미지가 변경되었습니다.');
+      return true;
+    } catch (e) {
+      print('❌ 프로필 이미지 URL 업데이트 오류: $e');
+      _showErrorToast('프로필 이미지 변경에 실패했습니다.');
+      return false;
+    }
+  }
+
+  /// 프로필 이미지 업로드 및 URL 업데이트 (통합 메서드)
+  Future<bool> updateProfileImage(File imageFile) async {
+    try {
+      // 1. 이미지 업로드
+      final imageUrl = await uploadProfileImage(imageFile);
+      if (imageUrl == null) {
+        return false;
+      }
+
+      // 2. URL을 Firestore에 저장
+      return await updateProfileImageUrl(imageUrl);
+    } catch (e) {
+      print('❌ 프로필 이미지 업데이트 오류: $e');
+      _showErrorToast('프로필 이미지 변경에 실패했습니다.');
       return false;
     }
   }

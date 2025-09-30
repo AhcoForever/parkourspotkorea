@@ -32,7 +32,7 @@ final GoRouter appRouter = GoRouter(
      // MyPage()
      // NicknamePage(),
       LoginPage()
-     // AppInitializer(),
+      //AppInitializer(),
 
     ),
 

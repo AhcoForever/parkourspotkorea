@@ -45,6 +45,25 @@ class _MyPageState extends State<MyPage> {
     }
   }
 
+  /// 프로필 이미지 가져오기 (우선순위: 로컬 이미지 > Firebase URL > null)
+  ImageProvider? _getProfileImage() {
+    // 편집 중이고 로컬에 새로 선택한 이미지가 있는 경우
+    if (_profileImage != null) {
+      return FileImage(_profileImage!);
+    }
+
+    // Firebase Storage에서 저장된 이미지 URL이 있는 경우
+    if (_userProfile != null && _userProfile!['profileImageUrl'] != null) {
+      final imageUrl = _userProfile!['profileImageUrl'] as String;
+      if (imageUrl.isNotEmpty) {
+        return NetworkImage(imageUrl);
+      }
+    }
+
+    // 둘 다 없는 경우
+    return null;
+  }
+
   Future<void> _loadUserProfile() async {
     try {
       final profile = await _userProfileService.getCurrentUserProfile();
@@ -53,12 +72,20 @@ class _MyPageState extends State<MyPage> {
           _userProfile = profile;
           nicknameController.text = profile['displayName'] ?? '';
           introController.text = profile['introduction'] ?? 'hello everyone!';
+          // 프로필 로드 시 로컬 이미지 초기화 (Firebase에서 가져온 이미지를 우선)
+          if (!isEditing) {
+            _profileImage = null;
+          }
           _isLoading = false;
         });
       } else {
         setState(() {
           nicknameController.text = '';
           introController.text = 'hello everyone!';
+          _userProfile = null;
+          if (!isEditing) {
+            _profileImage = null;
+          }
           _isLoading = false;
         });
       }
@@ -73,25 +100,68 @@ class _MyPageState extends State<MyPage> {
   Future<void> _toggleEdit() async {
     if (isEditing) {
       // 편집 완료 - 저장
-      final nicknameSuccess = await _userProfileService.updateDisplayName(
-        nicknameController.text,
-      );
-      final introSuccess = await _userProfileService.updateUserIntroduction(
-        introController.text,
-      );
+      setState(() {
+        _isLoading = true;
+      });
 
-      if (nicknameSuccess && introSuccess) {
+      try {
+        final nicknameSuccess = await _userProfileService.updateDisplayName(
+          nicknameController.text,
+        );
+        final introSuccess = await _userProfileService.updateUserIntroduction(
+          introController.text,
+        );
+
+        // 프로필 이미지가 변경된 경우 업로드
+        bool imageSuccess = true;
+        if (_profileImage != null) {
+          imageSuccess = await _userProfileService.updateProfileImage(_profileImage!);
+          if (imageSuccess) {
+            // 업로드 성공 후 로컬 이미지 초기화
+            setState(() {
+              _profileImage = null;
+            });
+          }
+        }
+
+        if (nicknameSuccess && introSuccess && imageSuccess) {
+          setState(() {
+            isEditing = false;
+          });
+          await _loadUserProfile(); // 저장 후 새로고침
+        }
+      } finally {
         setState(() {
-          isEditing = false;
+          _isLoading = false;
         });
-        await _loadUserProfile(); // 저장 후 새로고침
       }
     } else {
       // 편집 시작
       setState(() {
         isEditing = true;
+        // 편집 시작 시 현재 프로필 정보로 필드 초기화
+        if (_userProfile != null) {
+          nicknameController.text = _userProfile!['displayName'] ?? '';
+          introController.text = _userProfile!['introduction'] ?? 'hello everyone!';
+        }
+        // 편집 시작 시 로컬 이미지 초기화
+        _profileImage = null;
       });
     }
+  }
+
+  /// 편집 취소
+  void _cancelEdit() {
+    setState(() {
+      isEditing = false;
+      // 기존 프로필 정보로 되돌리기
+      if (_userProfile != null) {
+        nicknameController.text = _userProfile!['displayName'] ?? '';
+        introController.text = _userProfile!['introduction'] ?? 'hello everyone!';
+      }
+      // 선택한 이미지 취소
+      _profileImage = null;
+    });
   }
 
   void _showSettingsBottomSheet() {
@@ -225,13 +295,9 @@ class _MyPageState extends State<MyPage> {
                             onTap: isEditing ? _pickImage : null,
                             child: CircleAvatar(
                               radius: 75,
-
                               backgroundColor: BrandColors.c700,
-
-                              backgroundImage: _profileImage != null
-                                  ? FileImage(_profileImage!)
-                                  : null,
-                              child: _profileImage == null
+                              backgroundImage: _getProfileImage(),
+                              child: _getProfileImage() == null
                                   ? Icon(
                                       Icons.person,
                                       size: 60,
@@ -294,16 +360,24 @@ class _MyPageState extends State<MyPage> {
                                       ),
                                     ),
                             ),
-                            IconButton(
-                              icon: isEditing
-                                  ? Icon(Icons.check, color: BrandColors.c500)
-                                  : SvgPicture.asset(
-                                      'assets/icons/iconamoon_edit-light.svg',
-                                      width: 24,
-                                      height: 24,
-                                    ),
-                              onPressed: _toggleEdit,
-                            ),
+                            if (isEditing) ...[
+                              IconButton(
+                                icon: Icon(Icons.close, color: BrandColors.txt300),
+                                onPressed: _cancelEdit,
+                              ),
+                              IconButton(
+                                icon: Icon(Icons.check, color: BrandColors.c500),
+                                onPressed: _toggleEdit,
+                              ),
+                            ] else
+                              IconButton(
+                                icon: SvgPicture.asset(
+                                  'assets/icons/iconamoon_edit-light.svg',
+                                  width: 24,
+                                  height: 24,
+                                ),
+                                onPressed: _toggleEdit,
+                              ),
                           ],
                         ),
                         SizedBox(height: 30),
