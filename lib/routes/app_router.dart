@@ -4,6 +4,7 @@ import 'package:parkourspotkorea/screens/bookmark_page.dart';
 import 'package:parkourspotkorea/screens/locationPermission_white_page.dart';
 import 'package:parkourspotkorea/screens/location_permission_dark_page.dart';
 
+import '../screens/about_creator_page.dart';
 import '../screens/auth/signup_page.dart';
 import '../screens/customer_service_page.dart';
 import '../screens/errorscreen.dart';
@@ -33,8 +34,10 @@ final GoRouter appRouter = GoRouter(
      //MyPage()
      // NicknamePage(),
       //LoginPage()
-     AppInitializer(),
+     //AppInitializer(),
+
       //Bookmark(),
+      AboutCreatorPage(),
 
     ),
 
@@ -95,10 +98,19 @@ final GoRouter appRouter = GoRouter(
       name: 'parkourLevel',
       builder: (context, state) => ParkourLevel(),
     ),
+
+    // 나의 파쿠르 스팟 페이지
     GoRoute(
       path: '/spotBookmark',
       name: 'spotBookmark',
       builder: (context, state) => Bookmark(),
+    ),
+
+    // 만든이 정보 페이지
+    GoRoute(
+      path: '/aboutCreator',
+      name: 'aboutCreator',
+      builder: (context, state) => AboutCreatorPage(),
     ),
   ],
 );
