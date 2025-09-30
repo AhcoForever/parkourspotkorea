@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:parkourspotkorea/theme/app_colors.dart';
+import 'package:parkourspotkorea/constants/app_constants.dart';
 
 class SettingsBottomSheet extends StatelessWidget {
   const SettingsBottomSheet({super.key});
@@ -72,7 +74,7 @@ class SettingsBottomSheet extends StatelessWidget {
                   icon: Icons.help_outline,
                   onTap: () {
                     Navigator.pop(context);
-                    // 고객 지원 로직
+                    context.pushNamed('customerService');
                   },
                 ),
                 _SettingsMenuItem(
@@ -95,7 +97,7 @@ class SettingsBottomSheet extends StatelessWidget {
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    '버전 1.1.0',
+                    '버전 ${AppConstants.appVersion}',
                     style: TextStyle(
                       color: BrandColors.txtWhite,
                       fontSize: 14,

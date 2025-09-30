@@ -5,6 +5,7 @@ import 'package:parkourspotkorea/theme/app_colors.dart';
 import 'package:parkourspotkorea/widgets/background_wrapper.dart';
 import 'package:parkourspotkorea/widgets/settings_bottom_sheet.dart';
 import 'package:parkourspotkorea/viewmodels/my_page_viewmodel.dart';
+import 'package:parkourspotkorea/constants/app_constants.dart';
 
 class MyPage extends StatelessWidget {
   @override
@@ -42,11 +43,11 @@ class _MyPageView extends StatelessWidget {
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              _buildSkillLevelOption(context, viewModel, '트레이서', '파쿠르를 처음 시작하는 단계'),
+              _buildSkillLevelOption(context, viewModel, AppConstants.skillLevels[0], '파쿠르를 처음 시작하는 단계'),
               SizedBox(height: 8),
-              _buildSkillLevelOption(context, viewModel, '프리러너', '기본적인 동작들을 익힌 단계'),
+              _buildSkillLevelOption(context, viewModel, AppConstants.skillLevels[1], '기본적인 동작들을 익힌 단계'),
               SizedBox(height: 8),
-              _buildSkillLevelOption(context, viewModel, '야막', '다양한 기술을 자유롭게 구사하는 단계'),
+              _buildSkillLevelOption(context, viewModel, AppConstants.skillLevels[2], '다양한 기술을 자유롭게 구사하는 단계'),
             ],
           ),
           actions: [
@@ -329,7 +330,7 @@ class _MyPageView extends StatelessWidget {
                                     borderRadius: BorderRadius.circular(4),
                                   ),
                                   child: Text(
-                                    viewModel.userProfile?['skillLevel'] ?? '트레이서',
+                                    viewModel.userProfile?['skillLevel'] ?? AppConstants.defaultSkillLevel,
                                     style: TextStyle(
                                       color: SecondaryColors.c500Default,
                                       fontWeight: FontWeight.w700,

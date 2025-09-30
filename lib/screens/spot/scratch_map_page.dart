@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:custom_info_window/custom_info_window.dart';
@@ -130,7 +129,7 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
         width: 50,
         height: 50,
         decoration: BoxDecoration(
-          color: Color(0xFF3A59D1).withOpacity(0.1),
+          color: Color(0xFF3A59D1).withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Icon(Icons.location_on, color: Color(0xFF3A59D1), size: 24),
@@ -685,7 +684,7 @@ class _ScratchMapPageState extends State<ScratchMapPage> {
                                 splashColor: Colors.transparent,
                                 highlightColor: Colors.transparent,
                                 onTap: () {
-                                  print('즐겨찾기 버튼 클릭');
+                                  context.goNamed('spotBookmark');
                                 },
                                 child: Center(
                                   child: Image.asset(

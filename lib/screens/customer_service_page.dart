@@ -4,7 +4,9 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:parkourspotkorea/theme/app_colors.dart';
 
 class CustomerServicePage extends StatelessWidget {
-  const CustomerServicePage({Key? key}) : super(key: key);
+  final String? from;
+
+  const CustomerServicePage({Key? key, this.from}) : super(key: key);
 
   // 이메일 보내기 함수
   Future<void> _sendEmail() async {
@@ -60,7 +62,13 @@ class CustomerServicePage extends StatelessWidget {
           padding: const EdgeInsets.only(left: 20),
           icon: const Icon(Icons.arrow_back_ios),
           onPressed: () {
-            context.goNamed('login');
+            if (from == 'resetPassword') {
+              context.goNamed('find');
+            } else if (from == 'login') {
+              context.goNamed('login');
+            } else {
+              context.pop();
+            }
           },
         ),
         backgroundColor: BrandColors.c900,

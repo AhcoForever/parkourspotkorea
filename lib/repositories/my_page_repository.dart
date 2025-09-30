@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:parkourspotkorea/services/firebase/user_profile_service.dart';
+import 'package:parkourspotkorea/constants/app_constants.dart';
 
 /// 마이페이지 관련 데이터 액세스를 담당하는 Repository
 class MyPageRepository {
@@ -114,20 +115,20 @@ class MyPageRepository {
     if (displayName != null) {
       if (displayName.trim().isEmpty) {
         errors['displayName'] = '닉네임을 입력해주세요.';
-      } else if (displayName.length < 2) {
-        errors['displayName'] = '닉네임은 2글자 이상이어야 합니다.';
-      } else if (displayName.length > 12) {
-        errors['displayName'] = '닉네임은 12글자 이하여야 합니다.';
+      } else if (displayName.length < AppConstants.minNicknameLength) {
+        errors['displayName'] = '닉네임은 ${AppConstants.minNicknameLength}글자 이상이어야 합니다.';
+      } else if (displayName.length > AppConstants.maxNicknameLength) {
+        errors['displayName'] = '닉네임은 ${AppConstants.maxNicknameLength}글자 이하여야 합니다.';
       }
     }
 
     // 소개글 검증
-    if (introduction != null && introduction.length > 200) {
-      errors['introduction'] = '소개글은 200글자 이하여야 합니다.';
+    if (introduction != null && introduction.length > AppConstants.maxIntroductionLength) {
+      errors['introduction'] = '소개글은 ${AppConstants.maxIntroductionLength}글자 이하여야 합니다.';
     }
 
     // 숙련도 검증
-    if (skillLevel != null && !['트레이서', '프리러너', '야막'].contains(skillLevel)) {
+    if (skillLevel != null && !AppConstants.skillLevels.contains(skillLevel)) {
       errors['skillLevel'] = '유효하지 않은 숙련도입니다.';
     }
 
@@ -139,15 +140,15 @@ class MyPageRepository {
     if (imageFile == null) return null;
 
     final fileExtension = imageFile.path.split('.').last.toLowerCase();
-    if (!['jpg', 'jpeg', 'png', 'webp'].contains(fileExtension)) {
-      return '지원하지 않는 이미지 형식입니다. (jpg, png, webp만 지원)';
+    if (!AppConstants.supportedImageFormats.contains(fileExtension)) {
+      return '지원하지 않는 이미지 형식입니다. (${AppConstants.supportedImageFormats.join(', ')}만 지원)';
     }
 
-    // 파일 크기 체크 (10MB 제한)
+    // 파일 크기 체크
     final fileSizeInBytes = imageFile.lengthSync();
-    const maxSizeInBytes = 10 * 1024 * 1024; // 10MB
+    final maxSizeInBytes = AppConstants.maxProfileImageSizeMB * 1024 * 1024;
     if (fileSizeInBytes > maxSizeInBytes) {
-      return '이미지 크기는 10MB 이하여야 합니다.';
+      return '이미지 크기는 ${AppConstants.maxProfileImageSizeMB}MB 이하여야 합니다.';
     }
 
     return null;
@@ -166,7 +167,7 @@ class MyPageRepository {
         'displayName': displayName ?? '',
         'email': email ?? '',
         'introduction': 'hello everyone!',
-        'skillLevel': '트레이서',
+        'skillLevel': AppConstants.defaultSkillLevel,
         'profileImageUrl': null,
         'createdAt': DateTime.now().toIso8601String(),
         'lastUpdated': DateTime.now().toIso8601String(),

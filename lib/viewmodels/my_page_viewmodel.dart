@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:parkourspotkorea/repositories/my_page_repository.dart';
+import 'package:parkourspotkorea/constants/app_constants.dart';
 
 class MyPageViewModel extends ChangeNotifier {
   final MyPageRepository _repository = MyPageRepository();
@@ -201,7 +202,7 @@ class MyPageViewModel extends ChangeNotifier {
 
   /// 숙련도 레벨 옵션 체크
   bool isSkillLevelSelected(String level) {
-    return (_userProfile?['skillLevel'] ?? '트레이서') == level;
+    return (_userProfile?['skillLevel'] ?? AppConstants.defaultSkillLevel) == level;
   }
 
   /// 현재 프로필이 완성되었는지 확인

@@ -156,7 +156,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                             child: GestureDetector(
                               onTap: () {
                                 // 고객센터 페이지로 이동
-                                context.goNamed('customerService');
+                                context.pushNamed('customerService', extra: 'resetPassword');
                               },
                               child: Text(
                                 '고객센터 ',

@@ -299,7 +299,7 @@ class _LoginPageState extends State<LoginPage> {
                 padding: const EdgeInsets.only(top: 16.0),
                 child: TextButton(
                   onPressed: () {
-                    context.goNamed('customerService');
+                    context.pushNamed('customerService', extra: 'login');
                   },
                   child: Container(
                     decoration: const BoxDecoration(

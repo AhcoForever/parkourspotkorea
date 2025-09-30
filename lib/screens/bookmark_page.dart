@@ -1,28 +1,32 @@
 import 'package:flutter/material.dart';
+import '../theme/app_colors.dart';
 
-class Bookmark extends StatelessWidget {
+class Bookmark extends StatefulWidget {
   const Bookmark({super.key});
 
   @override
+  State<Bookmark> createState() => _BookmarkState();
+}
+
+class _BookmarkState extends State<Bookmark> {
+  bool _isButtonClicked = false;
+
+  @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: BrandColors.c900,
       appBar: AppBar(
-        backgroundColor: Colors.grey[50],
-        elevation: 0,
+        backgroundColor: BrandColors.c900,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
+          icon: Icon(Icons.arrow_back_ios, color: BrandColors.txtWhite),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          '나만의 파쿠르 장소',
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-          ),
+        title: Text(
+          '나만의 파쿠르 스팟',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
         ),
-        centerTitle: false,
       ),
       body: Column(
         children: [
@@ -33,78 +37,67 @@ class Bookmark extends StatelessWidget {
               alignment: Alignment.centerLeft,
               child: ElevatedButton.icon(
                 onPressed: () {
+                  setState(() {
+                    _isButtonClicked = true;
+                  });
                   // 새 장소 추가 기능
                   print('새 장소 추가 버튼 클릭');
                 },
-                icon: const Icon(Icons.add, color: Colors.white),
-                label: const Text(
+                icon: Icon(
+                  Icons.add_rounded,
+                  color: BrandColors.c900,
+                  size: 24,
+                ),
+                label: Text(
                   '새 장소 추가',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: BrandColors.c900,
                     fontSize: 16,
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
-                  foregroundColor: Colors.white,
+                  backgroundColor: _isButtonClicked
+                      ? SecondaryColors.c700
+                      : SecondaryColors.c500Default,
+                  foregroundColor: BrandColors.txtWhite,
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 12,
+                    horizontal: 26,
+                    vertical: 13,
                   ),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(25),
+                    borderRadius: BorderRadius.circular(8),
                   ),
                   elevation: 0,
                 ),
               ),
             ),
           ),
-
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text('나만의 파쿠르 스팟',
+              style: TextStyle(
+                color: BrandColors.txt100,
+                fontWeight: FontWeight.w600,
+                fontSize: 14,
+              ),),
+            ),
+          ),
           // 메인 컨텐츠 영역
           Expanded(
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // 파쿠르 이미지
-                  Container(
-                    width: 280,
-                    height: 120,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Image.asset(
-                      'assets/images/PARKOUR_SPOT.png', // 이미지 경로
-                      fit: BoxFit.contain,
-                      errorBuilder: (context, error, stackTrace) {
-                        // 이미지 로드 실패 시 플레이스홀더
-                        return Container(
-                          width: 280,
-                          height: 120,
-                          decoration: BoxDecoration(
-                            color: Colors.grey[200],
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: const Icon(
-                            Icons.image,
-                            size: 48,
-                            color: Colors.grey,
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-
-                  const SizedBox(height: 30),
-
                   // 안내 텍스트
-                  const Text(
+                  Text(
                     '아직 저장된 파쿠르 장소가 없어요.',
                     style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.grey,
-                      fontWeight: FontWeight.w400,
+                      color: BrandColors.normal,
+                      fontWeight: FontWeight.w600,
+                      height: 1.50,
                     ),
                   ),
                 ],

@@ -1,5 +1,6 @@
 
 import 'package:go_router/go_router.dart';
+import 'package:parkourspotkorea/screens/bookmark_page.dart';
 import 'package:parkourspotkorea/screens/locationPermission_white_page.dart';
 import 'package:parkourspotkorea/screens/location_permission_dark_page.dart';
 
@@ -31,8 +32,9 @@ final GoRouter appRouter = GoRouter(
      // ParkourLevel()
      //MyPage()
      // NicknamePage(),
-      LoginPage()
-      //AppInitializer(),
+      //LoginPage()
+     //AppInitializer(),
+      Bookmark(),
 
     ),
 
@@ -43,7 +45,7 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => LoginPage(),
     ),
 
-    // 회원가입 페이지 (이제 Provider가 main.dart에서 전역으로 제공됨)
+    // 회원가입 페이지
     GoRoute(
       path: '/signup',
       name: 'signup',
@@ -68,7 +70,9 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/customer-service',
       name: 'customerService',
-      builder: (context, state) => CustomerServicePage(),
+      builder: (context, state) => CustomerServicePage(
+        from: state.extra as String?,
+      ),
     ),
 
     // 지도 페이지
@@ -79,7 +83,7 @@ final GoRouter appRouter = GoRouter(
     ),
 
     // 마이페이지
-    GoRoute( //ParkourLevel
+    GoRoute(
       path: '/profile',
       name: 'profile',
       builder: (context, state) => MyPage(),
@@ -90,6 +94,11 @@ final GoRouter appRouter = GoRouter(
       path: '/parkourLevel',
       name: 'parkourLevel',
       builder: (context, state) => ParkourLevel(),
+    ),
+    GoRoute(
+      path: '/spotBookmark',
+      name: 'spotBookmark',
+      builder: (context, state) => Bookmark(),
     ),
   ],
 );
