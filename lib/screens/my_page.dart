@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:parkourspotkorea/theme/app_colors.dart';
 import 'package:parkourspotkorea/widgets/background_wrapper.dart';
@@ -43,20 +44,32 @@ class _MyPageView extends StatelessWidget {
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              _buildSkillLevelOption(context, viewModel, AppConstants.skillLevels[0], '파쿠르를 처음 시작하는 단계'),
+              _buildSkillLevelOption(
+                context,
+                viewModel,
+                AppConstants.skillLevels[0],
+                '파쿠르를 처음 시작하는 단계',
+              ),
               SizedBox(height: 8),
-              _buildSkillLevelOption(context, viewModel, AppConstants.skillLevels[1], '기본적인 동작들을 익힌 단계'),
+              _buildSkillLevelOption(
+                context,
+                viewModel,
+                AppConstants.skillLevels[1],
+                '기본적인 동작들을 익힌 단계',
+              ),
               SizedBox(height: 8),
-              _buildSkillLevelOption(context, viewModel, AppConstants.skillLevels[2], '다양한 기술을 자유롭게 구사하는 단계'),
+              _buildSkillLevelOption(
+                context,
+                viewModel,
+                AppConstants.skillLevels[2],
+                '다양한 기술을 자유롭게 구사하는 단계',
+              ),
             ],
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: Text(
-                '취소',
-                style: TextStyle(color: BrandColors.txt300),
-              ),
+              child: Text('취소', style: TextStyle(color: BrandColors.txtWhite)),
             ),
           ],
         );
@@ -64,7 +77,12 @@ class _MyPageView extends StatelessWidget {
     );
   }
 
-  Widget _buildSkillLevelOption(BuildContext context, MyPageViewModel viewModel, String level, String description) {
+  Widget _buildSkillLevelOption(
+    BuildContext context,
+    MyPageViewModel viewModel,
+    String level,
+    String description,
+  ) {
     final isSelected = viewModel.isSkillLevelSelected(level);
 
     return InkWell(
@@ -77,10 +95,14 @@ class _MyPageView extends StatelessWidget {
         width: double.infinity,
         padding: EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: isSelected ? SecondaryColors.c500Default.withValues(alpha: 0.1) : BrandColors.c700,
+          color: isSelected
+              ? SecondaryColors.c500Default.withValues(alpha: 0.1)
+              : BrandColors.c700,
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
-            color: isSelected ? SecondaryColors.c500Default : StrokeColors.defaultStroke,
+            color: isSelected
+                ? SecondaryColors.c500Default
+                : StrokeColors.defaultStroke,
             width: isSelected ? 2 : 1,
           ),
         ),
@@ -90,7 +112,9 @@ class _MyPageView extends StatelessWidget {
             Text(
               level,
               style: TextStyle(
-                color: isSelected ? SecondaryColors.c500Default : BrandColors.txtWhite,
+                color: isSelected
+                    ? SecondaryColors.c500Default
+                    : BrandColors.txtWhite,
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
               ),
@@ -98,10 +122,7 @@ class _MyPageView extends StatelessWidget {
             SizedBox(height: 4),
             Text(
               description,
-              style: TextStyle(
-                color: BrandColors.txt300,
-                fontSize: 12,
-              ),
+              style: TextStyle(color: BrandColors.txt300, fontSize: 12),
             ),
           ],
         ),
@@ -109,13 +130,18 @@ class _MyPageView extends StatelessWidget {
     );
   }
 
-
   Widget _buildScaffold(BuildContext context, MyPageViewModel viewModel) {
     final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
       backgroundColor: BrandColors.c900,
       appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios),color: BrandColors.txtWhite,
+          onPressed: () {
+            context.goNamed('map');
+          },
+        ),
         title: Text(
           '마이 페이지',
           style: Theme.of(context).appBarTheme.titleTextStyle,
@@ -155,7 +181,9 @@ class _MyPageView extends StatelessWidget {
                             ),
                           ),
                           child: GestureDetector(
-                            onTap: viewModel.isEditing ? viewModel.pickImage : null,
+                            onTap: viewModel.isEditing
+                                ? viewModel.pickImage
+                                : null,
                             child: CircleAvatar(
                               radius: 75,
                               backgroundColor: BrandColors.c700,
@@ -214,7 +242,11 @@ class _MyPageView extends StatelessWidget {
                                           ? '닉네임을 설정해주세요'
                                           : viewModel.nicknameController.text,
                                       style: TextStyle(
-                                        color: viewModel.nicknameController.text.isEmpty
+                                        color:
+                                            viewModel
+                                                .nicknameController
+                                                .text
+                                                .isEmpty
                                             ? BrandColors.txt300
                                             : BrandColors.txtWhite,
                                         fontSize: 32,
@@ -225,11 +257,17 @@ class _MyPageView extends StatelessWidget {
                             ),
                             if (viewModel.isEditing) ...[
                               IconButton(
-                                icon: Icon(Icons.close, color: BrandColors.txt300),
+                                icon: Icon(
+                                  Icons.close,
+                                  color: BrandColors.txt300,
+                                ),
                                 onPressed: viewModel.cancelEdit,
                               ),
                               IconButton(
-                                icon: Icon(Icons.check, color: SecondaryColors.c500Default),
+                                icon: Icon(
+                                  Icons.check,
+                                  color: SecondaryColors.c500Default,
+                                ),
                                 onPressed: viewModel.toggleEdit,
                               ),
                             ] else
@@ -330,7 +368,8 @@ class _MyPageView extends StatelessWidget {
                                     borderRadius: BorderRadius.circular(4),
                                   ),
                                   child: Text(
-                                    viewModel.userProfile?['skillLevel'] ?? AppConstants.defaultSkillLevel,
+                                    viewModel.userProfile?['skillLevel'] ??
+                                        AppConstants.defaultSkillLevel,
                                     style: TextStyle(
                                       color: SecondaryColors.c500Default,
                                       fontWeight: FontWeight.w700,
@@ -357,5 +396,4 @@ class _MyPageView extends StatelessWidget {
       ),
     );
   }
-
 }

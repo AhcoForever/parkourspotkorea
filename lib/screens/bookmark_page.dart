@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../theme/app_colors.dart';
 
 class Bookmark extends StatefulWidget {
@@ -21,7 +22,7 @@ class _BookmarkState extends State<Bookmark> {
         backgroundColor: BrandColors.c900,
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios, color: BrandColors.txtWhite),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => context.goNamed('map'),
         ),
         title: Text(
           '나만의 파쿠르 스팟',
