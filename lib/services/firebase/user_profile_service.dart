@@ -166,6 +166,29 @@ class UserProfileService {
     }
   }
 
+  /// 기존 프로필 이미지 삭제
+  Future<bool> _deleteOldProfileImage(String? oldImageUrl) async {
+    if (oldImageUrl == null || oldImageUrl.isEmpty) {
+      return true; // 삭제할 이미지가 없으면 성공으로 처리
+    }
+
+    try {
+      // Firebase Storage URL에서 파일 경로 추출
+      final Uri uri = Uri.parse(oldImageUrl);
+      final String path = uri.pathSegments.skip(3).join('/'); // /v0/b/bucket/o/ 이후 경로
+      final String decodedPath = Uri.decodeComponent(path);
+
+      final Reference ref = _storage.ref().child(decodedPath);
+      await ref.delete();
+
+      print('✅ 기존 프로필 이미지 삭제 완료: $decodedPath');
+      return true;
+    } catch (e) {
+      print('⚠️ 기존 프로필 이미지 삭제 실패 (계속 진행): $e');
+      return true; // 삭제 실패해도 새 이미지 업로드는 계속 진행
+    }
+  }
+
   /// 프로필 이미지 업로드
   Future<String?> uploadProfileImage(File imageFile) async {
     try {
@@ -179,19 +202,20 @@ class UserProfileService {
       print('🔄 프로필 이미지 업로드 시작...');
 
       // 파일 확장자 확인
-      final fileName = 'profile_${currentUser.uid}_${DateTime.now().millisecondsSinceEpoch}';
       final fileExtension = imageFile.path.split('.').last.toLowerCase();
-
       if (!['jpg', 'jpeg', 'png', 'webp'].contains(fileExtension)) {
         _showErrorToast('지원하지 않는 이미지 형식입니다.');
         return null;
       }
 
+      // 고정된 파일명 사용 (사용자당 하나의 프로필 이미지만 유지)
+      final fileName = 'profile_${currentUser.uid}.$fileExtension';
+
       // Firebase Storage에 업로드
       final storageRef = _storage
           .ref()
           .child('profile_images')
-          .child('$fileName.$fileExtension');
+          .child(fileName);
 
       final uploadTask = storageRef.putFile(imageFile);
       final snapshot = await uploadTask;
@@ -245,13 +269,23 @@ class UserProfileService {
   /// 프로필 이미지 업로드 및 URL 업데이트 (통합 메서드)
   Future<bool> updateProfileImage(File imageFile) async {
     try {
-      // 1. 이미지 업로드
+      // 1. 현재 프로필에서 기존 이미지 URL 가져오기
+      final currentProfile = await getCurrentUserProfile();
+      final oldImageUrl = currentProfile?['profileImageUrl'] as String?;
+
+      // 2. 기존 이미지가 있다면 삭제
+      if (oldImageUrl != null && oldImageUrl.isNotEmpty) {
+        print('🔄 기존 프로필 이미지 삭제 중...');
+        await _deleteOldProfileImage(oldImageUrl);
+      }
+
+      // 3. 새 이미지 업로드
       final imageUrl = await uploadProfileImage(imageFile);
       if (imageUrl == null) {
         return false;
       }
 
-      // 2. URL을 Firestore에 저장
+      // 4. URL을 Firestore에 저장
       return await updateProfileImageUrl(imageUrl);
     } catch (e) {
       print('❌ 프로필 이미지 업데이트 오류: $e');
