@@ -166,6 +166,41 @@ class UserProfileService {
     }
   }
 
+  /// 사용자 파쿠르 숙련도 업데이트
+  Future<bool> updateSkillLevel(String skillLevel) async {
+    try {
+      final currentUser = _auth.currentUser;
+      if (currentUser == null) {
+        _showErrorToast('로그인이 필요합니다.');
+        return false;
+      }
+
+      if (!['트레이서', '프리러너', '야막'].contains(skillLevel)) {
+        _showErrorToast('유효하지 않은 숙련도입니다.');
+        return false;
+      }
+
+      print('🔄 파쿠르 숙련도 업데이트 중: $skillLevel');
+
+      // Firestore의 사용자 문서 업데이트
+      await _firestore
+          .collection('users')
+          .doc(currentUser.uid)
+          .update({
+        'skillLevel': skillLevel,
+        'lastUpdated': FieldValue.serverTimestamp(),
+      });
+
+      print('✅ 파쿠르 숙련도 업데이트 완료');
+      _showSuccessToast('파쿠르 숙련도가 변경되었습니다.');
+      return true;
+    } catch (e) {
+      print('❌ 파쿠르 숙련도 업데이트 오류: $e');
+      _showErrorToast('숙련도 변경에 실패했습니다.');
+      return false;
+    }
+  }
+
   /// 기존 프로필 이미지 삭제
   Future<bool> _deleteOldProfileImage(String? oldImageUrl) async {
     if (oldImageUrl == null || oldImageUrl.isEmpty) {

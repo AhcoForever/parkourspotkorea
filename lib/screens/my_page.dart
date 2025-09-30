@@ -1,170 +1,113 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 import 'package:parkourspotkorea/theme/app_colors.dart';
 import 'package:parkourspotkorea/widgets/background_wrapper.dart';
-import 'package:parkourspotkorea/services/firebase/user_profile_service.dart';
+import 'package:parkourspotkorea/viewmodels/my_page_viewmodel.dart';
 
-class MyPage extends StatefulWidget {
+class MyPage extends StatelessWidget {
   @override
-  _MyPageState createState() => _MyPageState();
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (_) => MyPageViewModel(),
+      child: _MyPageView(),
+    );
+  }
 }
 
-class _MyPageState extends State<MyPage> {
-  bool isEditing = false;
-  late TextEditingController nicknameController;
-  late TextEditingController introController;
-  File? _profileImage;
-  final ImagePicker _picker = ImagePicker();
-  final UserProfileService _userProfileService = UserProfileService();
-  Map<String, dynamic>? _userProfile;
-  bool _isLoading = true;
-
+class _MyPageView extends StatelessWidget {
   @override
-  void initState() {
-    super.initState();
-    nicknameController = TextEditingController();
-    introController = TextEditingController();
-    _loadUserProfile();
+  Widget build(BuildContext context) {
+    return Consumer<MyPageViewModel>(
+      builder: (context, viewModel, child) {
+        return _buildScaffold(context, viewModel);
+      },
+    );
   }
 
-  @override
-  void dispose() {
-    nicknameController.dispose();
-    introController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _pickImage() async {
-    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-    if (image != null) {
-      setState(() {
-        _profileImage = File(image.path);
-      });
-    }
-  }
-
-  /// 프로필 이미지 가져오기 (우선순위: 로컬 이미지 > Firebase URL > null)
-  ImageProvider? _getProfileImage() {
-    // 편집 중이고 로컬에 새로 선택한 이미지가 있는 경우
-    if (_profileImage != null) {
-      return FileImage(_profileImage!);
-    }
-
-    // Firebase Storage에서 저장된 이미지 URL이 있는 경우
-    if (_userProfile != null && _userProfile!['profileImageUrl'] != null) {
-      final imageUrl = _userProfile!['profileImageUrl'] as String;
-      if (imageUrl.isNotEmpty) {
-        return NetworkImage(imageUrl);
-      }
-    }
-
-    // 둘 다 없는 경우
-    return null;
-  }
-
-  Future<void> _loadUserProfile() async {
-    try {
-      final profile = await _userProfileService.getCurrentUserProfile();
-      if (profile != null) {
-        setState(() {
-          _userProfile = profile;
-          nicknameController.text = profile['displayName'] ?? '';
-          introController.text = profile['introduction'] ?? 'hello everyone!';
-          // 프로필 로드 시 로컬 이미지 초기화 (Firebase에서 가져온 이미지를 우선)
-          if (!isEditing) {
-            _profileImage = null;
-          }
-          _isLoading = false;
-        });
-      } else {
-        setState(() {
-          nicknameController.text = '';
-          introController.text = 'hello everyone!';
-          _userProfile = null;
-          if (!isEditing) {
-            _profileImage = null;
-          }
-          _isLoading = false;
-        });
-      }
-    } catch (e) {
-      print('프로필 로드 오류: $e');
-      setState(() {
-        _isLoading = false;
-      });
-    }
-  }
-
-  Future<void> _toggleEdit() async {
-    if (isEditing) {
-      // 편집 완료 - 저장
-      setState(() {
-        _isLoading = true;
-      });
-
-      try {
-        final nicknameSuccess = await _userProfileService.updateDisplayName(
-          nicknameController.text,
+  void _showSkillLevelDialog(BuildContext context, MyPageViewModel viewModel) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: BrandColors.c800,
+          title: Text(
+            '파쿠르 숙련도 선택',
+            style: TextStyle(
+              color: BrandColors.txtWhite,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildSkillLevelOption(context, viewModel, '트레이서', '파쿠르를 처음 시작하는 단계'),
+              SizedBox(height: 8),
+              _buildSkillLevelOption(context, viewModel, '프리러너', '기본적인 동작들을 익힌 단계'),
+              SizedBox(height: 8),
+              _buildSkillLevelOption(context, viewModel, '야막', '다양한 기술을 자유롭게 구사하는 단계'),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(
+                '취소',
+                style: TextStyle(color: BrandColors.txt300),
+              ),
+            ),
+          ],
         );
-        final introSuccess = await _userProfileService.updateUserIntroduction(
-          introController.text,
-        );
-
-        // 프로필 이미지가 변경된 경우 업로드
-        bool imageSuccess = true;
-        if (_profileImage != null) {
-          imageSuccess = await _userProfileService.updateProfileImage(_profileImage!);
-          if (imageSuccess) {
-            // 업로드 성공 후 로컬 이미지 초기화
-            setState(() {
-              _profileImage = null;
-            });
-          }
-        }
-
-        if (nicknameSuccess && introSuccess && imageSuccess) {
-          setState(() {
-            isEditing = false;
-          });
-          await _loadUserProfile(); // 저장 후 새로고침
-        }
-      } finally {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    } else {
-      // 편집 시작
-      setState(() {
-        isEditing = true;
-        // 편집 시작 시 현재 프로필 정보로 필드 초기화
-        if (_userProfile != null) {
-          nicknameController.text = _userProfile!['displayName'] ?? '';
-          introController.text = _userProfile!['introduction'] ?? 'hello everyone!';
-        }
-        // 편집 시작 시 로컬 이미지 초기화
-        _profileImage = null;
-      });
-    }
+      },
+    );
   }
 
-  /// 편집 취소
-  void _cancelEdit() {
-    setState(() {
-      isEditing = false;
-      // 기존 프로필 정보로 되돌리기
-      if (_userProfile != null) {
-        nicknameController.text = _userProfile!['displayName'] ?? '';
-        introController.text = _userProfile!['introduction'] ?? 'hello everyone!';
-      }
-      // 선택한 이미지 취소
-      _profileImage = null;
-    });
+  Widget _buildSkillLevelOption(BuildContext context, MyPageViewModel viewModel, String level, String description) {
+    final isSelected = viewModel.isSkillLevelSelected(level);
+
+    return InkWell(
+      onTap: () {
+        viewModel.updateSkillLevel(level);
+        Navigator.of(context).pop();
+      },
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        width: double.infinity,
+        padding: EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: isSelected ? SecondaryColors.c500Default.withValues(alpha: 0.1) : BrandColors.c700,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: isSelected ? SecondaryColors.c500Default : StrokeColors.defaultStroke,
+            width: isSelected ? 2 : 1,
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              level,
+              style: TextStyle(
+                color: isSelected ? SecondaryColors.c500Default : BrandColors.txtWhite,
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            SizedBox(height: 4),
+            Text(
+              description,
+              style: TextStyle(
+                color: BrandColors.txt300,
+                fontSize: 12,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
-  void _showSettingsBottomSheet() {
+  void _showSettingsBottomSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -207,31 +150,31 @@ class _MyPageState extends State<MyPage> {
                 padding: EdgeInsets.symmetric(horizontal: 16),
                 child: Column(
                   children: [
-                    _buildMenuItem('계정 설정', () {
+                    _buildMenuItem(context, '계정 설정', () {
                       Navigator.pop(context);
                       // 계정 설정 로직
                     }),
-                    _buildMenuItem('공지사항', () {
+                    _buildMenuItem(context, '공지사항', () {
                       Navigator.pop(context);
                       // 공지사항 로직
                     }),
-                    _buildMenuItem('친구 초대', () {
+                    _buildMenuItem(context, '친구 초대', () {
                       Navigator.pop(context);
                       // 친구 초대 로직
                     }),
-                    _buildMenuItem('고객 지원', () {
+                    _buildMenuItem(context, '고객 지원', () {
                       Navigator.pop(context);
                       // 고객 지원 로직
                     }),
-                    _buildMenuItem('언어 설정', () {
+                    _buildMenuItem(context, '언어 설정', () {
                       Navigator.pop(context);
                       // 언어 설정 로직
                     }),
-                    _buildMenuItem('버전 1.0.0.', () {
+                    _buildMenuItem(context, '버전 1.0.0.', () {
                       Navigator.pop(context);
                       // 버전 정보 로직
                     }),
-                    _buildMenuItem('로그아웃', () {
+                    _buildMenuItem(context, '로그아웃', () {
                       Navigator.pop(context);
                       // 로그아웃 로직
                     }, underline: true),
@@ -246,8 +189,7 @@ class _MyPageState extends State<MyPage> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildScaffold(BuildContext context, MyPageViewModel viewModel) {
     final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
@@ -264,12 +206,12 @@ class _MyPageState extends State<MyPage> {
         actions: [
           IconButton(
             icon: Icon(Icons.settings, color: BrandColors.txt30),
-            onPressed: _showSettingsBottomSheet,
+            onPressed: () => _showSettingsBottomSheet(context),
           ),
         ],
       ),
       body: SafeArea(
-        child: _isLoading
+        child: viewModel.isLoading
             ? Center(
                 child: CircularProgressIndicator(
                   color: SecondaryColors.c500Default,
@@ -292,12 +234,12 @@ class _MyPageState extends State<MyPage> {
                             ),
                           ),
                           child: GestureDetector(
-                            onTap: isEditing ? _pickImage : null,
+                            onTap: viewModel.isEditing ? viewModel.pickImage : null,
                             child: CircleAvatar(
                               radius: 75,
                               backgroundColor: BrandColors.c700,
-                              backgroundImage: _getProfileImage(),
-                              child: _getProfileImage() == null
+                              backgroundImage: viewModel.getProfileImage(),
+                              child: viewModel.getProfileImage() == null
                                   ? Icon(
                                       Icons.person,
                                       size: 60,
@@ -314,9 +256,9 @@ class _MyPageState extends State<MyPage> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Flexible(
-                              child: isEditing
+                              child: viewModel.isEditing
                                   ? TextField(
-                                      controller: nicknameController,
+                                      controller: viewModel.nicknameController,
                                       textAlign: TextAlign.center,
                                       style: textTheme.bodyLarge?.copyWith(
                                         color: BrandColors.txtWhite,
@@ -347,11 +289,11 @@ class _MyPageState extends State<MyPage> {
                                       ),
                                     )
                                   : Text(
-                                      nicknameController.text.isEmpty
+                                      viewModel.nicknameController.text.isEmpty
                                           ? '닉네임을 설정해주세요'
-                                          : nicknameController.text,
+                                          : viewModel.nicknameController.text,
                                       style: TextStyle(
-                                        color: nicknameController.text.isEmpty
+                                        color: viewModel.nicknameController.text.isEmpty
                                             ? BrandColors.txt300
                                             : BrandColors.txtWhite,
                                         fontSize: 32,
@@ -360,14 +302,14 @@ class _MyPageState extends State<MyPage> {
                                       ),
                                     ),
                             ),
-                            if (isEditing) ...[
+                            if (viewModel.isEditing) ...[
                               IconButton(
                                 icon: Icon(Icons.close, color: BrandColors.txt300),
-                                onPressed: _cancelEdit,
+                                onPressed: viewModel.cancelEdit,
                               ),
                               IconButton(
-                                icon: Icon(Icons.check, color: BrandColors.c500),
-                                onPressed: _toggleEdit,
+                                icon: Icon(Icons.check, color: SecondaryColors.c500Default),
+                                onPressed: viewModel.toggleEdit,
                               ),
                             ] else
                               IconButton(
@@ -376,14 +318,14 @@ class _MyPageState extends State<MyPage> {
                                   width: 24,
                                   height: 24,
                                 ),
-                                onPressed: _toggleEdit,
+                                onPressed: viewModel.toggleEdit,
                               ),
                           ],
                         ),
                         SizedBox(height: 30),
-                        isEditing
+                        viewModel.isEditing
                             ? TextField(
-                                controller: introController,
+                                controller: viewModel.introController,
                                 maxLines: 4,
                                 style: TextStyle(
                                   color: BrandColors.txtWhite,
@@ -421,7 +363,7 @@ class _MyPageState extends State<MyPage> {
                                   borderRadius: BorderRadius.circular(4),
                                 ),
                                 child: Text(
-                                  introController.text,
+                                  viewModel.introController.text,
                                   style: textTheme.bodyLarge?.copyWith(
                                     color: BrandColors.txtWhite,
                                     fontWeight: FontWeight.w600,
@@ -430,40 +372,60 @@ class _MyPageState extends State<MyPage> {
                                 ),
                               ),
                         SizedBox(height: 12),
-                        Row(
-                          children: [
-                            Text(
-                              '파쿠르 숙련도 변경',
-                              style: TextStyle(
-                                color: BrandColors.txtWhite,
-                                fontSize: 14,
-                              ),
+                        InkWell(
+                          onTap: () {
+                            // 파쿠르 숙련도 변경 로직
+                            _showSkillLevelDialog(context, viewModel);
+                          },
+                          borderRadius: BorderRadius.circular(4),
+                          child: Container(
+                            width: double.infinity,
+                            padding: EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: BrandColors.c800,
+                              borderRadius: BorderRadius.circular(4),
                             ),
-                            SizedBox(width: 8),
-                            Container(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: SecondaryColors.c500Default,
-                                  width: 2,
+                            child: Row(
+                              children: [
+                                Text(
+                                  '파쿠르 숙련도 변경',
+                                  style: TextStyle(
+                                    color: BrandColors.txtWhite,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              child: Text(
-                                '초급',
-                                style: TextStyle(
-                                  color: SecondaryColors.c500Default,
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 12,
+                                SizedBox(width: 8),
+                                Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 4,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                      color: SecondaryColors.c500Default,
+                                      width: 2,
+                                    ),
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  child: Text(
+                                    viewModel.userProfile?['skillLevel'] ?? '트레이서',
+                                    style: TextStyle(
+                                      color: SecondaryColors.c500Default,
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 12,
+                                    ),
+                                  ),
                                 ),
-                              ),
+                                Spacer(),
+                                Icon(
+                                  Icons.arrow_forward_ios_rounded,
+                                  color: BrandColors.txt300,
+                                  size: 16,
+                                ),
+                              ],
                             ),
-                            Spacer(),
-                            Icon(Icons.info_outline, color: BrandColors.txt300),
-                          ],
+                          ),
                         ),
                         SizedBox(height: 16),
                       ],
@@ -476,6 +438,7 @@ class _MyPageState extends State<MyPage> {
   }
 
   Widget _buildMenuItem(
+    BuildContext context,
     String title,
     VoidCallback onTap, {
     bool underline = false,
