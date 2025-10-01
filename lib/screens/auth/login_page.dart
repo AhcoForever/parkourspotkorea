@@ -105,7 +105,10 @@ class _LoginPageState extends State<LoginPage> {
     if (user != null && authorization != null) {
       // 구글 로그인 성공 시 로컬 사용자 생성/동기화
       final userRepo = context.read<UserRepository>();
-      final isFirstTime = await userRepo.ensureUserExists(uid: user.id, email: user.email);
+      final isFirstTime = await userRepo.ensureUserExists(
+        uid: user.id,
+        email: user.email,
+      );
 
       // 최초 로그인 사용자는 닉네임 페이지로, 기존 사용자는 지도 페이지로 이동
       if (isFirstTime) {
@@ -176,150 +179,192 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final logoHeight = screenHeight * 0.45; // 화면 높이의 45%
+    final topPadding = logoHeight * 0.65; // 로고 높이의 65%
+
     return Scaffold(
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // 로고 이미지
-              SvgPicture.asset(
-                'assets/logo/login-parkourspot.svg',
-                height: 260,
-                width: double.infinity,
-                fit: BoxFit.contain,
-              ),
-              // 이메일 입력창
-              TextField(
-                controller: _emailCtrl,
-                style: TextStyle(color: BrandColors.txt30),
-                decoration: InputDecoration(
-                  label: Text('아이디(이메일)을 입력해주세요.'),
-                  hintText: 'parkourspot@gmail.com',
-                ),
-              ),
-
-              SizedBox(height: 16),
-
-              // 비밀번호 입력창
-              TextField(
-                controller: _pwCtrl,
-                style: TextStyle(color: BrandColors.txt30),
-                obscureText: true,
-                decoration: InputDecoration(
-                  label: Text('비밀번호를 입력해주세요.'),
-                  hintText: '영문+숫자+특수문자 조합 8~16자리',
-                ),
-              ),
-
-              // 로그인 버튼
-              Padding(
-                padding: const EdgeInsets.only(top: 30.0),
-                child: SizedBox(
-                  width: double.infinity,
-                  height: 60,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(),
-                    onPressed: _isLoading ? null : _signin,
-                    child: _isLoading
-                        ? const CircularProgressIndicator()
-                        : Text('로그인'),
-                  ),
-                ),
-              ),
-              SizedBox(height: 50),
-              // 소셜 로그인 (구글)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+      body: Stack(
+        children: [
+          // 배경 이미지 1
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Image.asset(
+              'assets/images/loginPage-background.png',
+              width: double.infinity,
+              fit: BoxFit.cover,
+            ),
+          ),
+          // 배경 이미지 2
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Image.asset(
+              'assets/images/loginPage-bottom-image.png',
+              width: double.infinity,
+              fit: BoxFit.cover,
+            ),
+          ),
+          // 로고 이미지 (SafeArea 밖)
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: SvgPicture.asset(
+              'assets/logo/login-parkourspot.svg',
+              height: logoHeight,
+              fit: BoxFit.contain,
+            ),
+          ),
+          // 기존 컨텐츠
+          SafeArea(
+            child: SingleChildScrollView(
+              padding: EdgeInsets.only(top: topPadding, left: 16, right: 16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // 구글 버튼
-                  InkWell(
-                    onTap: () {
-                      GoogleSignIn.instance.authenticate();
-                    },
-                    child: Image.asset(
-                      'assets/images/ios_dark_rd_ctn@3x.png',
-                      height: 49,
-                      width: 221,
+                  // 이메일 입력창
+                  TextField(
+                    controller: _emailCtrl,
+                    style: TextStyle(color: BrandColors.txt30),
+                    decoration: InputDecoration(
+                      label: Text('아이디(이메일)을 입력해주세요.'),
+                      hintText: 'parkourspot@gmail.com',
+                      hintStyle: TextStyle(color: BrandColors.txt500),
+                    ),
+                  ),
+
+                  SizedBox(height: 16),
+
+                  // 비밀번호 입력창
+                  TextField(
+                    controller: _pwCtrl,
+                    style: TextStyle(color: BrandColors.txt30),
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      label: Text('비밀번호를 입력해주세요.'),
+                      hintText: '영문+숫자+특수문자 조합 8~16자리',
+                      hintStyle: TextStyle(color: BrandColors.txt500),
+                    ),
+                  ),
+
+                  // 로그인 버튼
+                  Padding(
+                    padding: const EdgeInsets.only(top: 30.0),
+                    child: SizedBox(
+                      width: double.infinity,
+                      height: 60,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: SecondaryColors.c500Default,
+                          disabledBackgroundColor: Color(0xFF32AD5F),
+                          foregroundColor: BrandColors.c900,
+                          disabledForegroundColor: BrandColors.c900,
+                        ),
+                        onPressed: _isLoading ? null : _signin,
+                        child: _isLoading
+                            ? const CircularProgressIndicator()
+                            : Text('로그인'),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 50),
+                  // 소셜 로그인 (구글)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // 구글 버튼
+                      InkWell(
+                        onTap: () {
+                          GoogleSignIn.instance.authenticate();
+                        },
+                        child: Image.asset(
+                          'assets/images/ios_dark_rd_ctn@3x.png',
+                          height: 49,
+                          width: 221,
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 50),
+                  // 하단 버튼 3개
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 10.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        TextButton(
+                          onPressed: () {
+                            context.goNamed('find');
+                          },
+                          child: Text(
+                            '비밀번호 재설정',
+                            style: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(
+                                  color: BrandColors.txt30,
+                                  fontWeight: FontWeight.w600,
+
+                                  fontSize: 12,
+                                ),
+                          ),
+                        ),
+
+                        Text(
+                          '  |  ',
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(
+                                color: BrandColors.txt30,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                              ),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            context.goNamed('signup');
+                          },
+                          child: Text(
+                            '회원 가입',
+                            style: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(
+                                  color: BrandColors.txt30,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  Padding(
+                    padding: const EdgeInsets.only(top: 16.0),
+                    child: TextButton(
+                      onPressed: () {
+                        context.pushNamed('customerService', extra: 'login');
+                      },
+                      child: Container(
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(color: BrandColors.txt300),
+                          ),
+                        ),
+                        child: Text(
+                          '로그인에 어려움이 있나요?',
+                          style: TextStyle(
+                            color: BrandColors.txt300,
+                            fontSize: 12,
+                            fontFamily: 'Pretendard',
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ],
               ),
-              SizedBox(height: 50),
-              // 하단 버튼 3개
-              Padding(
-                padding: const EdgeInsets.only(bottom: 10.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    TextButton(
-                      onPressed: () {
-                        context.goNamed('find');
-                      },
-                      child: Text(
-                        '비밀번호 재설정',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: BrandColors.txt30,
-                          fontWeight: FontWeight.w600,
-
-                          fontSize: 12,
-                        ),
-                      ),
-                    ),
-
-                    Text(
-                      '  |  ',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: BrandColors.txt30,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        context.goNamed('signup');
-                      },
-                      child: Text(
-                        '회원 가입',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: BrandColors.txt30,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              Padding(
-                padding: const EdgeInsets.only(top: 16.0),
-                child: TextButton(
-                  onPressed: () {
-                    context.pushNamed('customerService', extra: 'login');
-                  },
-                  child: Container(
-                    decoration: const BoxDecoration(
-                      border: Border(
-                        bottom: BorderSide(
-                          color: BrandColors.txt300,
-
-                        ),
-                      ),
-                    ),
-                    child: Text(
-                      '로그인에 어려움이 있나요?',
-                      style: TextStyle(color: BrandColors.txt300, fontSize: 12, fontFamily: 'Pretendard'),
-                    ),
-                  ),
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

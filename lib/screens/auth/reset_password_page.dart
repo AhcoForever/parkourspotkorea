@@ -105,7 +105,9 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                         if (_emailController.text.trim().isEmpty) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text('이메일 주소를 입력해 주세요.'),
+                              content: Text('이메일 주소를 입력해 주세요.', style: TextStyle(
+                                color: BrandColors.txtWhite
+                              ),),
                               backgroundColor: StrokeColors.error,
                             ),
                           );

@@ -278,11 +278,10 @@ SizedBox(height: 15),
             ? () => viewModel.signUp()
             : null,
         style: ElevatedButton.styleFrom(
-          backgroundColor: viewModel.canSignUp
-              ? BrandColors.c500
-              : BrandColors.c700,
-          foregroundColor: BrandColors.txtWhite,
-
+          backgroundColor: SecondaryColors.c500Default,
+          disabledBackgroundColor: BrandColors.normal,
+          foregroundColor: BrandColors.c900,
+          disabledForegroundColor: BrandColors.txt100,
           elevation: 0,
         ),
         child: viewModel.isLoading
@@ -298,7 +297,7 @@ SizedBox(height: 15),
               )
             : const Text(
                 '회원가입',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: BrandColors.c900),
               ),
       ),
     );
@@ -341,6 +340,7 @@ SizedBox(height: 15),
           keyboardType: keyboardType,
           style: const TextStyle(color: BrandColors.txt30),
           decoration: InputDecoration(
+
             hintText: hintText,
             hintStyle: const TextStyle(color: BrandColors.txt500, fontSize: 14),
             filled: true,
@@ -363,7 +363,7 @@ SizedBox(height: 15),
               borderSide: BorderSide(
                 color: successText != null
                     ? StrokeColors.success
-                    : BrandColors.c500,
+                    : SecondaryColors.c500Default,
                 width: 2,
               ),
             ),
@@ -400,9 +400,9 @@ SizedBox(height: 15),
             height: 24,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: value ? BrandColors.c500 : Colors.transparent,
+              color: value ? SecondaryColors.c500Default : Colors.transparent,
               border: Border.all(
-                color: value ? BrandColors.c500 : BrandColors.normal,
+                color: value ? SecondaryColors.c500Default : BrandColors.normal,
                 width: 2,
               ),
             ),
@@ -410,7 +410,7 @@ SizedBox(height: 15),
                 ? const Icon(
                     Icons.check,
                     size: 16,
-                    color: BrandColors.txtWhite,
+                    color: BrandColors.c900,
                   )
                 : null,
           ),
@@ -444,7 +444,7 @@ SizedBox(height: 15),
           child: Icon(
             Icons.check,
             size: 20,
-            color: value ? BrandColors.c500 : StrokeColors.defaultStroke,
+            color: value ? SecondaryColors.c500Default : StrokeColors.defaultStroke,
           ),
         ),
         const SizedBox(width:24),

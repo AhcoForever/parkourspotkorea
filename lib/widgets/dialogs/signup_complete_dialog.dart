@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:parkourspotkorea/theme/app_colors.dart';
 import 'package:parkourspotkorea/widgets/comfirm_button.dart';
 
@@ -55,7 +54,7 @@ class SignupCompleteDialog extends StatelessWidget {
                 fontSize: 24,
                 fontWeight: FontWeight.w700,
                 height: 1.33,
-                color: BrandColors.c500,
+                color: SecondaryColors.c300
               ),
             ),
             const SizedBox(height: 16),
@@ -70,7 +69,10 @@ class SignupCompleteDialog extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 24),
-            ComfirmButton(onPressed: onConfirm),
+            ComfirmButton(
+              onPressed: onConfirm,
+              textColor: BrandColors.txtWhite,
+            ),
           ],
         ),
       ),

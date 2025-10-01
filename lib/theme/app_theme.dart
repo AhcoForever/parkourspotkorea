@@ -32,9 +32,11 @@ class AppTheme {
       elevatedButtonTheme: ElevatedButtonThemeData(
         style:
             ElevatedButton.styleFrom(
-              backgroundColor: BrandColors.c500,
+              backgroundColor: SecondaryColors.c500Default,
               // 메인 브랜드 색상
               foregroundColor: Color(0xFFFCFCFC),
+              disabledBackgroundColor: SecondaryColors.c700,
+              disabledForegroundColor: BrandColors.c900,
               textStyle: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
@@ -47,7 +49,7 @@ class AppTheme {
               // 호버 상태
               backgroundColor: WidgetStateProperty.resolveWith((states) {
                 if (states.contains(WidgetState.hovered)) {
-                  return BrandColors.c600Dark; // 호버 시 더 어두운 브랜드 색상
+                  return Color(0xFF32AD5F);
                 }
                 return BrandColors.c500;
               }),
@@ -153,7 +155,7 @@ class AppTheme {
         // 포커스 테두리 - 브랜드 색상
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(4),
-          borderSide: BorderSide(color: BrandColors.c500, width: 2),
+          borderSide: BorderSide(color: SecondaryColors.c500Default, width: 2),
         ),
 
         // 오류 테두리 - Stroke 오류 색상
