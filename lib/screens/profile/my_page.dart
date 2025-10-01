@@ -67,9 +67,12 @@ class _MyPageView extends StatelessWidget {
             ],
           ),
           actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text('취소', style: TextStyle(color: BrandColors.txtWhite)),
+            Padding(
+              padding: EdgeInsets.only(bottom: 10, right: 8),
+              child: TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text('취소', style: TextStyle(color: BrandColors.txtWhite)),
+              ),
             ),
           ],
         );
@@ -92,7 +95,7 @@ class _MyPageView extends StatelessWidget {
       },
       borderRadius: BorderRadius.circular(8),
       child: Container(
-        width: double.infinity,
+        width: 358,
         padding: EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: isSelected
