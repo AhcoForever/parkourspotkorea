@@ -25,7 +25,11 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios),
           onPressed: () {
-            context.goNamed('login');
+            if (Navigator.canPop(context)) {
+              context.pop();
+            } else {
+              context.goNamed('login');
+            }
           },
         ),
         title: Text('비밀번호 재설정'),

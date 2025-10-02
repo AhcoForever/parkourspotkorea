@@ -49,7 +49,7 @@ class SettingsBottomSheet extends StatelessWidget {
                   title: '비밀번호 변경',
                   icon: Icons.key_outlined,
                   onTap: () {
-                    context.goNamed('find');
+                    context.pushNamed('changePassword');
                   },
                 ),
                 _SettingsMenuItem(
@@ -72,7 +72,7 @@ class SettingsBottomSheet extends StatelessWidget {
                   icon: Icons.help_outline,
                   onTap: () {
                     Navigator.pop(context);
-                    context.pushNamed('customerService');
+                    context.pushNamed('customerService', extra: 'settings');
                   },
                 ),
                 _SettingsMenuItem(

@@ -2,6 +2,8 @@ import 'package:go_router/go_router.dart';
 import 'package:parkourspotkorea/screens/bookmark_page.dart';
 import 'package:parkourspotkorea/screens/locationPermission_white_page.dart';
 import 'package:parkourspotkorea/screens/location_permission_dark_page.dart';
+import 'package:parkourspotkorea/screens/profile/delete_account_page.dart';
+import 'package:parkourspotkorea/screens/profile/notice_list_page.dart';
 
 import '../screens/profile/about_creator_page.dart';
 import '../screens/auth/signup_page.dart';
@@ -34,7 +36,8 @@ final GoRouter appRouter = GoRouter(
               // ParkourLevel()
               MyPage()
               // NicknamePage(),
-              //LoginPage()
+
+          //LoginPage()
               //AppInitializer(),
               //Bookmark(),
              // AboutCreatorPage(),
@@ -88,6 +91,14 @@ final GoRouter appRouter = GoRouter(
       path: '/profile',
       name: 'profile',
       builder: (context, state) => MyPage(),
+      routes: [
+        // 비밀번호 변경 (profile의 하위 라우트)
+        GoRoute(
+          path: 'change-password',
+          name: 'changePassword',
+          builder: (context, state) => ResetPasswordPage(),
+        ),
+      ],
     ),
 
     // 파쿠르 레벨 페이지
@@ -115,14 +126,14 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/notice',
       name: 'notice',
-      builder: (context, state) => AboutCreatorPage(),
+      builder: (context, state) => NoticeListPage(),
     ),
 
     // 회원 탈퇴 페이지
     GoRoute(
       path: '/deleteAccount',
       name: 'deleteAccount',
-      builder: (context, state) => AboutCreatorPage(),
+      builder: (context, state) => DeleteAccountPage(),
     ),
 
     // 로그아웃 페이지
