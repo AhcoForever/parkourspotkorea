@@ -4,6 +4,13 @@
 한국의 파쿠르 스팟을 찾고 공유하는 Flutter 앱입니다.
 
 ![Parkour Logo](assets/logo/PARKOUR_SPOT.png)
+## 스크린샷
+<img width="300" src="assets/screenshots/appstore-iOS-1@3x.png" />
+<img width="300" src="assets/screenshots/appstore-iOS-2@3x.png" />
+<img width="300" src="assets/screenshots/appstore-iOS-3@3x.png" />
+<img width="300" src="assets/screenshots/appstore-iOS-4@3x.png" />
+<img width="300" src="assets/screenshots/appstore-iOS-5@3x.png" />
+<img width="300" src="assets/screenshots/appstore-iOS-6@3x.png" />
 
 ## 📱 주요 기능
 

@@ -34,13 +34,13 @@ final GoRouter appRouter = GoRouter(
           (context, state) => //ParkourLandingPage(),
               //SignupCompleteDialog()
               // ParkourLevel()
-              MyPage()
+             // MyPage()
               // NicknamePage(),
 
           //LoginPage()
-              //AppInitializer(),
+              AppInitializer(),
               //Bookmark(),
-             // AboutCreatorPage(),
+              //AboutCreatorPage(),
     ),
 
     // 로그인 페이지

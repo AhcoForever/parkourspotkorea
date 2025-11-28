@@ -1,6 +1,6 @@
 class AppConstants {
   // 앱 버전 정보
-  static const String appVersion = '1.0.0';
+  static const String appVersion = '1.0.1';
   static const String appName = 'Parkour Spot Korea';
 
   // 앱 정보
