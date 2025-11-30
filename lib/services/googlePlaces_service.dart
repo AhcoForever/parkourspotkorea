@@ -3,9 +3,10 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class GooglePlacesService {
-  static const String _apiKey = 'AIzaSyBPhKExB0RmTtcjXlenfpT8LQTUZp9smwU';
+  static String get _apiKey => dotenv.env['GOOGLE_PLACES_API_KEY'] ?? '';
 
   // Places API 기본 URL들
   static const String _nearbySearchUrl = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json';
